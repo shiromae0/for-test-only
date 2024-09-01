@@ -350,6 +350,12 @@
 			null
 		],
 		[
+			"C:/Users/51392/Desktop/Assignment/DECO3801/shapez/GameMap.h",
+			"MU",
+			"EWIEGA46WW/moc_GameMap.cpp",
+			null
+		],
+		[
 			"C:/Users/51392/Desktop/Assignment/DECO3801/shapez/HelpScene.h",
 			"MU",
 			"EWIEGA46WW/moc_HelpScene.cpp",
@@ -401,12 +407,6 @@
 			"C:/Users/51392/Desktop/Assignment/DECO3801/shapez/config.h",
 			"MU",
 			"EWIEGA46WW/moc_config.cpp",
-			null
-		],
-		[
-			"C:/Users/51392/Desktop/Assignment/DECO3801/shapez/gamemap.h",
-			"MU",
-			"EWIEGA46WW/moc_gamemap.cpp",
 			null
 		],
 		[

@@ -228,6 +228,50 @@ build MyShapez.exe: CXX_EXECUTABLE_LINKER__MyShapez_Debug CMakeFiles/MyShapez.di
   TARGET_IMPLIB = libMyShapez.dll.a
   TARGET_PDB = MyShapez.exe.dbg
 
+# =============================================================================
+# Object build statements for SHARED_LIBRARY target MyShapezLib
+
+
+#############################################
+# Order-only phony target for MyShapezLib
+
+build cmake_object_order_depends_target_MyShapezLib: phony || MyShapezLib_autogen MyShapezLib_autogen/mocs_compilation.cpp MyShapezLib_autogen/timestamp MyShapezLib_autogen_timestamp_deps
+
+build CMakeFiles/MyShapezLib.dir/MyShapezLib_autogen/mocs_compilation.cpp.obj: CXX_COMPILER__MyShapezLib_unscanned_Debug C$:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapezLib_autogen/mocs_compilation.cpp || cmake_object_order_depends_target_MyShapezLib
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DMyShapezLib_EXPORTS -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEP_FILE = CMakeFiles\MyShapezLib.dir\MyShapezLib_autogen\mocs_compilation.cpp.obj.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapezLib_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include
+  OBJECT_DIR = CMakeFiles\MyShapezLib.dir
+  OBJECT_FILE_DIR = CMakeFiles\MyShapezLib.dir\MyShapezLib_autogen
+
+build CMakeFiles/MyShapezLib.dir/gamemap.cpp.obj: CXX_COMPILER__MyShapezLib_unscanned_Debug C$:/Users/51392/Desktop/Assignment/DECO3801/shapez/gamemap.cpp || cmake_object_order_depends_target_MyShapezLib
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DMyShapezLib_EXPORTS -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEP_FILE = CMakeFiles\MyShapezLib.dir\gamemap.cpp.obj.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapezLib_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include
+  OBJECT_DIR = CMakeFiles\MyShapezLib.dir
+  OBJECT_FILE_DIR = CMakeFiles\MyShapezLib.dir
+
+
+# =============================================================================
+# Link build statements for SHARED_LIBRARY target MyShapezLib
+
+
+#############################################
+# Link the shared library libMyShapezLib.dll
+
+build libMyShapezLib.dll libMyShapezLib.dll.a: CXX_SHARED_LIBRARY_LINKER__MyShapezLib_Debug CMakeFiles/MyShapezLib.dir/MyShapezLib_autogen/mocs_compilation.cpp.obj CMakeFiles/MyShapezLib.dir/gamemap.cpp.obj | C$:/Qt/6.7.2/mingw_64/lib/libQt6Widgets.a C$:/Qt/6.7.2/mingw_64/lib/libQt6Gui.a C$:/Qt/6.7.2/mingw_64/lib/libQt6Core.a || MyShapezLib_autogen MyShapezLib_autogen_timestamp_deps
+  LANGUAGE_COMPILE_FLAGS = -DQT_QML_DEBUG -g
+  LINK_LIBRARIES = C:/Qt/6.7.2/mingw_64/lib/libQt6Widgets.a  C:/Qt/6.7.2/mingw_64/lib/libQt6Gui.a  C:/Qt/6.7.2/mingw_64/lib/libQt6Core.a  -lmpr  -luserenv  -ld3d11  -ldxgi  -ldxguid  -ld3d12  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+  OBJECT_DIR = CMakeFiles\MyShapezLib.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  RESTAT = 1
+  TARGET_FILE = libMyShapezLib.dll
+  TARGET_IMPLIB = libMyShapezLib.dll.a
+  TARGET_PDB = MyShapezLib.dll.dbg
+
 
 #############################################
 # Utility command for edit_cache
@@ -308,6 +352,18 @@ build MyShapez_autogen: phony CMakeFiles/MyShapez_autogen MyShapez_autogen/times
 
 
 #############################################
+# Utility command for MyShapezLib_autogen_timestamp_deps
+
+build MyShapezLib_autogen_timestamp_deps: phony
+
+
+#############################################
+# Utility command for MyShapezLib_autogen
+
+build MyShapezLib_autogen: phony CMakeFiles/MyShapezLib_autogen MyShapezLib_autogen/timestamp MyShapezLib_autogen/mocs_compilation.cpp MyShapezLib_autogen_timestamp_deps
+
+
+#############################################
 # Custom command for MyShapez_autogen\timestamp
 
 build MyShapez_autogen/timestamp MyShapez_autogen/mocs_compilation.cpp | ${cmake_ninja_workdir}MyShapez_autogen/timestamp ${cmake_ninja_workdir}MyShapez_autogen/mocs_compilation.cpp: CUSTOM_COMMAND C$:/Qt/6.7.2/mingw_64/./bin/moc.exe C$:/Qt/6.7.2/mingw_64/./bin/uic.exe || MyShapez_autogen_timestamp_deps
@@ -328,14 +384,33 @@ build MyShapez_autogen/EWIEGA46WW/qrc_res.cpp | ${cmake_ninja_workdir}MyShapez_a
 
 
 #############################################
+# Custom command for MyShapezLib_autogen\timestamp
+
+build MyShapezLib_autogen/timestamp MyShapezLib_autogen/mocs_compilation.cpp | ${cmake_ninja_workdir}MyShapezLib_autogen/timestamp ${cmake_ninja_workdir}MyShapezLib_autogen/mocs_compilation.cpp: CUSTOM_COMMAND C$:/Qt/6.7.2/mingw_64/./bin/moc.exe C$:/Qt/6.7.2/mingw_64/./bin/uic.exe || MyShapezLib_autogen_timestamp_deps
+  COMMAND = C:\Windows\system32\cmd.exe /C "cd /D C:\Users\51392\Desktop\Assignment\DECO3801\shapez\build\Desktop_Qt_6_7_2_MinGW_64_bit-Debug && C:\Qt\Tools\CMake_64\bin\cmake.exe -E cmake_autogen C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapezLib_autogen.dir/AutogenInfo.json Debug && C:\Qt\Tools\CMake_64\bin\cmake.exe -E touch C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapezLib_autogen/timestamp && C:\Qt\Tools\CMake_64\bin\cmake.exe -E cmake_transform_depfile Ninja gccdepfile C:/Users/51392/Desktop/Assignment/DECO3801/shapez C:/Users/51392/Desktop/Assignment/DECO3801/shapez C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapezLib_autogen/deps C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/d/2307332dd76be1d341b767359db68922e1897673709d49b02f666e70066d00e7.d"
+  DESC = Automatic MOC and UIC for target MyShapezLib
+  depfile = CMakeFiles\d\2307332dd76be1d341b767359db68922e1897673709d49b02f666e70066d00e7.d
+  deps = gcc
+  restat = 1
+
+
+#############################################
 # Phony custom command for CMakeFiles\MyShapez_autogen
 
 build CMakeFiles/MyShapez_autogen | ${cmake_ninja_workdir}CMakeFiles/MyShapez_autogen: phony MyShapez_autogen/timestamp || MyShapez_autogen_timestamp_deps
+
+
+#############################################
+# Phony custom command for CMakeFiles\MyShapezLib_autogen
+
+build CMakeFiles/MyShapezLib_autogen | ${cmake_ninja_workdir}CMakeFiles/MyShapezLib_autogen: phony MyShapezLib_autogen/timestamp || MyShapezLib_autogen_timestamp_deps
 
 # =============================================================================
 # Target aliases.
 
 build MyShapez: phony MyShapez.exe
+
+build MyShapezLib: phony libMyShapezLib.dll
 
 # =============================================================================
 # Folder targets.
@@ -345,7 +420,7 @@ build MyShapez: phony MyShapez.exe
 #############################################
 # Folder: C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug
 
-build all: phony MyShapez.exe
+build all: phony MyShapez.exe libMyShapezLib.dll
 
 # =============================================================================
 # Built-in targets

@@ -2,6 +2,8 @@
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/Belt.h
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/ChooseScene.h
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/Cutter.h
+C:/Users/51392/Desktop/Assignment/DECO3801/shapez/ShopScene.h
+C:/Users/51392/Desktop/Assignment/DECO3801/shapez/GameMap.h
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/scene.cpp
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/RoundScene.cpp
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/HelpScene.h
@@ -366,7 +368,6 @@ C:/Users/51392/Desktop/Assignment/DECO3801/shapez/scene.h
  mdp:C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/moc_predefs.h
  mdp:C:/Users/51392/Desktop/Assignment/DECO3801/shapez/scene.h
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/RoundScene.h
-C:/Users/51392/Desktop/Assignment/DECO3801/shapez/ShopScene.h
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/Trash.h
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/config.h
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/WinScene.h
@@ -816,7 +817,7 @@ C:/Users/51392/Desktop/Assignment/DECO3801/shapez/WindowControl.h
  mdp:C:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include/wctype.h
  mdp:C:/Users/51392/Desktop/Assignment/DECO3801/shapez/building.h
  mdp:C:/Users/51392/Desktop/Assignment/DECO3801/shapez/ChooseScene.h
- mdp:C:/Users/51392/Desktop/Assignment/DECO3801/shapez/gamemap.h
+ mdp:C:/Users/51392/Desktop/Assignment/DECO3801/shapez/GameMap.h
  mdp:C:/Users/51392/Desktop/Assignment/DECO3801/shapez/HelpScene.h
  mdp:C:/Users/51392/Desktop/Assignment/DECO3801/shapez/hub.h
  mdp:C:/Users/51392/Desktop/Assignment/DECO3801/shapez/playscene.h
@@ -833,7 +834,6 @@ C:/Users/51392/Desktop/Assignment/DECO3801/shapez/WindowControl.h
  mdp:C:/Users/51392/Desktop/Assignment/DECO3801/shapez/scene.h
  mdp:C:/Users/51392/Desktop/Assignment/DECO3801/shapez/vec.h
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/building.h
-C:/Users/51392/Desktop/Assignment/DECO3801/shapez/gamemap.h
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/WinScene.cpp
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/hub.h
 C:/Users/51392/Desktop/Assignment/DECO3801/shapez/miner.h

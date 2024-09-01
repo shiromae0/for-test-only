@@ -56,7 +56,7 @@
 			{
 				"command" : 3,
 				"file" : 1,
-				"line" : 23,
+				"line" : 24,
 				"parent" : 0
 			},
 			{
@@ -80,13 +80,7 @@
 			{
 				"command" : 4,
 				"file" : 1,
-				"line" : 83,
-				"parent" : 0
-			},
-			{
-				"command" : 5,
-				"file" : 1,
-				"line" : 65,
+				"line" : 87,
 				"parent" : 0
 			},
 			{
@@ -96,9 +90,15 @@
 				"parent" : 0
 			},
 			{
+				"command" : 5,
+				"file" : 1,
+				"line" : 67,
+				"parent" : 0
+			},
+			{
 				"command" : 8,
 				"file" : 1,
-				"line" : 13,
+				"line" : 14,
 				"parent" : 0
 			},
 			{
@@ -182,7 +182,7 @@
 			{
 				"command" : 8,
 				"file" : 1,
-				"line" : 14,
+				"line" : 15,
 				"parent" : 0
 			},
 			{
@@ -363,7 +363,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always"
+					"fragment" : "-DQT_QML_DEBUG -O3 -DNDEBUG -std=gnu++17 -fdiagnostics-color=always"
 				}
 			],
 			"defines" : 
@@ -391,6 +391,10 @@
 				{
 					"backtrace" : 7,
 					"define" : "QT_NETWORK_LIB"
+				},
+				{
+					"backtrace" : 37,
+					"define" : "QT_NO_DEBUG"
 				},
 				{
 					"backtrace" : 6,
@@ -525,7 +529,7 @@
 		],
 		"prefix" : 
 		{
-			"path" : "C:/Program Files (x86)/shapez"
+			"path" : "C:/Program Files (x86)/MyShapez"
 		}
 	},
 	"link" : 
@@ -533,7 +537,7 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "-DQT_QML_DEBUG -g",
+				"fragment" : "-DQT_QML_DEBUG -O3 -DNDEBUG",
 				"role" : "flags"
 			},
 			{
@@ -771,7 +775,7 @@
 		},
 		{
 			"backtrace" : 4,
-			"path" : "gamemap.h",
+			"path" : "GameMap.h",
 			"sourceGroupIndex" : 1
 		},
 		{

@@ -26,7 +26,7 @@ public:
     /**
      * \brief 地图上哪些单元是矿地
      */
-    int Resource[HEIGHT][WIDTH];
+    static int Resource[HEIGHT][WIDTH];
 
     /**
      * \brief 地图每个单元的建筑

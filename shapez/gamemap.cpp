@@ -1,5 +1,7 @@
 #include "GameMap.h"
 #include "Building.h"
+#include <cstdlib>
+int GameMap::Resource[HEIGHT][WIDTH] = {};
 GameMap::GameMap()
 {
     for (int i = 0; i < HEIGHT; i++)
@@ -127,7 +129,6 @@ int GameMap::GetResource(GridVec pos)
 {
     return Resource[pos.i][pos.j];
 }
-
 void GameMap::SetBuilding(GridVec pos, Building *building, int direction, int name)
 {
     for (auto pos : building->BuildingAllPos())
@@ -190,4 +191,24 @@ int GameMap::OppositeDirection(int direction)
     default:
         return NONE;
     }
+}
+
+extern "C" {
+__declspec(dllexport) int** get_2d_array() {
+    int** array = (int**)malloc(HEIGHT * sizeof(int*));
+
+    for (int i = 0; i < HEIGHT; i++) {
+        array[i] = (int*)malloc(WIDTH * sizeof(int));
+        for (int j = 0; j < WIDTH; j++) {
+            array[i][j] = GameMap::Resource[i][j];
+        }
+    }
+    return array;
+}
+__declspec(dllexport) void free_2d_array(int** array, int rows) {
+    for (int i = 0; i < rows; i++) {
+        free(array[i]);
+    }
+    free(array);
+}
 }

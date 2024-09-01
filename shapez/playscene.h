@@ -89,6 +89,11 @@ public:
      */
     int cur_y;
 
+    double scaleFactor = 1.0;
+    bool dragging = false;
+    QPoint start_pos;
+    QPoint scroll_offset = QPoint(0,0);
+
     /**************音乐***************/
     QMediaPlayer *player;
     QAudioOutput *audioOutput;
@@ -267,7 +272,8 @@ public:
     */
     void beltDataInMap();
     void blockInitializer();
-
+    void setScaleFactor(double fac);
+    void wheelEvent(QWheelEvent *event);
 
 };
 

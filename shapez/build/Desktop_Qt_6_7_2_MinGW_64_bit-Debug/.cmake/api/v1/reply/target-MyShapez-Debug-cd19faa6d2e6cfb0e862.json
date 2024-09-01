@@ -80,7 +80,7 @@
 			{
 				"command" : 4,
 				"file" : 1,
-				"line" : 83,
+				"line" : 86,
 				"parent" : 0
 			},
 			{
@@ -453,6 +453,11 @@
 					"path" : "C:/Qt/6.7.2/mingw_64/include/QtGui"
 				},
 				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "C:/VulkanSDK/1.3.290.0/Include"
+				},
+				{
 					"backtrace" : 7,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.2/mingw_64/include/QtMultimedia"
@@ -501,11 +506,11 @@
 	"dependencies" : 
 	[
 		{
-			"id" : "MyShapez_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
-		},
-		{
 			"backtrace" : 0,
 			"id" : "MyShapez_autogen::@6890427a1f51a3e7e1df"
+		},
+		{
+			"id" : "MyShapez_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "MyShapez::@6890427a1f51a3e7e1df",
@@ -520,7 +525,7 @@
 		],
 		"prefix" : 
 		{
-			"path" : "C:/Program Files (x86)/shapez"
+			"path" : "C:/Program Files (x86)/MyShapez"
 		}
 	},
 	"link" : 
@@ -766,7 +771,7 @@
 		},
 		{
 			"backtrace" : 4,
-			"path" : "gamemap.h",
+			"path" : "GameMap.h",
 			"sourceGroupIndex" : 1
 		},
 		{

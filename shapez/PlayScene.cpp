@@ -4,14 +4,9 @@
 #include "Cutter.h"
 #include "Trash.h"
 // #include "math.h"
+#include <iostream>
 #include "config.h"
 #include <QPainter>
-#include <iostream>
-#include <thread>
-#include <mutex>
-#include <QMutex>
-#include <vector>
-using namespace Qt;
 
 PlayScene::PlayScene()
 {
@@ -119,6 +114,8 @@ void PlayScene::draw_cells()
     pen.setColor(QColor(220, 220, 220)); // 淡灰色
     QPainter gridPainter(this);          // 画家
     gridPainter.setPen(pen);             // 画家拿笔
+    gridPainter.scale(scaleFactor, scaleFactor);
+    gridPainter.translate(scroll_offset);
     for (int y = 0; y <= GAME_HEIGHT; y += CELLSIZE)
     {
         gridPainter.drawLine(0, y, GAME_WIDTH, y);
@@ -133,6 +130,8 @@ void PlayScene::draw_map_resources()
 {
     // 绘制矿地
     QPainter mineFieldPainter(this);
+    mineFieldPainter.scale(scaleFactor, scaleFactor);
+    mineFieldPainter.translate(scroll_offset);
     for (int i = 0; i < HEIGHT; i++)
     {
         for (int j = 0; j < WIDTH; j++)
@@ -159,6 +158,8 @@ void PlayScene::draw_building()
     if (buildings.size() > 0)
     {
         QPainter painter(this);
+        painter.scale(scaleFactor, scaleFactor);
+        painter.translate(scroll_offset);
         for (int i = 0; i < buildings.size(); i++)
         {
             Building *building = buildings[i];
@@ -294,6 +295,8 @@ void PlayScene::draw_hub_text()
 {
     QPainter hubPainter(this);
     // 绘制hub文字
+    hubPainter.scale(scaleFactor, scaleFactor);
+    hubPainter.translate(scroll_offset);
     if (!hub->upgradehub)
     {
         // 未升级的hub
@@ -313,6 +316,8 @@ void PlayScene::draw_item()
     if (buildings.size() > 0)
     {
         QPainter itemPainter(this);
+        itemPainter.scale(scaleFactor, scaleFactor);
+        itemPainter.translate(scroll_offset);
         for (auto &building : buildings)
         {
             if (building->name >= BELT_A && building->name <= BELT_W_D)
@@ -344,6 +349,8 @@ void PlayScene::draw_item()
 void PlayScene::draw_overlay(int x, int y)
 {
     QPainter painter(this);
+    painter.scale(scaleFactor, scaleFactor);
+    painter.translate(scroll_offset);
     switch (current_building_name)
     {
     case MINER:
@@ -384,25 +391,6 @@ void PlayScene::draw_overlay(int x, int y)
             break;
         }
         break;
-    case BELT:
-        switch (current_building_direction)
-        {
-        case UP:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE , CELLSIZE, belt_img_blue_W);
-            break;
-        case DOWN:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE , CELLSIZE, belt_img_blue_S);
-            break;
-        case LEFT:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE - CELLSIZE / 2, CELLSIZE, CELLSIZE , belt_img_blue_A);
-            break;
-        case RIGHT:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE , belt_img_blue_D);
-            break;
-        default:
-            break;
-        }
-        break;
     case TRASH:
         switch (current_building_direction)
         {
@@ -422,33 +410,18 @@ void PlayScene::draw_overlay(int x, int y)
         default:
             break;
         }
-
+    case BELT:
+    default:
+        break;
     }
     if (current_building_name == BELT)
     {
-        /*
-        std::sort(belt_grid_path.begin(), belt_grid_path.end(), [](const GridVec &a, const GridVec &b) {
-            if(a.j != b.j) {
-                return a.j < b.j;
-            }
-            else return a.i < b.i;
-        });
-*/
-        /*for (const GridVec &point : belt_grid_path) {
-            qDebug() << "point.j:" << point.j << "point.i" << point.i << " ";
-        }
-        std::cout << endl;*/
-
         if (belt_grid_path.size() >= 2)
         {
             int which_belt = 0;
-
             for (int i = 0; i < belt_grid_path.size(); i++)
             {
-
-                //printf("i1 = %d,size = %d\n", i,belt_grid_path.size());
                 which_belt = WhichBeltImg(i);
-                //printf("i2 = %d\n", i);
                 switch (which_belt)
                 {
                 case BELT_A:
@@ -496,6 +469,7 @@ void PlayScene::draw_overlay(int x, int y)
 }
 void PlayScene::paintEvent(QPaintEvent *)
 {
+
     draw_cells();
     draw_map_resources();
     draw_building();
@@ -506,6 +480,14 @@ void PlayScene::paintEvent(QPaintEvent *)
 }
 void PlayScene::mousePressEvent(QMouseEvent *e)
 {
+    for(int i = 0; i < HEIGHT;i++){
+        for (int k = 0; k < WIDTH; k++){
+            if (map.BuildingsMap[i][k] != nullptr)
+                std::cout<<"i="<<i<<" k="<<k<<"build = "<<map.BuildingsMap[i][k]->shape.name;
+        }
+        printf("\n");
+    }
+    fflush(stdout);
     int click_x = e->pos().x();
     int click_y = e->pos().y();
     int grid_j = click_x / CELLSIZE;
@@ -568,6 +550,10 @@ void PlayScene::mousePressEvent(QMouseEvent *e)
                 update();
             }
         }
+        if (!ready_to_place_belt && !current_building_name){
+            dragging = true;
+            start_pos = e->pos();
+        }
     }
     else if (e->button() == Qt::RightButton)
     {
@@ -577,9 +563,6 @@ void PlayScene::mousePressEvent(QMouseEvent *e)
 }
 void PlayScene::RemoveBuilding(GridVec pos)
 {
-    if(pos.i >= HEIGHT || pos.j >= WIDTH) {
-        return;
-    }
     if (map.BuildingsMap[pos.i][pos.j] != nullptr)
     {
         for (auto curr : map.BuildingsMap[pos.i][pos.j]->BuildingAllPos())
@@ -624,60 +607,17 @@ void PlayScene::PushBackNewBeltGridPoint(int grid_j, int grid_i)
     // 把鼠标拖动放置传送带时经过的新网格点压入qlist
     belt_grid_Point.i = grid_i;
     belt_grid_Point.j = grid_j;
-    if (!belt_grid_path.contains(belt_grid_Point))
+    if (!belt_grid_path.contains(belt_grid_Point)) //
     {
         belt_grid_path.append(belt_grid_Point);
-    }
-    //std::cout<<"list: ";
-   // for (int i = 0; i < belt_grid_path.size(); ++i) {
-      //  qDebug() <<belt_grid_path[i].j<<belt_grid_path[i].i<<" ";
-   // }
-    //std::cout<<std::endl;
-
-}
-std::vector<GridVec> BresenhamLine(int i1, int j1, int i2, int j2) {
-    std::vector<GridVec> points;
-    int di = abs(i2 - i1);
-    int dj = abs(j2 - j1);
-    int si = (i1 < i2) ? 1 : -1;
-    int sj = (j1 < j2) ? 1 : -1;
-    int err = (di > dj ? di : -1 * dj) / 2;
-
-    while (true) {
-        points.push_back({i1, j1});
-        if (i1 == i2 && j1 == j2) break;
-        int e2 = err;
-        if (e2 > -di) {
-            err -= dj;
-            i1 += si;
-        }
-        if (e2 < dj) {
-            err += di;
-            j1 += sj;
-        }
-    }
-
-    return points;
-}
-
-void PlayScene::blockInitializer()
-{
-    for (int i = 0; i < 24; i++){
-        for (int j = 0; j < 16; j++){
-            mapcell[i][j] = 0;
-            //printf("%d", mapcell[i][j]);
-        }
     }
 }
 void PlayScene::mouseMoveEvent(QMouseEvent *e)
 {
-    //blockInitializer();
-    int x = e->pos().x();
-    int y = e->pos().y();
-    int grid_j = int(x / CELLSIZE);
-    int grid_i = int(y / CELLSIZE);
-    //printf("x:%d y:%d\n", x,y);
-    fflush(stdout);
+    int x = e->pos().x();      // 鼠标点击的屏幕位置的横坐标
+    int y = e->pos().y();      // 鼠标点击的屏幕位置的纵坐标
+    int grid_j = x / CELLSIZE; // 在网格里的横坐标
+    int grid_i = y / CELLSIZE; // 在网格里的纵坐标
     if (current_building_name)
     {
         cur_x = x;
@@ -685,28 +625,25 @@ void PlayScene::mouseMoveEvent(QMouseEvent *e)
         update();
         if (is_placing_belt)
         {
-            if(!belt_grid_path.empty()){
-            int diff_j = abs(belt_grid_path.last().j - grid_j);
-            int diff_i = abs(belt_grid_path.last().i - grid_i);
-            if (diff_j > 1 || diff_i > 1 || (diff_j == diff_i == 1)){
-                std::vector<GridVec> points = BresenhamLine(grid_j,grid_i,  belt_grid_path.last().j, belt_grid_path.last().i);
-                for (int i = points.size() - 1; i >= 0; --i) {
-                    const auto& point = points[i];
-                    PushBackNewBeltGridPoint(point.j, point.i);
-                }
-            }
-        }
-
-
             PushBackNewBeltGridPoint(grid_j, grid_i);
         }
-        }
-
     }
+    if (dragging){
+        //const int v_height = this->height();
+        //const int v_width = this->width();
+        //int maxX = WIDGET_HEIGHT - v_height;
+        //int maxY = WIDGET_WIDTH - v_width;
 
-
-
-
+        QPoint delta = e->pos() - start_pos;
+        scroll_offset += delta;
+        //scroll_offset.setX((scroll_offset.x() < -maxX) ? -maxX:scroll_offset.x());
+        //scroll_offset.setY((scroll_offset.y() < -maxY) ? -maxY:scroll_offset.y());
+        //scroll_offset.setX((scroll_offset.x() < 0) ? 0:scroll_offset.x());
+        //scroll_offset.setY((scroll_offset.y() < 0) ? 0:scroll_offset.y());
+        start_pos = e->pos();
+        update();
+    }
+}
 void PlayScene::ClearBeltGridPath()
 {
     while (!belt_grid_path.empty())
@@ -735,9 +672,8 @@ int PlayScene::WhichBeltImg(int belt_grid_path_index)
             return BELT_S;
         }
     }
-
     int end_index = belt_grid_path.size() - 1;
-    if (abs(belt_grid_path_index - end_index)<=1e-6)
+    if (belt_grid_path_index == end_index)
     {
         if (belt_grid_path[end_index] - belt_grid_path[end_index - 1] == RIGHT)
         {
@@ -756,7 +692,7 @@ int PlayScene::WhichBeltImg(int belt_grid_path_index)
             return BELT_S;
         }
     }
-    else if ((belt_grid_path[belt_grid_path_index + 1] - belt_grid_path[belt_grid_path_index] == RIGHT) && (belt_grid_path[belt_grid_path_index] - belt_grid_path[belt_grid_path_index - 1] == RIGHT))
+    if ((belt_grid_path[belt_grid_path_index + 1] - belt_grid_path[belt_grid_path_index] == RIGHT) && (belt_grid_path[belt_grid_path_index] - belt_grid_path[belt_grid_path_index - 1] == RIGHT))
     {
         return BELT_D;
     }
@@ -804,15 +740,11 @@ int PlayScene::WhichBeltImg(int belt_grid_path_index)
     {
         return BELT_D_S;
     }
-    else {
-        return BELT_D;
-    }
     return 0;
 }
-
-
 void PlayScene::mouseReleaseEvent(QMouseEvent *e)
 {
+    dragging = false;
     if (is_placing_belt)
     {
         is_placing_belt = false;
@@ -860,33 +792,11 @@ void PlayScene::mouseReleaseEvent(QMouseEvent *e)
                 }
             }
         }
-        else {
-            int which_belt = 0;
-            int belt_direction = current_building_direction;
-            switch (current_building_direction) {
-            case UP:
-                which_belt = BELT_W;
-                break;
-            case DOWN:
-                which_belt = BELT_S;
-                break;
-            case LEFT:
-                which_belt = BELT_A;
-                break;
-            case RIGHT:
-                which_belt = BELT_D;
-                break;
-            default:
-                break;
-            }
-            Building *current_building = new Belt(belt_grid_path[0], which_belt, belt_direction);
-            map.SetBuilding(belt_grid_path[0], current_building, belt_direction, which_belt);
-            buildings.push_back(current_building);
-        }
         ClearBeltGridPath();
         update();
         current_building_name = NONE;
     }
+
 }
 void PlayScene::FactoryRunning()
 {
@@ -1168,4 +1078,22 @@ void PlayScene::music()
     player->setAudioOutput(audioOutput);
     player->setSource(QUrl("qrc:/res/theme-full.mp3"));
     player->play();
+}
+void PlayScene::setScaleFactor(double fac){
+    scaleFactor = fac;
+    update();
+}
+void PlayScene::wheelEvent(QWheelEvent *event){
+    int delta = event->angleDelta().y();
+    double scaleFactorStep = 0.1;
+    if (delta > 0) {
+        setScaleFactor(scaleFactor + scaleFactorStep);
+    } else {
+        setScaleFactor(scaleFactor - scaleFactorStep);
+    }
+    if (scaleFactor < 0.5) {
+        setScaleFactor(0.5);
+    } else if (scaleFactor > 2.0) {
+        setScaleFactor(2.0);
+    }
 }

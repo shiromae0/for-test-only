@@ -767,7 +767,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Program Files (x86)/shapez"
+			"value" : "C:/Program Files (x86)/MyShapez"
 		},
 		{
 			"name" : "CMAKE_INSTALL_RUNSTATEDIR",
@@ -1554,6 +1554,18 @@
 			"value" : "[1][v()]"
 		},
 		{
+			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_WrapVulkanHeaders",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Details about finding WrapVulkanHeaders"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "[C:/VulkanSDK/1.3.290.0/Include][v()]"
+		},
+		{
 			"name" : "HAVE_STDATOMIC",
 			"properties" : 
 			[
@@ -1564,6 +1576,18 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "1"
+		},
+		{
+			"name" : "MyShapezLib_LIB_DEPENDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Dependencies for the target"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "general;Qt6::Widgets;"
 		},
 		{
 			"name" : "MyShapez_BINARY_DIR",
@@ -6775,7 +6799,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "Vulkan_GLSLANG_VALIDATOR_EXECUTABLE-NOTFOUND"
+			"value" : "C:/VulkanSDK/1.3.290.0/Bin/glslangValidator.exe"
 		},
 		{
 			"name" : "Vulkan_GLSLC_EXECUTABLE",
@@ -6791,7 +6815,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "Vulkan_GLSLC_EXECUTABLE-NOTFOUND"
+			"value" : "C:/VulkanSDK/1.3.290.0/Bin/glslc.exe"
 		},
 		{
 			"name" : "Vulkan_INCLUDE_DIR",
@@ -6807,7 +6831,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "Vulkan_INCLUDE_DIR-NOTFOUND"
+			"value" : "C:/VulkanSDK/1.3.290.0/Include"
 		},
 		{
 			"name" : "Vulkan_LIBRARY",
@@ -6823,7 +6847,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "Vulkan_LIBRARY-NOTFOUND"
+			"value" : "C:/VulkanSDK/1.3.290.0/Lib/vulkan-1.lib"
 		},
 		{
 			"name" : "WINDEPLOYQT_EXECUTABLE",
@@ -6859,43 +6883,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Program Files (x86)/shapez"
-		},
-		{
-			"name" : "shapez_BINARY_DIR",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug"
-		},
-		{
-			"name" : "shapez_IS_TOP_LEVEL",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "ON"
-		},
-		{
-			"name" : "shapez_SOURCE_DIR",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "C:/Users/51392/Desktop/Assignment/DECO3801/shapez"
+			"value" : "C:/Program Files (x86)/MyShapez"
 		}
 	],
 	"kind" : "cache",
