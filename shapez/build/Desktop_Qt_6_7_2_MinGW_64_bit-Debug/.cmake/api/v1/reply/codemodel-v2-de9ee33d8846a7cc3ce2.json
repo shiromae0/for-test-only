@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-452eab9982b1b4382f2b.json",
+					"jsonFile" : "directory-.-Debug-195f20ab4cc056f5b2f0.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -30,7 +30,7 @@
 					[
 						0
 					],
-					"name" : "shapez",
+					"name" : "MyShapez",
 					"targetIndexes" : 
 					[
 						0,
@@ -43,23 +43,23 @@
 			[
 				{
 					"directoryIndex" : 0,
-					"id" : "shapez::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-shapez-Debug-64cc073c1442d9e63f6f.json",
-					"name" : "shapez",
+					"id" : "MyShapez::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-MyShapez-Debug-ec21e4879bff69551da6.json",
+					"name" : "MyShapez",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
-					"id" : "shapez_autogen::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-shapez_autogen-Debug-0dbe9a05f1ecde06e062.json",
-					"name" : "shapez_autogen",
+					"id" : "MyShapez_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-MyShapez_autogen-Debug-9e1597f5eafa010750f3.json",
+					"name" : "MyShapez_autogen",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
-					"id" : "shapez_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-shapez_autogen_timestamp_deps-Debug-e6fb4c69404ed71289ad.json",
-					"name" : "shapez_autogen_timestamp_deps",
+					"id" : "MyShapez_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-MyShapez_autogen_timestamp_deps-Debug-1f471434ab288392abef.json",
+					"name" : "MyShapez_autogen_timestamp_deps",
 					"projectIndex" : 0
 				}
 			]

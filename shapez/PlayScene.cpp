@@ -6,6 +6,12 @@
 // #include "math.h"
 #include "config.h"
 #include <QPainter>
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <QMutex>
+#include <vector>
+using namespace Qt;
 
 PlayScene::PlayScene()
 {
@@ -378,6 +384,25 @@ void PlayScene::draw_overlay(int x, int y)
             break;
         }
         break;
+    case BELT:
+        switch (current_building_direction)
+        {
+        case UP:
+            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE , CELLSIZE, belt_img_blue_W);
+            break;
+        case DOWN:
+            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE , CELLSIZE, belt_img_blue_S);
+            break;
+        case LEFT:
+            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE - CELLSIZE / 2, CELLSIZE, CELLSIZE , belt_img_blue_A);
+            break;
+        case RIGHT:
+            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE , belt_img_blue_D);
+            break;
+        default:
+            break;
+        }
+        break;
     case TRASH:
         switch (current_building_direction)
         {
@@ -397,18 +422,33 @@ void PlayScene::draw_overlay(int x, int y)
         default:
             break;
         }
-    case BELT:
-    default:
-        break;
+
     }
     if (current_building_name == BELT)
     {
+        /*
+        std::sort(belt_grid_path.begin(), belt_grid_path.end(), [](const GridVec &a, const GridVec &b) {
+            if(a.j != b.j) {
+                return a.j < b.j;
+            }
+            else return a.i < b.i;
+        });
+*/
+        /*for (const GridVec &point : belt_grid_path) {
+            qDebug() << "point.j:" << point.j << "point.i" << point.i << " ";
+        }
+        std::cout << endl;*/
+
         if (belt_grid_path.size() >= 2)
         {
             int which_belt = 0;
+
             for (int i = 0; i < belt_grid_path.size(); i++)
             {
+
+                //printf("i1 = %d,size = %d\n", i,belt_grid_path.size());
                 which_belt = WhichBeltImg(i);
+                //printf("i2 = %d\n", i);
                 switch (which_belt)
                 {
                 case BELT_A:
@@ -537,6 +577,9 @@ void PlayScene::mousePressEvent(QMouseEvent *e)
 }
 void PlayScene::RemoveBuilding(GridVec pos)
 {
+    if(pos.i >= HEIGHT || pos.j >= WIDTH) {
+        return;
+    }
     if (map.BuildingsMap[pos.i][pos.j] != nullptr)
     {
         for (auto curr : map.BuildingsMap[pos.i][pos.j]->BuildingAllPos())
@@ -581,17 +624,60 @@ void PlayScene::PushBackNewBeltGridPoint(int grid_j, int grid_i)
     // 把鼠标拖动放置传送带时经过的新网格点压入qlist
     belt_grid_Point.i = grid_i;
     belt_grid_Point.j = grid_j;
-    if (!belt_grid_path.contains(belt_grid_Point)) //
+    if (!belt_grid_path.contains(belt_grid_Point))
     {
         belt_grid_path.append(belt_grid_Point);
+    }
+    //std::cout<<"list: ";
+   // for (int i = 0; i < belt_grid_path.size(); ++i) {
+      //  qDebug() <<belt_grid_path[i].j<<belt_grid_path[i].i<<" ";
+   // }
+    //std::cout<<std::endl;
+
+}
+std::vector<GridVec> BresenhamLine(int i1, int j1, int i2, int j2) {
+    std::vector<GridVec> points;
+    int di = abs(i2 - i1);
+    int dj = abs(j2 - j1);
+    int si = (i1 < i2) ? 1 : -1;
+    int sj = (j1 < j2) ? 1 : -1;
+    int err = (di > dj ? di : -1 * dj) / 2;
+
+    while (true) {
+        points.push_back({i1, j1});
+        if (i1 == i2 && j1 == j2) break;
+        int e2 = err;
+        if (e2 > -di) {
+            err -= dj;
+            i1 += si;
+        }
+        if (e2 < dj) {
+            err += di;
+            j1 += sj;
+        }
+    }
+
+    return points;
+}
+
+void PlayScene::blockInitializer()
+{
+    for (int i = 0; i < 24; i++){
+        for (int j = 0; j < 16; j++){
+            mapcell[i][j] = 0;
+            //printf("%d", mapcell[i][j]);
+        }
     }
 }
 void PlayScene::mouseMoveEvent(QMouseEvent *e)
 {
-    int x = e->pos().x();      // 鼠标点击的屏幕位置的横坐标
-    int y = e->pos().y();      // 鼠标点击的屏幕位置的纵坐标
-    int grid_j = x / CELLSIZE; // 在网格里的横坐标
-    int grid_i = y / CELLSIZE; // 在网格里的纵坐标
+    //blockInitializer();
+    int x = e->pos().x();
+    int y = e->pos().y();
+    int grid_j = int(x / CELLSIZE);
+    int grid_i = int(y / CELLSIZE);
+    //printf("x:%d y:%d\n", x,y);
+    fflush(stdout);
     if (current_building_name)
     {
         cur_x = x;
@@ -599,10 +685,28 @@ void PlayScene::mouseMoveEvent(QMouseEvent *e)
         update();
         if (is_placing_belt)
         {
+            if(!belt_grid_path.empty()){
+            int diff_j = abs(belt_grid_path.last().j - grid_j);
+            int diff_i = abs(belt_grid_path.last().i - grid_i);
+            if (diff_j > 1 || diff_i > 1 || (diff_j == diff_i == 1)){
+                std::vector<GridVec> points = BresenhamLine(grid_j,grid_i,  belt_grid_path.last().j, belt_grid_path.last().i);
+                for (int i = points.size() - 1; i >= 0; --i) {
+                    const auto& point = points[i];
+                    PushBackNewBeltGridPoint(point.j, point.i);
+                }
+            }
+        }
+
+
             PushBackNewBeltGridPoint(grid_j, grid_i);
         }
+        }
+
     }
-}
+
+
+
+
 void PlayScene::ClearBeltGridPath()
 {
     while (!belt_grid_path.empty())
@@ -631,8 +735,9 @@ int PlayScene::WhichBeltImg(int belt_grid_path_index)
             return BELT_S;
         }
     }
+
     int end_index = belt_grid_path.size() - 1;
-    if (belt_grid_path_index == end_index)
+    if (abs(belt_grid_path_index - end_index)<=1e-6)
     {
         if (belt_grid_path[end_index] - belt_grid_path[end_index - 1] == RIGHT)
         {
@@ -651,7 +756,7 @@ int PlayScene::WhichBeltImg(int belt_grid_path_index)
             return BELT_S;
         }
     }
-    if ((belt_grid_path[belt_grid_path_index + 1] - belt_grid_path[belt_grid_path_index] == RIGHT) && (belt_grid_path[belt_grid_path_index] - belt_grid_path[belt_grid_path_index - 1] == RIGHT))
+    else if ((belt_grid_path[belt_grid_path_index + 1] - belt_grid_path[belt_grid_path_index] == RIGHT) && (belt_grid_path[belt_grid_path_index] - belt_grid_path[belt_grid_path_index - 1] == RIGHT))
     {
         return BELT_D;
     }
@@ -699,8 +804,13 @@ int PlayScene::WhichBeltImg(int belt_grid_path_index)
     {
         return BELT_D_S;
     }
+    else {
+        return BELT_D;
+    }
     return 0;
 }
+
+
 void PlayScene::mouseReleaseEvent(QMouseEvent *e)
 {
     if (is_placing_belt)
@@ -749,6 +859,29 @@ void PlayScene::mouseReleaseEvent(QMouseEvent *e)
                     buildings.push_back(current_building);
                 }
             }
+        }
+        else {
+            int which_belt = 0;
+            int belt_direction = current_building_direction;
+            switch (current_building_direction) {
+            case UP:
+                which_belt = BELT_W;
+                break;
+            case DOWN:
+                which_belt = BELT_S;
+                break;
+            case LEFT:
+                which_belt = BELT_A;
+                break;
+            case RIGHT:
+                which_belt = BELT_D;
+                break;
+            default:
+                break;
+            }
+            Building *current_building = new Belt(belt_grid_path[0], which_belt, belt_direction);
+            map.SetBuilding(belt_grid_path[0], current_building, belt_direction, which_belt);
+            buildings.push_back(current_building);
         }
         ClearBeltGridPath();
         update();

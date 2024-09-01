@@ -13,11 +13,11 @@ typedef struct gridvec
     }
     int operator-(gridvec b)
     {
-        if (j - b.j == 1 && i == b.i)
+        if (j - b.j == 1 && i == b.i || ((j - b.j == 1) && (i - b.i == 1)) || ((j - b.j == 1) && (i - b.i == -1)))
         {
             return RIGHT;
         }
-        if (j - b.j == -1 && i == b.i)
+        if (j - b.j == -1 && i == b.i || ((j - b.j == -1) && (i - b.i == 1)) || ((j - b.j == -1) && (i - b.i == -1)))
         {
             return LEFT;
         }

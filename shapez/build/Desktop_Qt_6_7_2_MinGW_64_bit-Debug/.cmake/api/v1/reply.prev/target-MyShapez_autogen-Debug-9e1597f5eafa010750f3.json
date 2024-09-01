@@ -17,12 +17,12 @@
 	"dependencies" : 
 	[
 		{
-			"id" : "shapez_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
+			"id" : "MyShapez_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
 		}
 	],
-	"id" : "shapez_autogen::@6890427a1f51a3e7e1df",
+	"id" : "MyShapez_autogen::@6890427a1f51a3e7e1df",
 	"isGeneratorProvided" : true,
-	"name" : "shapez_autogen",
+	"name" : "MyShapez_autogen",
 	"paths" : 
 	{
 		"build" : ".",
@@ -51,19 +51,19 @@
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/shapez_autogen",
+			"path" : "build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapez_autogen",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/shapez_autogen.rule",
+			"path" : "build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapez_autogen.rule",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/shapez_autogen/timestamp.rule",
+			"path" : "build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/timestamp.rule",
 			"sourceGroupIndex" : 1
 		}
 	],

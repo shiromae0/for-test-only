@@ -17,7 +17,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 62,
+				"line" : 83,
 				"parent" : 0
 			}
 		]
@@ -30,9 +30,9 @@
 			"destination" : "bin",
 			"paths" : 
 			[
-				"shapez.exe"
+				"MyShapez.exe"
 			],
-			"targetId" : "shapez::@6890427a1f51a3e7e1df",
+			"targetId" : "MyShapez::@6890427a1f51a3e7e1df",
 			"targetIndex" : 0,
 			"type" : "target"
 		}

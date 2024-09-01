@@ -8,6 +8,7 @@ C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_6
   C:/Qt/6.7.2/mingw_64/include/QtCore/QSize \
   C:/Qt/6.7.2/mingw_64/include/QtCore/QSizeF \
   C:/Qt/6.7.2/mingw_64/include/QtCore/QTextStream \
+  C:/Qt/6.7.2/mingw_64/include/QtCore/QTime \
   C:/Qt/6.7.2/mingw_64/include/QtCore/QTimer \
   C:/Qt/6.7.2/mingw_64/include/QtCore/q20functional.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/q20memory.h \
@@ -28,6 +29,7 @@ C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_6
   C:/Qt/6.7.2/mingw_64/include/QtCore/qbytearrayalgorithms.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qbytearraylist.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qbytearrayview.h \
+  C:/Qt/6.7.2/mingw_64/include/QtCore/qcalendar.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qchar.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qcompare.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qcompare_impl.h \
@@ -44,6 +46,7 @@ C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_6
   C:/Qt/6.7.2/mingw_64/include/QtCore/qcoreevent.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qdarwinhelpers.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qdatastream.h \
+  C:/Qt/6.7.2/mingw_64/include/QtCore/qdatetime.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qdeadlinetimer.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qdebug.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qelapsedtimer.h \

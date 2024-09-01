@@ -3,7 +3,7 @@
 
 /******************窗口设置*******************/
 #define WIDGET_WIDTH 1200           // 窗口宽度
-#define WIDGET_HEIGHT 830           // 窗口高度
+#define WIDGET_HEIGHT 830         // 窗口高度
 #define GAME_TITLE "异形工厂"       // 标题
 #define GAME_RES_PATH "./res.qrc"   // 资源文件相对路径
 #define GAME_ICON "://res/icon.png" // 图标

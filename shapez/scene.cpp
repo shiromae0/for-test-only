@@ -11,4 +11,5 @@ Scene::Scene(QWidget *parent)
     this->setWindowTitle(GAME_TITLE);
     //
     setMouseTracking(true);
+    //this->showFullScreen();
 }

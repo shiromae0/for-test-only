@@ -53,7 +53,7 @@ build CMakeFiles/MyShapez.dir/MyShapez_autogen/mocs_compilation.cpp.obj: CXX_COM
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\MyShapez_autogen\mocs_compilation.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir\MyShapez_autogen
 
@@ -61,7 +61,7 @@ build CMakeFiles/MyShapez.dir/main.cpp.obj: CXX_COMPILER__MyShapez_unscanned_Deb
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\main.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -69,7 +69,7 @@ build CMakeFiles/MyShapez.dir/WindowControl.cpp.obj: CXX_COMPILER__MyShapez_unsc
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\WindowControl.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -77,7 +77,7 @@ build CMakeFiles/MyShapez.dir/hub.cpp.obj: CXX_COMPILER__MyShapez_unscanned_Debu
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\hub.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -85,7 +85,7 @@ build CMakeFiles/MyShapez.dir/scene.cpp.obj: CXX_COMPILER__MyShapez_unscanned_De
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\scene.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -93,7 +93,7 @@ build CMakeFiles/MyShapez.dir/PlayScene.cpp.obj: CXX_COMPILER__MyShapez_unscanne
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\PlayScene.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -101,7 +101,7 @@ build CMakeFiles/MyShapez.dir/gamemap.cpp.obj: CXX_COMPILER__MyShapez_unscanned_
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\gamemap.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -109,7 +109,7 @@ build CMakeFiles/MyShapez.dir/building.cpp.obj: CXX_COMPILER__MyShapez_unscanned
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\building.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -117,7 +117,7 @@ build CMakeFiles/MyShapez.dir/miner.cpp.obj: CXX_COMPILER__MyShapez_unscanned_De
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\miner.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -125,7 +125,7 @@ build CMakeFiles/MyShapez.dir/Belt.cpp.obj: CXX_COMPILER__MyShapez_unscanned_Deb
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\Belt.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -133,7 +133,7 @@ build CMakeFiles/MyShapez.dir/timer.cpp.obj: CXX_COMPILER__MyShapez_unscanned_De
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\timer.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -141,7 +141,7 @@ build CMakeFiles/MyShapez.dir/Trash.cpp.obj: CXX_COMPILER__MyShapez_unscanned_De
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\Trash.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -149,7 +149,7 @@ build CMakeFiles/MyShapez.dir/Cutter.cpp.obj: CXX_COMPILER__MyShapez_unscanned_D
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\Cutter.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -157,7 +157,7 @@ build CMakeFiles/MyShapez.dir/RoundScene.cpp.obj: CXX_COMPILER__MyShapez_unscann
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\RoundScene.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -165,7 +165,7 @@ build CMakeFiles/MyShapez.dir/ChooseScene.cpp.obj: CXX_COMPILER__MyShapez_unscan
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\ChooseScene.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -173,7 +173,7 @@ build CMakeFiles/MyShapez.dir/ShopScene.cpp.obj: CXX_COMPILER__MyShapez_unscanne
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\ShopScene.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -181,7 +181,7 @@ build CMakeFiles/MyShapez.dir/StartScene.cpp.obj: CXX_COMPILER__MyShapez_unscann
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\StartScene.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -189,7 +189,7 @@ build CMakeFiles/MyShapez.dir/WinScene.cpp.obj: CXX_COMPILER__MyShapez_unscanned
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\WinScene.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -197,7 +197,7 @@ build CMakeFiles/MyShapez.dir/HelpScene.cpp.obj: CXX_COMPILER__MyShapez_unscanne
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\HelpScene.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir
 
@@ -205,7 +205,7 @@ build CMakeFiles/MyShapez.dir/MyShapez_autogen/EWIEGA46WW/qrc_res.cpp.obj: CXX_C
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\MyShapez.dir\MyShapez_autogen\EWIEGA46WW\qrc_res.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
+  INCLUDES = -IC:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui -isystem C:/VulkanSDK/1.3.290.0/Include -isystem C:/Qt/6.7.2/mingw_64/include/QtMultimedia -isystem C:/Qt/6.7.2/mingw_64/include/QtNetwork
   OBJECT_DIR = CMakeFiles\MyShapez.dir
   OBJECT_FILE_DIR = CMakeFiles\MyShapez.dir\MyShapez_autogen\EWIEGA46WW
 

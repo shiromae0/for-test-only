@@ -6,7 +6,7 @@
 WindowControl::WindowControl(QWidget *parent)
 {
     // 每1s检查一下有没有通过某一关
-    timer.setInterval(1000);
+    timer.setInterval(10);
     start = new StartScene;
     play = new PlayScene;
     round = new RoundScene;
@@ -314,6 +314,7 @@ void WindowControl::connections()
     // todo,没考虑none
     connect(&play->miner_button, &QPushButton::clicked, this, [=]()
             { play->current_building_name = MINER; });
+    //选择传送带
     connect(&play->belt_button, &QPushButton::clicked, this, [=]()
             {
         play->current_building_name = BELT;

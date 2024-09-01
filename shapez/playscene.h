@@ -10,6 +10,8 @@
 #include "Scene.h"
 #include "GameMap.h"
 #include "Hub.h"
+#include <QTime>
+
 
 class PlayScene : public Scene
 {
@@ -86,6 +88,7 @@ public:
      * \brief  实时捕捉的鼠标的y
      */
     int cur_y;
+
     /**************音乐***************/
     QMediaPlayer *player;
     QAudioOutput *audioOutput;
@@ -158,6 +161,12 @@ public:
     QPixmap rect_img;
     QPixmap left_cycle_img;
     QPixmap right_cycle_img;
+
+    int last_mouse_x;
+    int last_mouse_y;
+    QTime last_mouse_move_time;
+
+    int mapcell [24][16];
 
     /**
      * \brief 画出所有网格
@@ -253,6 +262,13 @@ public:
      * \brief 加载之前的游戏状态
      */
     void LoadSave();
+    /**
+     * /
+    */
+    void beltDataInMap();
+    void blockInitializer();
+
+
 };
 
 #endif // PLAYSCENE_H
