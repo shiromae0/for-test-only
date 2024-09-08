@@ -1,0 +1,12 @@
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapez.dir
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapezLib.dir
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/list_install_components.dir
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/install.dir
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/install/local.dir
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/install/strip.dir
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapez_autogen_timestamp_deps.dir
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapez_autogen.dir
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapezLib_autogen_timestamp_deps.dir
+C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapezLib_autogen.dir
