@@ -88,6 +88,10 @@ public:
      * \brief  实时捕捉的鼠标的y
      */
     int cur_y;
+    /**
+     * \brief  右键拖动删除
+     */
+    bool right_button_pressed;
 
     double scaleFactor = 1.0;
     bool dragging = false;
@@ -170,6 +174,13 @@ public:
     int last_mouse_x;
     int last_mouse_y;
     QTime last_mouse_move_time;
+
+    QPoint reserved_start_pos;
+    QPoint mouseReleasePosition = QPoint(0,0);
+    int absolute_i_offset = 0;
+    int absolute_j_offset = 0;
+    int related_i_offset = 0;
+    int related_j_offset = 0;
 
     int mapcell [24][16];
 
@@ -274,6 +285,7 @@ public:
     void blockInitializer();
     void setScaleFactor(double fac);
     void wheelEvent(QWheelEvent *event);
+
 
 };
 
