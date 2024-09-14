@@ -1,4 +1,5 @@
 # ninja log v6
+<<<<<<< HEAD
 1099	4351	7479825963541879	CMakeFiles/MyShapez.dir/ChooseScene.cpp.obj	d0d7874a2aaf180f
 44	262	7479838518667637	MyShapez_autogen/timestamp	31659d53f5e7ff4b
 887	1410	7479837632541774	CMakeFiles/MyShapez.dir/Cutter.cpp.obj	9513fe924c880323
@@ -110,3 +111,40 @@
 31	178	7479896919963576	C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/mocs_compilation.cpp	31659d53f5e7ff4b
 178	1156	7479896921445589	CMakeFiles/MyShapez.dir/gamemap.cpp.obj	b3cf683368feb694
 1157	1644	7479896931224016	MyShapez.exe	997497e42429ac07
+=======
+34	800	7474607047644791	MyShapezLib_autogen/timestamp	b45f628e309476ed
+34	800	7474607047644791	MyShapezLib_autogen/mocs_compilation.cpp	b45f628e309476ed
+34	800	7474607047644791	C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapezLib_autogen/timestamp	b45f628e309476ed
+34	800	7474607047644791	C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapezLib_autogen/mocs_compilation.cpp	b45f628e309476ed
+811	970	7474607049859016	CMakeFiles/MyShapezLib.dir/MyShapezLib_autogen/mocs_compilation.cpp.obj	148c3fa0cac54737
+835	1464	7474607050099418	CMakeFiles/MyShapezLib.dir/gamemap.cpp.obj	785104fe381fd4f6
+1465	1766	7474607059209472	libMyShapezLib.dll	31be3be68a8f576b
+1465	1766	7474607059209472	libMyShapezLib.dll.a	31be3be68a8f576b
+19	2255	7474607060803672	MyShapez_autogen/timestamp	d2c0881194184e3d
+19	2255	7474607060803672	MyShapez_autogen/mocs_compilation.cpp	d2c0881194184e3d
+19	2255	7474607060803672	C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/timestamp	d2c0881194184e3d
+19	2255	7474607060803672	C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/mocs_compilation.cpp	d2c0881194184e3d
+2261	3560	7474607077175815	MyShapez_autogen/EWIEGA46WW/qrc_res.cpp	8690bee50d5c64d
+2261	3560	7474607077175815	C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez_autogen/EWIEGA46WW/qrc_res.cpp	8690bee50d5c64d
+3622	4480	7474607077963876	CMakeFiles/MyShapez.dir/hub.cpp.obj	331406393bd4c980
+3693	4508	7474607078676861	CMakeFiles/MyShapez.dir/gamemap.cpp.obj	867a1a1e6b886416
+3719	4542	7474607078934144	CMakeFiles/MyShapez.dir/building.cpp.obj	6b166349a6338605
+3745	4997	7474607079195480	CMakeFiles/MyShapez.dir/miner.cpp.obj	b08df5612dd0463c
+3771	5033	7474607079450084	CMakeFiles/MyShapez.dir/Belt.cpp.obj	104f146502e20156
+4480	5282	7474607086545063	CMakeFiles/MyShapez.dir/timer.cpp.obj	f836d0cf60174037
+4508	5596	7474607086828730	CMakeFiles/MyShapez.dir/Trash.cpp.obj	7fc892250674a684
+4543	5828	7474607087172278	CMakeFiles/MyShapez.dir/Cutter.cpp.obj	1895750d0fa1de31
+3647	10204	7474607078209764	CMakeFiles/MyShapez.dir/scene.cpp.obj	36344cf9a2171e31
+4997	12522	7474607091718331	CMakeFiles/MyShapez.dir/RoundScene.cpp.obj	ab68c91161692a59
+5283	12936	7474607094574820	CMakeFiles/MyShapez.dir/ShopScene.cpp.obj	ce961cb9380d1cb6
+5033	13200	7474607092079664	CMakeFiles/MyShapez.dir/ChooseScene.cpp.obj	cfa8f3c4ced68eaa
+3599	13325	7474607077734825	CMakeFiles/MyShapez.dir/WindowControl.cpp.obj	fe62cdef2eaf0e8f
+3560	13476	7474607077347633	CMakeFiles/MyShapez.dir/MyShapez_autogen/mocs_compilation.cpp.obj	82213da0bd3d12d
+3579	13573	7474607077536040	CMakeFiles/MyShapez.dir/main.cpp.obj	e42245fd605343ae
+5597	13729	7474607097714028	CMakeFiles/MyShapez.dir/StartScene.cpp.obj	3d6ba00ef00991c1
+3669	13765	7474607078425708	CMakeFiles/MyShapez.dir/PlayScene.cpp.obj	330758d4e4cea669
+5828	13975	7474607100026036	CMakeFiles/MyShapez.dir/WinScene.cpp.obj	60932b35686e2ee7
+10204	16666	7474607143790073	CMakeFiles/MyShapez.dir/HelpScene.cpp.obj	92abbf30b9a44df5
+12522	41591	7474607166967181	CMakeFiles/MyShapez.dir/MyShapez_autogen/EWIEGA46WW/qrc_res.cpp.obj	a049758bfffcde88
+41591	43080	7474607457660014	MyShapez.exe	5917549d32756642
+>>>>>>> 8fcbed69569fc321d69e664afc48e50f066e3ae1
