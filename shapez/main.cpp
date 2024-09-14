@@ -4,7 +4,6 @@
 #include <QApplication>
 #include <QResource>
 #include "config.h"
-
 int main(int argc, char *argv[])
 {
     // QApplication是qt框架提供的应用程序类
@@ -12,9 +11,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     // 注册外部资源文件
     QResource::registerResource(GAME_RES_PATH);
-    // 创建窗口，并显示
     WindowControl w;
-    //    w.show();
+    // 创建窗口，并显示
     // 进入事件的循环处理，直到退出应用程序
     return a.exec();
 }

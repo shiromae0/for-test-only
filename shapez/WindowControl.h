@@ -1,6 +1,7 @@
 #ifndef GAMEWINDOW_H
 #define GAMEWINDOW_H
 
+
 #include <QWidget>
 #include "StartScene.h"
 #include "PlayScene.h"
@@ -59,4 +60,9 @@ public:
      */
     void ChooseUpgradeCutter();
 };
+extern WindowControl w;
+
+
 #endif // GAMEWINDOW_H
+
+

@@ -1,9 +1,39 @@
+#include <windows.h>
+#include <cstdio>
 #include "GameMap.h"
 #include "Building.h"
 #include <cstdlib>
-int GameMap::Resource[HEIGHT][WIDTH] = {};
+
+int (*shared_c)[WIDTH];
+int (*GameMap::Resource)[WIDTH] = nullptr;
+int (*GameMap::Buildingsmap)[WIDTH] = nullptr;
 GameMap::GameMap()
 {
+    HANDLE hMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // 使用分页文件
+        NULL,                    // 默认安全属性
+        PAGE_READWRITE,          // 读/写权限
+        0,                       // 文件的高32位大小
+        sizeof(int)*HEIGHT*WIDTH,             // 文件的低32位大小（int 的大小）
+        L"SharedMemoryC"         // 使用宽字符字符串作为共享内存名称
+        );
+    Resource = (int(*)[WIDTH]) MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int) * HEIGHT*WIDTH);
+
+    if (Resource == NULL) {
+        printf("Could not map view of file (%d).\n", GetLastError());
+        CloseHandle(hMapFile);
+    }
+    //UnmapViewOfFile(shared_c);
+    //CloseHandle(hMapFile);
+    HANDLE buildmapfile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // 使用分页文件
+        NULL,                    // 默认安全属性
+        PAGE_READWRITE,          // 读/写权限
+        0,                       // 文件的高32位大小
+        sizeof(int)*HEIGHT*WIDTH,             // 文件的低32位大小（int 的大小）
+        L"ShareBuild"         // 使用宽字符字符串作为共享内存名称
+        );
+    Buildingsmap = (int(*)[WIDTH]) MapViewOfFile(buildmapfile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int) * HEIGHT*WIDTH);
     for (int i = 0; i < HEIGHT; i++)
         for (int j = 0; j < WIDTH; j++)
         {
@@ -13,9 +43,12 @@ GameMap::GameMap()
         for (int j = 0; j < WIDTH; j++)
         {
             BuildingsMap[i][j] = nullptr;
+            Buildingsmap[i][j] = -1;
         }
 }
-
+int* GameMap::getResource() {
+    return &Resource[0][0];  // 返回 Resource 数组的首地址
+}
 void GameMap::FirstMap()
 {
     // 初始化资源
@@ -134,6 +167,7 @@ void GameMap::SetBuilding(GridVec pos, Building *building, int direction, int na
     for (auto pos : building->BuildingAllPos())
     {
         BuildingsMap[pos.i][pos.j] = building;
+        Buildingsmap[pos.i][pos.j] = building->name;
     }
 }
 
@@ -149,6 +183,7 @@ void GameMap::RemoveBuilding(GridVec pos)
         for (auto pos : BuildingsMap[pos.i][pos.j]->BuildingAllPos())
         {
             BuildingsMap[pos.i][pos.j] = nullptr;
+            Buildingsmap[pos.i][pos.j] = -1;
         }
     }
 }
@@ -191,24 +226,4 @@ int GameMap::OppositeDirection(int direction)
     default:
         return NONE;
     }
-}
-
-extern "C" {
-__declspec(dllexport) int** get_2d_array() {
-    int** array = (int**)malloc(HEIGHT * sizeof(int*));
-
-    for (int i = 0; i < HEIGHT; i++) {
-        array[i] = (int*)malloc(WIDTH * sizeof(int));
-        for (int j = 0; j < WIDTH; j++) {
-            array[i][j] = GameMap::Resource[i][j];
-        }
-    }
-    return array;
-}
-__declspec(dllexport) void free_2d_array(int** array, int rows) {
-    for (int i = 0; i < rows; i++) {
-        free(array[i]);
-    }
-    free(array);
-}
 }

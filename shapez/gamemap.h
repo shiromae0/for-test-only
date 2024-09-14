@@ -12,6 +12,7 @@ public:
      * \brief 初始化，矿地为none，建筑为空指针
      */
     GameMap();
+    int* getResource();
 
     /**
      * \brief 升级地图前，地图上哪些单元是矿地
@@ -26,8 +27,8 @@ public:
     /**
      * \brief 地图上哪些单元是矿地
      */
-    static int Resource[HEIGHT][WIDTH];
-
+    static int (*Resource)[WIDTH];
+    static int (*Buildingsmap)[WIDTH];
     /**
      * \brief 地图每个单元的建筑
      */
