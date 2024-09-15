@@ -360,16 +360,16 @@ void PlayScene::draw_overlay(int x, int y)
         switch (current_building_direction)
         {
         case UP:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_W);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_W);
             break;
         case DOWN:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_S);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_S);
             break;
         case LEFT:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_A);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_A);
             break;
         case RIGHT:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_D);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_D);
             break;
         default:
             break;
@@ -379,16 +379,16 @@ void PlayScene::draw_overlay(int x, int y)
         switch (current_building_direction)
         {
         case UP:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE * 2, CELLSIZE, cutter_img_blue_W);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE * 2, CELLSIZE, cutter_img_blue_W);
             break;
         case DOWN:
-            painter.drawPixmap(x - CELLSIZE - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE * 2, CELLSIZE, cutter_img_blue_S);
+            painter.drawPixmap(x/scaleFactor- 3*CELLSIZE/2  , y/scaleFactor- CELLSIZE / 2, CELLSIZE * 2, CELLSIZE, cutter_img_blue_S);
             break;
         case LEFT:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE - CELLSIZE / 2, CELLSIZE, CELLSIZE * 2, cutter_img_blue_A);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- 3*CELLSIZE / 2, CELLSIZE, CELLSIZE * 2, cutter_img_blue_A);
             break;
         case RIGHT:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE * 2, cutter_img_blue_D);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE,CELLSIZE * 2, cutter_img_blue_D);
             break;
         default:
             break;
@@ -399,16 +399,16 @@ void PlayScene::draw_overlay(int x, int y)
         {
         case UP:
             // qDebug() << tr("try to draw trash");
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_W);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_W);
             break;
         case DOWN:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_S);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_S);
             break;
         case LEFT:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_A);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_A);
             break;
         case RIGHT:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_D);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_D);
             break;
         default:
             break;
@@ -417,16 +417,16 @@ void PlayScene::draw_overlay(int x, int y)
         switch (current_building_direction)
         {
         case UP:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W);
             break;
         case DOWN:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S);
             break;
         case LEFT:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A);
             break;
         case RIGHT:
-            painter.drawPixmap(x - CELLSIZE / 2, y - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D);
             break;
         default:
             break;
@@ -499,23 +499,16 @@ void PlayScene::paintEvent(QPaintEvent *)
     draw_item();
     //cur_x = ((cur_x / CELLSIZE) - related_j_offset + 0.5) * CELLSIZE;
     //cur_y = ((cur_y / CELLSIZE) - related_i_offset + 0.5) * CELLSIZE;
-    draw_overlay((((cur_x + pixel_offset_x)/ CELLSIZE) - related_j_offset + 0.5) * CELLSIZE,
-                 (((cur_y + pixel_offset_y)/ CELLSIZE) - related_i_offset + 0.5) * CELLSIZE);
+    draw_overlay(cur_x, cur_y);
 }
 void PlayScene::mousePressEvent(QMouseEvent *e)
 {
-    for(int i = 0; i < HEIGHT;i++){
-        for (int k = 0; k < WIDTH; k++){
-            if (map.BuildingsMap[i][k] != nullptr)
-                std::cout<<"i="<<i<<" k="<<k<<"build = "<<map.BuildingsMap[i][k]->shape.name;
-        }
-        printf("\n");
-    }
+    int x = (e->pos().x()-scroll_offset.x()*scaleFactor);      // 鼠标点击的屏幕位置的横坐标
+    int y = (e->pos().y()-scroll_offset.y()*scaleFactor);      // 鼠标点击的屏幕位置的纵坐标
+    int grid_j = x / (CELLSIZE*scaleFactor); // 在网格里的横坐标
+    int grid_i = y / (CELLSIZE*scaleFactor); // 在网格里的纵坐标
+    printf("ex = %d; ey =%d ;x = %d y = %d j = %d , i = %d s= %lf\n",e->pos().x(),e->pos().y(),x,y,grid_j,grid_i,scaleFactor);
     fflush(stdout);
-    int click_x = e->pos().x() / scaleFactor;
-    int click_y = e->pos().y() / scaleFactor;
-    int grid_j = (click_x / CELLSIZE) - related_j_offset;
-    int grid_i = (click_y / CELLSIZE) - related_i_offset;
     GridVec cur;
     Building *current_building;
     cur.j = grid_j;
@@ -524,10 +517,12 @@ void PlayScene::mousePressEvent(QMouseEvent *e)
     {
         if (ready_to_place_belt)
         {
-            PushBackNewBeltGridPoint(grid_j, grid_i);
-            ready_to_place_belt = false;
-            is_placing_belt = true;
-            return;
+
+                PushBackNewBeltGridPoint(grid_j, grid_i);
+                ready_to_place_belt = false;
+                is_placing_belt = true;
+                return;
+
         }
         if (current_building_name)
         {
@@ -577,15 +572,18 @@ void PlayScene::mousePressEvent(QMouseEvent *e)
         if (!ready_to_place_belt && !current_building_name){
             dragging = true;
             start_pos = e->pos();
-            reserved_start_pos = e->pos();
-            qDebug() << "start_pos(debug1): (" << start_pos.x() << ", " << start_pos.y() << ")";
+            /*reserved_start_pos = e->pos();
+            qDebug() << "start_pos(debug1): (" << start_pos.x() << ", " << start_pos.y() << ")";*/
         }
     }
     else if (e->button() == Qt::RightButton)
     {
         right_button_pressed = true;
-        RemoveBuilding(cur);
-        update();
+        if (0 <= grid_i && grid_i < HEIGHT && 0 <= grid_j && grid_j < WIDTH) {
+            RemoveBuilding(cur);
+            update();
+        }
+
     }
 }
 void PlayScene::RemoveBuilding(GridVec pos)
@@ -639,84 +637,58 @@ void PlayScene::PushBackNewBeltGridPoint(int grid_j, int grid_i)
         belt_grid_path.append(belt_grid_Point);
     }
 }
-std::vector<GridVec> BresenhamLine(int i1, int j1, int i2, int j2) {
-    std::vector<GridVec> points;
-    int di = abs(i2 - i1);
-    int dj = abs(j2 - j1);
-    int si = (i1 < i2) ? 1 : -1;
-    int sj = (j1 < j2) ? 1 : -1;
-    int err = (di > dj ? di : -1 * dj) / 2;
-
-    while (true) {
-        points.push_back({i1, j1});
-        if (i1 == i2 && j1 == j2) break;
-        int e2 = err;
-        if (e2 > -di) {
-            err -= dj;
-            i1 += si;
-        }
-        if (e2 < dj) {
-            err += di;
-            j1 += sj;
-        }
-    }
-
-    return points;
-}
 
 void PlayScene::mouseMoveEvent(QMouseEvent *e)
 {
+    //int x=e->pos().x()/scaleFactor;
+    //int y=e->pos().y()/scaleFactor;
+    int adjusted_x = (e->pos().x()-scroll_offset.x()*scaleFactor);      // 鼠标点击的屏幕位置的横坐标
+    int adjusted_y = (e->pos().y()-scroll_offset.y()*scaleFactor);      // 鼠标点击的屏幕位置的纵坐标
+    int grid_j = adjusted_x / (CELLSIZE*scaleFactor); // 在网格里的横坐标
+    int grid_i = adjusted_y/ (CELLSIZE*scaleFactor); // 在网格里的纵坐标
 
-    //blockInitializer();
-    qDebug() << "pixel_offset_x(move):\n" << pixel_offset_x;
-    qDebug() << "pixel_offset_y(move):\n" << pixel_offset_y;
-    int x = (e->pos().x() + pixel_offset_x) / scaleFactor;
-    int y = (e->pos().y() + pixel_offset_y) / scaleFactor;
-    int grid_j = int(x / CELLSIZE) - related_j_offset;
-    int grid_i = int(y / CELLSIZE) - related_i_offset;
     GridVec cur;
-    Building *current_building;
     cur.j = grid_j;
     cur.i = grid_i;
-    //printf("grid_j:%d grid_i:%d\n", grid_j,grid_i);
-    fflush(stdout);
-    if(dragging){
+    //std::cout << "Grid J (column): " << grid_j << " Grid I (row): " << grid_i << std::endl;
+    if (current_building_name)
+    {
+        cur_x = adjusted_x;
+        cur_y = adjusted_y;
+        update();
+        if (is_placing_belt)
+        {
+            PushBackNewBeltGridPoint(grid_j, grid_i);
+        }
+    }
+    if (dragging){
+        //const int v_height = this->height();
+        //const int v_width = this->width();
+        //int maxX = WIDGET_HEIGHT - v_height;
+        //int maxY = WIDGET_WIDTH - v_width;
+
         QPoint delta = e->pos() - start_pos;
+        /*scroll_offset.setX(scroll_offset.x() + delta.x()/scaleFactor);
+        scroll_offset.setY(scroll_offset.y() + delta.y()/scaleFactor);*/
         scroll_offset += delta;
-        //qDebug() << "offset delta: (" << delta.x() << ", " << delta.y() << ")";
+        //scroll_offset.setX((scroll_offset.x() < -maxX) ? -maxX:scroll_offset.x());
+        //scroll_offset.setY((scroll_offset.y() < -maxY) ? -maxY:scroll_offset.y());
+        //scroll_offset.setX((scroll_offset.x() < 0) ? 0:scroll_offset.x());
+        //scroll_offset.setY((scroll_offset.y() < 0) ? 0:scroll_offset.y());
+        qDebug() << "Mouse position:" << e->pos();
+        qDebug() << "Start position:" << start_pos;
+        qDebug() << "Delta:" << delta;
+        qDebug() << "Scroll offset:" << scroll_offset;
         start_pos = e->pos();
 
         update();
     }
-    else if (current_building_name)
-    {
-        cur_x = x;
-        cur_y = y;
+
+    if (right_button_pressed) {
+        if (0 <= grid_i && grid_i < HEIGHT && 0 <= grid_j && grid_j < WIDTH) {
+        RemoveBuilding(cur);
         update();
-
-
-        if (is_placing_belt)
-        {
-            if(!belt_grid_path.empty()){
-                int diff_j = abs(belt_grid_path.last().j - grid_j);
-                int diff_i = abs(belt_grid_path.last().i - grid_i);
-                if (diff_j > 1 || diff_i > 1 || (diff_j == diff_i == 1)){
-                    std::vector<GridVec> points = BresenhamLine(grid_j,grid_i,  belt_grid_path.last().j, belt_grid_path.last().i);
-                    for (int i = points.size() - 1; i >= 0; --i) {
-                        const auto& point = points[i];
-                        PushBackNewBeltGridPoint(point.j, point.i);
-                    }
-                }
-            }
-
-            PushBackNewBeltGridPoint(grid_j, grid_i);
         }
-    }
-    // 如果右键正在拖动，移除经过的建筑
-    if (right_button_pressed)
-    {
-        RemoveBuilding(cur);  // 删除当前网格中的建筑
-        update();             // 刷新场景
     }
 }
 
@@ -824,76 +796,6 @@ int PlayScene::WhichBeltImg(int belt_grid_path_index)
 }
 void PlayScene::mouseReleaseEvent(QMouseEvent *e)
 {
-
-    if(dragging == true) {
-        mouseReleasePosition = e->pos();
-        //根据鼠标移动计算屏幕位移，更新初始格子 grid_x grid_y
-        //绝对位移只和每次的鼠标位移起始有关  单次offset
-        //相对位移是以游戏启动时左上角为原点的  多次offset叠加
-        if (mouseReleasePosition != QPoint(0, 0)) {
-
-            // 计算 screen_offset
-            QPoint screen_offset = mouseReleasePosition - reserved_start_pos;
-            pixel_offset_x = CELLSIZE - abs(screen_offset.x() % CELLSIZE);
-            pixel_offset_y = CELLSIZE - abs(screen_offset.y() % CELLSIZE);
-            qDebug() << "pixel_offset_x(release):\n" << pixel_offset_x;
-            qDebug() << "pixel_offset_y(release):\n" << pixel_offset_y;
-
-            // 使用 qDebug 打印 screen_offset 坐标
-            qDebug() << "screen_offset: (" << screen_offset.x() << ", " << screen_offset.y() << ")";
-
-            absolute_j_offset = (screen_offset.x()) / CELLSIZE;
-            absolute_i_offset = (screen_offset.y()) / CELLSIZE;
-
-            // 使用 qDebug 打印偏移值
-            qDebug() << "grid_j_offset1: " << absolute_j_offset;
-            qDebug() << "grid_i_offset1: " << absolute_i_offset;
-
-
-            // 处理 screen_offset.x() 的条件
-            /*
-            if (abs((screen_offset.x() % CELLSIZE) / static_cast<float>(CELLSIZE)) > 0.5) {
-                if(absolute_j_offset <= 0) {
-                    absolute_j_offset -= 1;
-                }
-                else if(absolute_j_offset >= 0) {
-                    absolute_j_offset += 1;
-                }
-            }
-
-            // 处理 screen_offset.y() 的条件
-
-            if (abs((screen_offset.y() % CELLSIZE) / static_cast<float>(CELLSIZE)) > 0.5) {
-                if(absolute_i_offset <= 0) {
-                    absolute_i_offset -= 1;
-                }
-                else if(absolute_i_offset >= 0) {
-                    absolute_i_offset += 1;
-                }
-            }
-
-         */
-
-
-            // 使用 qDebug 打印偏移值
-            qDebug() << "screen_offset.x(): " << screen_offset.x();
-            qDebug() << "screen_offset.y(): " << screen_offset.y();
-
-            qDebug() << "abs(screen_offset.y() / CELLSIZE): " << abs((screen_offset.x() / static_cast<float>(CELLSIZE)));
-
-            qDebug() << "((screen_offset.x() % CELLSIZE) / static_cast<float>(CELLSIZE)): " << ((screen_offset.x() % CELLSIZE) / static_cast<float>(CELLSIZE));
-            qDebug() << "((screen_offset.y() % CELLSIZE) / static_cast<float>(CELLSIZE)): " << ((screen_offset.y() % CELLSIZE) / static_cast<float>(CELLSIZE));
-
-            qDebug() << "grid_j_offset2: " << absolute_j_offset;
-            qDebug() << "grid_i_offset2: " << absolute_i_offset;
-
-
-            related_j_offset += absolute_j_offset;
-            related_i_offset += absolute_i_offset;
-
-        }
-    }
-    qDebug() << "mouseReleasePosition: (" << mouseReleasePosition.x() << ", " << mouseReleasePosition.y() << ")";
     dragging = false;
     if (is_placing_belt)
     {
@@ -930,7 +832,9 @@ void PlayScene::mouseReleaseEvent(QMouseEvent *e)
                 default:
                     break;
                 }
+                qDebug() << "belt_grid_path[" << i << "]: " << belt_grid_path[i].j << "," << belt_grid_path[i].i;
                 Building *current_building = new Belt(belt_grid_path[i], which_belt, belt_direction);
+                qDebug() << "Building pos before SetBuilding: " << current_building->pos.j << "," << current_building->pos.i;
                 if (current_building->CanPlace(belt_grid_path[i], belt_direction, map))
                 {
                     if (upgrade == BELT)
@@ -967,9 +871,9 @@ void PlayScene::mouseReleaseEvent(QMouseEvent *e)
         }
         ClearBeltGridPath();
         update();
-        current_building_name = NONE;
+        current_building_name = NONE; 
     }
-    if (e->button() == Qt::RightButton) {
+    if(e->button() == Qt::RightButton){
         right_button_pressed = false;
     }
 }
