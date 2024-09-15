@@ -40,7 +40,7 @@ public:
      * \return 资源类型
      */
     int GetResource(GridVec pos);
-
+    void CreateMapFile();
     /**
      * \brief 在鼠标点击的网格位置放置建筑
      * \param pos 位置
@@ -77,6 +77,8 @@ public:
      * \return 相反方向
      */
     int OppositeDirection(int direction);
+
+    void updated_buildings();//check if there is any modification from the userland;
 };
 
 #endif // GAMEMAP_H

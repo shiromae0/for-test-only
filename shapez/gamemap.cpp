@@ -7,15 +7,14 @@
 int (*shared_c)[WIDTH];
 int (*GameMap::Resource)[WIDTH] = nullptr;
 int (*GameMap::Buildingsmap)[WIDTH] = nullptr;
-GameMap::GameMap()
-{
+void GameMap::CreateMapFile(){
     HANDLE hMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // 使用分页文件
         NULL,                    // 默认安全属性
         PAGE_READWRITE,          // 读/写权限
         0,                       // 文件的高32位大小
         sizeof(int)*HEIGHT*WIDTH,             // 文件的低32位大小（int 的大小）
-        L"SharedMemoryC"         // 使用宽字符字符串作为共享内存名称
+        L"SharedResource"         // 使用宽字符字符串作为共享内存名称
         );
     Resource = (int(*)[WIDTH]) MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int) * HEIGHT*WIDTH);
 
@@ -23,17 +22,19 @@ GameMap::GameMap()
         printf("Could not map view of file (%d).\n", GetLastError());
         CloseHandle(hMapFile);
     }
-    //UnmapViewOfFile(shared_c);
-    //CloseHandle(hMapFile);
     HANDLE buildmapfile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // 使用分页文件
         NULL,                    // 默认安全属性
         PAGE_READWRITE,          // 读/写权限
         0,                       // 文件的高32位大小
         sizeof(int)*HEIGHT*WIDTH,             // 文件的低32位大小（int 的大小）
-        L"ShareBuild"         // 使用宽字符字符串作为共享内存名称
+        L"SharedBuild"         // 使用宽字符字符串作为共享内存名称
         );
     Buildingsmap = (int(*)[WIDTH]) MapViewOfFile(buildmapfile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int) * HEIGHT*WIDTH);
+}
+GameMap::GameMap()
+{
+    CreateMapFile();
     for (int i = 0; i < HEIGHT; i++)
         for (int j = 0; j < WIDTH; j++)
         {

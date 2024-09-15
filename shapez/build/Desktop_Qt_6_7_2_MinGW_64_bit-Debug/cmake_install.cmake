@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # Install script for directory: C:/Users/51392/Desktop/Assignment/DECO3801/shapez
-=======
-# Install script for directory: C:/Users/ICBC/Desktop/shapez
->>>>>>> 8fcbed69569fc321d69e664afc48e50f066e3ae1
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -38,7 +34,6 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-<<<<<<< HEAD
   set(CMAKE_OBJDUMP "D:/QT/Tools/mingw1120_64/bin/objdump.exe")
 endif()
 
@@ -48,17 +43,6 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/MyShapez.exe")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "D:/QT/Tools/mingw1120_64/bin/strip.exe" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/MyShapez.exe")
-=======
-  set(CMAKE_OBJDUMP "D:/astranlia-courses/4/3801/qt/Tools/mingw1120_64/bin/objdump.exe")
-endif()
-
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/MyShapez.exe")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/MyShapez.exe" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/MyShapez.exe")
-    if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "D:/astranlia-courses/4/3801/qt/Tools/mingw1120_64/bin/strip.exe" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/MyShapez.exe")
->>>>>>> 8fcbed69569fc321d69e664afc48e50f066e3ae1
     endif()
   endif()
 endif()
@@ -71,9 +55,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-<<<<<<< HEAD
 file(WRITE "C:/Users/51392/Desktop/Assignment/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/${CMAKE_INSTALL_MANIFEST}"
-=======
-file(WRITE "C:/Users/ICBC/Desktop/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/${CMAKE_INSTALL_MANIFEST}"
->>>>>>> 8fcbed69569fc321d69e664afc48e50f066e3ae1
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 set(CMAKE_RC_COMPILER "D:/QT/Tools/mingw1120_64/bin/windres.exe")
-=======
-set(CMAKE_RC_COMPILER "D:/astranlia-courses/4/3801/qt/Tools/mingw1120_64/bin/windres.exe")
->>>>>>> 8fcbed69569fc321d69e664afc48e50f066e3ae1
 set(CMAKE_RC_COMPILER_ARG1 "")
 set(CMAKE_RC_COMPILER_LOADED 1)
 set(CMAKE_RC_SOURCE_FILE_EXTENSIONS rc;RC)
