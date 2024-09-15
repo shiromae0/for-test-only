@@ -181,6 +181,11 @@ public:
     int absolute_j_offset = 0;
     int related_i_offset = 0;
     int related_j_offset = 0;
+    int coordinate_error_x = 0;
+    int coordinate_error_y = 0;
+    bool first_drag = false;
+    int pixel_offset_x = 0;
+    int pixel_offset_y = 0;
 
     int mapcell [24][16];
 

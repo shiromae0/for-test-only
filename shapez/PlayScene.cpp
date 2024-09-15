@@ -497,9 +497,10 @@ void PlayScene::paintEvent(QPaintEvent *)
     draw_ui();
     draw_hub_text();
     draw_item();
-    cur_x = ((cur_x / CELLSIZE) - related_j_offset + 0.5) * CELLSIZE;
-    cur_y = ((cur_y / CELLSIZE) - related_i_offset + 0.5) * CELLSIZE;
-    draw_overlay(cur_x, cur_y);
+    //cur_x = ((cur_x / CELLSIZE) - related_j_offset + 0.5) * CELLSIZE;
+    //cur_y = ((cur_y / CELLSIZE) - related_i_offset + 0.5) * CELLSIZE;
+    draw_overlay((((cur_x + pixel_offset_x)/ CELLSIZE) - related_j_offset + 0.5) * CELLSIZE,
+                 (((cur_y + pixel_offset_y)/ CELLSIZE) - related_i_offset + 0.5) * CELLSIZE);
 }
 void PlayScene::mousePressEvent(QMouseEvent *e)
 {
@@ -667,8 +668,10 @@ void PlayScene::mouseMoveEvent(QMouseEvent *e)
 {
 
     //blockInitializer();
-    int x = e->pos().x() / scaleFactor;
-    int y = e->pos().y() / scaleFactor;
+    qDebug() << "pixel_offset_x(move):\n" << pixel_offset_x;
+    qDebug() << "pixel_offset_y(move):\n" << pixel_offset_y;
+    int x = (e->pos().x() + pixel_offset_x) / scaleFactor;
+    int y = (e->pos().y() + pixel_offset_y) / scaleFactor;
     int grid_j = int(x / CELLSIZE) - related_j_offset;
     int grid_i = int(y / CELLSIZE) - related_i_offset;
     GridVec cur;
@@ -828,25 +831,66 @@ void PlayScene::mouseReleaseEvent(QMouseEvent *e)
         //绝对位移只和每次的鼠标位移起始有关  单次offset
         //相对位移是以游戏启动时左上角为原点的  多次offset叠加
         if (mouseReleasePosition != QPoint(0, 0)) {
-            // 使用 qDebug 打印 start_pos 坐标
-            qDebug() << "start_pos: (" << reserved_start_pos.x() << ", " << reserved_start_pos.y() << ")";
 
             // 计算 screen_offset
             QPoint screen_offset = mouseReleasePosition - reserved_start_pos;
+            pixel_offset_x = CELLSIZE - abs(screen_offset.x() % CELLSIZE);
+            pixel_offset_y = CELLSIZE - abs(screen_offset.y() % CELLSIZE);
+            qDebug() << "pixel_offset_x(release):\n" << pixel_offset_x;
+            qDebug() << "pixel_offset_y(release):\n" << pixel_offset_y;
 
             // 使用 qDebug 打印 screen_offset 坐标
             qDebug() << "screen_offset: (" << screen_offset.x() << ", " << screen_offset.y() << ")";
 
-            // 计算新的初始格子和偏移值
-            absolute_j_offset = screen_offset.x() / CELLSIZE;
-            absolute_i_offset = screen_offset.y() / CELLSIZE;
+            absolute_j_offset = (screen_offset.x()) / CELLSIZE;
+            absolute_i_offset = (screen_offset.y()) / CELLSIZE;
+
+            // 使用 qDebug 打印偏移值
+            qDebug() << "grid_j_offset1: " << absolute_j_offset;
+            qDebug() << "grid_i_offset1: " << absolute_i_offset;
+
+
+            // 处理 screen_offset.x() 的条件
+            /*
+            if (abs((screen_offset.x() % CELLSIZE) / static_cast<float>(CELLSIZE)) > 0.5) {
+                if(absolute_j_offset <= 0) {
+                    absolute_j_offset -= 1;
+                }
+                else if(absolute_j_offset >= 0) {
+                    absolute_j_offset += 1;
+                }
+            }
+
+            // 处理 screen_offset.y() 的条件
+
+            if (abs((screen_offset.y() % CELLSIZE) / static_cast<float>(CELLSIZE)) > 0.5) {
+                if(absolute_i_offset <= 0) {
+                    absolute_i_offset -= 1;
+                }
+                else if(absolute_i_offset >= 0) {
+                    absolute_i_offset += 1;
+                }
+            }
+
+         */
+
+
+            // 使用 qDebug 打印偏移值
+            qDebug() << "screen_offset.x(): " << screen_offset.x();
+            qDebug() << "screen_offset.y(): " << screen_offset.y();
+
+            qDebug() << "abs(screen_offset.y() / CELLSIZE): " << abs((screen_offset.x() / static_cast<float>(CELLSIZE)));
+
+            qDebug() << "((screen_offset.x() % CELLSIZE) / static_cast<float>(CELLSIZE)): " << ((screen_offset.x() % CELLSIZE) / static_cast<float>(CELLSIZE));
+            qDebug() << "((screen_offset.y() % CELLSIZE) / static_cast<float>(CELLSIZE)): " << ((screen_offset.y() % CELLSIZE) / static_cast<float>(CELLSIZE));
+
+            qDebug() << "grid_j_offset2: " << absolute_j_offset;
+            qDebug() << "grid_i_offset2: " << absolute_i_offset;
+
 
             related_j_offset += absolute_j_offset;
             related_i_offset += absolute_i_offset;
 
-            // 使用 qDebug 打印偏移值
-            qDebug() << "grid_j_offset: " << absolute_j_offset;
-            qDebug() << "grid_i_offset: " << absolute_i_offset;
         }
     }
     qDebug() << "mouseReleasePosition: (" << mouseReleasePosition.x() << ", " << mouseReleasePosition.y() << ")";
