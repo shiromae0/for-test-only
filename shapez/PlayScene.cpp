@@ -671,6 +671,24 @@ void PlayScene::mouseMoveEvent(QMouseEvent *e)
         /*scroll_offset.setX(scroll_offset.x() + delta.x()/scaleFactor);
         scroll_offset.setY(scroll_offset.y() + delta.y()/scaleFactor);*/
         scroll_offset += delta;
+        if (scroll_offset.x()>0 ){
+            scroll_offset.setX(0);
+        }
+        if(scroll_offset.y()>0){
+            scroll_offset.setY(0);
+        }
+        if(scroll_offset.y()<-400){
+            scroll_offset.setY(-400);
+        }
+        if(scaleFactor>=1.0){
+            int maxX = (WIDGET_WIDTH-WIDTH*CELLSIZE*scaleFactor)/scaleFactor;
+            printf("maxX=%d",maxX);
+            int maxY = (750-HEIGHT*CELLSIZE*scaleFactor)/scaleFactor;
+            fflush(stdout);
+            scroll_offset.setX((scroll_offset.x() < maxX) ? maxX:scroll_offset.x());
+            scroll_offset.setY((scroll_offset.y() < maxY) ? maxY:scroll_offset.y());
+        }
+
         //scroll_offset.setX((scroll_offset.x() < -maxX) ? -maxX:scroll_offset.x());
         //scroll_offset.setY((scroll_offset.y() < -maxY) ? -maxY:scroll_offset.y());
         //scroll_offset.setX((scroll_offset.x() < 0) ? 0:scroll_offset.x());
@@ -865,9 +883,13 @@ void PlayScene::mouseReleaseEvent(QMouseEvent *e)
             default:
                 break;
             }
+
             Building *current_building = new Belt(belt_grid_path[0], which_belt, belt_direction);
+            if (current_building->CanPlace(belt_grid_path[0], belt_direction, map))
+            {
             map.SetBuilding(belt_grid_path[0], current_building, belt_direction, which_belt);
             buildings.push_back(current_building);
+            }
         }
         ClearBeltGridPath();
         update();
