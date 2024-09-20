@@ -119,13 +119,13 @@ void PlayScene::draw_cells()
     gridPainter.setPen(pen);             // 画家拿笔
     gridPainter.scale(scaleFactor, scaleFactor);
     gridPainter.translate(scroll_offset);
-    for (int y = 0; y <= GAME_HEIGHT; y += CELLSIZE)
+    for (int y = 0; y <= HEIGHT*CELLSIZE; y += CELLSIZE)
     {
-        gridPainter.drawLine(0, y, GAME_WIDTH, y);
+        gridPainter.drawLine(0, y, WIDTH*CELLSIZE, y);
     }
-    for (int x = 0; x <= GAME_WIDTH; x += CELLSIZE)
+    for (int x = 0; x <= WIDTH*CELLSIZE; x += CELLSIZE)
     {
-        gridPainter.drawLine(x, 0, x, GAME_HEIGHT);
+        gridPainter.drawLine(x, 0, x, HEIGHT*CELLSIZE);
     }
 }
 
@@ -501,91 +501,113 @@ void PlayScene::paintEvent(QPaintEvent *)
     //cur_y = ((cur_y / CELLSIZE) - related_i_offset + 0.5) * CELLSIZE;
     draw_overlay(cur_x, cur_y);
 }
-void PlayScene::mousePressEvent(QMouseEvent *e)
+
+void PlayScene::HandleLeftButtonPress(QMouseEvent *e, int grid_i, int grid_j)
 {
-    int x = (e->pos().x()-scroll_offset.x()*scaleFactor);      // 鼠标点击的屏幕位置的横坐标
-    int y = (e->pos().y()-scroll_offset.y()*scaleFactor);      // 鼠标点击的屏幕位置的纵坐标
-    int grid_j = x / (CELLSIZE*scaleFactor); // 在网格里的横坐标
-    int grid_i = y / (CELLSIZE*scaleFactor); // 在网格里的纵坐标
-    printf("ex = %d; ey =%d ;x = %d y = %d j = %d , i = %d s= %lf\n",e->pos().x(),e->pos().y(),x,y,grid_j,grid_i,scaleFactor);
-    fflush(stdout);
     GridVec cur;
-    Building *current_building;
     cur.j = grid_j;
     cur.i = grid_i;
-    if (e->button() == Qt::LeftButton)
+    Building *current_building;
+
+    if (ready_to_place_belt)
     {
-        if (ready_to_place_belt)
+        PushBackNewBeltGridPoint(grid_j, grid_i);
+        ready_to_place_belt = false;
+        is_placing_belt = true;
+        return;
+    }
+
+    if (current_building_name)
+    {
+        switch (current_building_name)
         {
-
-                PushBackNewBeltGridPoint(grid_j, grid_i);
-                ready_to_place_belt = false;
-                is_placing_belt = true;
-                return;
-
+        case MINER:
+            current_building = new Miner(cur, current_building_name, current_building_direction);
+            break;
+        case CUTTER:
+            current_building = new Cutter(cur, current_building_name, current_building_direction);
+            break;
+        case TRASH:
+            current_building = new Trash(cur, current_building_name, current_building_direction);
+            break;
+        default:
+            return;
         }
-        if (current_building_name)
+
+        switch (upgrade)
         {
-            switch (current_building_name)
+        case MINER:
+            current_building->FirstRequire_ms = MINER_SPEED_2;
+            break;
+        case CUTTER:
+            current_building->FirstRequire_ms = CUTTER_SPEED_2;
+            break;
+        default:
+            break;
+        }
+
+        // 放置建筑
+        if (current_building->CanPlace(cur, current_building_direction, map))
+        {
+            map.SetBuilding(cur, current_building, current_building_direction, current_building_name);
+            for (int i = 0; i < buildings.size(); i++)
             {
-            case MINER:
-                current_building = new Miner(cur, current_building_name, current_building_direction);
-                break;
-            case CUTTER:
-                current_building = new Cutter(cur, current_building_name, current_building_direction);
-                break;
-            case TRASH:
-                current_building = new Trash(cur, current_building_name, current_building_direction);
-            default:
-                break;
-            }
-            switch (upgrade)
-            {
-            case MINER:
-                current_building->FirstRequire_ms = MINER_SPEED_2;
-                break;
-            case CUTTER:
-                current_building->FirstRequire_ms = CUTTER_SPEED_2;
-                break;
-            default:
-                break;
-            }
-            // 放置建筑
-            if (current_building->CanPlace(cur, current_building_direction, map))
-            {
-                map.SetBuilding(cur, current_building, current_building_direction, current_building_name);
-                for (int i = 0; i < buildings.size(); i++)
+                for (auto poscur : current_building->BuildingAllPos())
                 {
-                    for (auto poscur : current_building->BuildingAllPos())
+                    if (buildings[i]->pos == poscur)
                     {
-                        if (buildings[i]->pos == poscur)
-                        {
-                            buildings.remove(i);
-                        }
+                        buildings.remove(i);
                     }
                 }
-                buildings.push_back(current_building);
-                current_building_name = NONE;
-                update();
             }
+            buildings.push_back(current_building);
+            current_building_name = NONE;
+            update();
         }
-        if (!ready_to_place_belt && !current_building_name){
-            dragging = true;
-            start_pos = e->pos();
-            /*reserved_start_pos = e->pos();
-            qDebug() << "start_pos(debug1): (" << start_pos.x() << ", " << start_pos.y() << ")";*/
-        }
+    }
+
+    if (!ready_to_place_belt && !current_building_name)
+    {
+        dragging = true;
+        start_pos = e->pos();
+    }
+}
+
+void PlayScene::HandleRightButtonPress(int grid_i, int grid_j)
+{
+    GridVec cur;
+    cur.j = grid_j;
+    cur.i = grid_i;
+
+    if (0 <= grid_i && grid_i < HEIGHT && 0 <= grid_j && grid_j < WIDTH)
+    {
+        RemoveBuilding(cur);
+        update();
+    }
+}
+
+
+void PlayScene::mousePressEvent(QMouseEvent *e)
+{
+    int x = (e->pos().x() - scroll_offset.x() * scaleFactor);
+    int y = (e->pos().y() - scroll_offset.y() * scaleFactor);
+    int grid_j = x / (CELLSIZE * scaleFactor);
+    int grid_i = y / (CELLSIZE * scaleFactor);
+
+    printf("ex = %d; ey =%d ;x = %d y = %d j = %d , i = %d s= %lf\n", e->pos().x(), e->pos().y(), x, y, grid_j, grid_i, scaleFactor);
+    fflush(stdout);
+
+    if (e->button() == Qt::LeftButton)
+    {
+        HandleLeftButtonPress(e, grid_i, grid_j);
     }
     else if (e->button() == Qt::RightButton)
     {
         right_button_pressed = true;
-        if (0 <= grid_i && grid_i < HEIGHT && 0 <= grid_j && grid_j < WIDTH) {
-            RemoveBuilding(cur);
-            update();
-        }
-
+        HandleRightButtonPress(grid_i, grid_j);
     }
 }
+
 void PlayScene::RemoveBuilding(GridVec pos)
 {
     if (map.BuildingsMap[pos.i][pos.j] != nullptr)
@@ -638,75 +660,90 @@ void PlayScene::PushBackNewBeltGridPoint(int grid_j, int grid_i)
     }
 }
 
-void PlayScene::mouseMoveEvent(QMouseEvent *e)
+void PlayScene::HandleBuildingPlacement(QMouseEvent *e, int grid_i, int grid_j)
 {
-    //int x=e->pos().x()/scaleFactor;
-    //int y=e->pos().y()/scaleFactor;
-    int adjusted_x = (e->pos().x()-scroll_offset.x()*scaleFactor);      // 鼠标点击的屏幕位置的横坐标
-    int adjusted_y = (e->pos().y()-scroll_offset.y()*scaleFactor);      // 鼠标点击的屏幕位置的纵坐标
-    int grid_j = adjusted_x / (CELLSIZE*scaleFactor); // 在网格里的横坐标
-    int grid_i = adjusted_y/ (CELLSIZE*scaleFactor); // 在网格里的纵坐标
+    int adjusted_x = (e->pos().x() - scroll_offset.x() * scaleFactor);
+    int adjusted_y = (e->pos().y() - scroll_offset.y() * scaleFactor);
 
-    GridVec cur;
-    cur.j = grid_j;
-    cur.i = grid_i;
-    //std::cout << "Grid J (column): " << grid_j << " Grid I (row): " << grid_i << std::endl;
+    // If a building is selected, update its position and refresh the display
     if (current_building_name)
     {
         cur_x = adjusted_x;
         cur_y = adjusted_y;
         update();
+
+        // If placing a belt, record the grid point
         if (is_placing_belt)
         {
             PushBackNewBeltGridPoint(grid_j, grid_i);
         }
     }
-    if (dragging){
-        //const int v_height = this->height();
-        //const int v_width = this->width();
-        //int maxX = WIDGET_HEIGHT - v_height;
-        //int maxY = WIDGET_WIDTH - v_width;
+}
 
-        QPoint delta = e->pos() - start_pos;
-        /*scroll_offset.setX(scroll_offset.x() + delta.x()/scaleFactor);
-        scroll_offset.setY(scroll_offset.y() + delta.y()/scaleFactor);*/
-        scroll_offset += delta;
-        if (scroll_offset.x()>0 ){
-            scroll_offset.setX(0);
-        }
-        if(scroll_offset.y()>0){
-            scroll_offset.setY(0);
-        }
-        if(scroll_offset.y()<-400){
-            scroll_offset.setY(-400);
-        }
-        if(scaleFactor>=1.0){
-            int maxX = (WIDGET_WIDTH-WIDTH*CELLSIZE*scaleFactor)/scaleFactor;
-            printf("maxX=%d",maxX);
-            int maxY = (750-HEIGHT*CELLSIZE*scaleFactor)/scaleFactor;
-            fflush(stdout);
-            scroll_offset.setX((scroll_offset.x() < maxX) ? maxX:scroll_offset.x());
-            scroll_offset.setY((scroll_offset.y() < maxY) ? maxY:scroll_offset.y());
-        }
+void PlayScene::HandleDragging(QMouseEvent *e)
+{
+    QPoint delta = e->pos() - start_pos;
+    scroll_offset += delta;
 
-        //scroll_offset.setX((scroll_offset.x() < -maxX) ? -maxX:scroll_offset.x());
-        //scroll_offset.setY((scroll_offset.y() < -maxY) ? -maxY:scroll_offset.y());
-        //scroll_offset.setX((scroll_offset.x() < 0) ? 0:scroll_offset.x());
-        //scroll_offset.setY((scroll_offset.y() < 0) ? 0:scroll_offset.y());
-        qDebug() << "Mouse position:" << e->pos();
-        qDebug() << "Start position:" << start_pos;
-        qDebug() << "Delta:" << delta;
-        qDebug() << "Scroll offset:" << scroll_offset;
-        start_pos = e->pos();
-
-        update();
+    // Ensure scroll_offset stays within the valid range (prevents scrolling too far)
+    if (scroll_offset.x() > 0)
+    {
+        scroll_offset.setX(0);
+    }
+    if (scroll_offset.y() > 0)
+    {
+        scroll_offset.setY(0);
     }
 
-    if (right_button_pressed) {
-        if (0 <= grid_i && grid_i < HEIGHT && 0 <= grid_j && grid_j < WIDTH) {
+    int maxX = (WIDGET_WIDTH - WIDTH * CELLSIZE * scaleFactor) / scaleFactor;
+    int maxY = (WIDGET_HEIGHT - HEIGHT * CELLSIZE * scaleFactor) / scaleFactor;
+
+    // Keep the scroll offset within the boundaries of the grid
+    scroll_offset.setX((scroll_offset.x() < maxX) ? maxX : scroll_offset.x());
+    scroll_offset.setY((scroll_offset.y() < maxY) ? maxY : scroll_offset.y());
+
+    start_pos = e->pos();  // Update the starting position for the next movement
+    update();  // Refresh the display
+}
+
+void PlayScene::HandleRightButtonDrag(int grid_i, int grid_j)
+{
+    GridVec cur;
+    cur.j = grid_j;
+    cur.i = grid_i;
+
+    // If the grid coordinates are valid, remove the building at this location
+    if (0 <= grid_i && grid_i < HEIGHT && 0 <= grid_j && grid_j < WIDTH)
+    {
         RemoveBuilding(cur);
-        update();
-        }
+        update();  // Refresh the display
+    }
+}
+
+
+void PlayScene::mouseMoveEvent(QMouseEvent *e)
+{
+    int adjusted_x = (e->pos().x() - scroll_offset.x() * scaleFactor);
+    int adjusted_y = (e->pos().y() - scroll_offset.y() * scaleFactor);
+    int grid_j = adjusted_x / (CELLSIZE * scaleFactor);  // Calculate the grid column (j)
+    int grid_i = adjusted_y / (CELLSIZE * scaleFactor);  // Calculate the grid row (i)
+
+    // Handle building placement when a building is selected
+    if (current_building_name)
+    {
+        HandleBuildingPlacement(e, grid_i, grid_j);
+    }
+
+    // Handle dragging (scrolling) action
+    if (dragging)
+    {
+        HandleDragging(e);
+    }
+
+    // Handle right-button drag action to remove buildings
+    if (right_button_pressed)
+    {
+        HandleRightButtonDrag(grid_i, grid_j);
     }
 }
 
@@ -812,112 +849,149 @@ int PlayScene::WhichBeltImg(int belt_grid_path_index)
     }
     return 0;
 }
-void PlayScene::mouseReleaseEvent(QMouseEvent *e)
-{
-    dragging = false;
-    if (is_placing_belt)
-    {
-        is_placing_belt = false;
-        if (belt_grid_path.size() >= 2)
-        {
-            int which_belt = 0;
-            int belt_direction = 0;
-            for (int i = 0; i < belt_grid_path.size(); i++)
-            {
-                which_belt = WhichBeltImg(i);
-                switch (which_belt)
-                {
-                case BELT_A:
-                case BELT_S_A:
-                case BELT_W_A:
-                    belt_direction = LEFT;
-                    break;
-                case BELT_S:
-                case BELT_A_S:
-                case BELT_D_S:
-                    belt_direction = DOWN;
-                    break;
-                case BELT_W:
-                case BELT_A_W:
-                case BELT_D_W:
-                    belt_direction = UP;
-                    break;
-                case BELT_D:
-                case BELT_S_D:
-                case BELT_W_D:
-                    belt_direction = RIGHT;
-                    break;
-                default:
-                    break;
-                }
-                qDebug() << "belt_grid_path[" << i << "]: " << belt_grid_path[i].j << "," << belt_grid_path[i].i;
-                Building *current_building = new Belt(belt_grid_path[i], which_belt, belt_direction);
-                qDebug() << "Building pos before SetBuilding: " << current_building->pos.j << "," << current_building->pos.i;
-                if (current_building->CanPlace(belt_grid_path[i], belt_direction, map))
-                {
-                    if (upgrade == BELT)
-                    {
-                        current_building->FirstRequire_ms = BELT_SPEED_2;
-                    }
-                    map.SetBuilding(belt_grid_path[i], current_building, belt_direction, which_belt);
-                    buildings.push_back(current_building);
-                }
-            }
-        }
-        else {
-            int which_belt = 0;
-            int belt_direction = current_building_direction;
-            switch (current_building_direction) {
-            case UP:
-                which_belt = BELT_W;
-                break;
-            case DOWN:
-                which_belt = BELT_S;
-                break;
-            case LEFT:
-                which_belt = BELT_A;
-                break;
-            case RIGHT:
-                which_belt = BELT_D;
-                break;
-            default:
-                break;
-            }
 
-            Building *current_building = new Belt(belt_grid_path[0], which_belt, belt_direction);
-            if (current_building->CanPlace(belt_grid_path[0], belt_direction, map))
-            {
-            map.SetBuilding(belt_grid_path[0], current_building, belt_direction, which_belt);
-            buildings.push_back(current_building);
-            }
-        }
-        ClearBeltGridPath();
-        update();
-        current_building_name = NONE; 
+void PlayScene::HandleSingleBeltPlacement()
+{
+    int which_belt = 0;
+    int belt_direction = current_building_direction;
+
+    // Determine which belt based on the current building direction
+    switch (current_building_direction)
+    {
+    case UP:
+        which_belt = BELT_W;
+        break;
+    case DOWN:
+        which_belt = BELT_S;
+        break;
+    case LEFT:
+        which_belt = BELT_A;
+        break;
+    case RIGHT:
+        which_belt = BELT_D;
+        break;
+    default:
+        break;
     }
-    if(e->button() == Qt::RightButton){
+
+    // Create a new belt and check if it can be placed
+    Building *current_building = new Belt(belt_grid_path[0], which_belt, belt_direction);
+    if (current_building->CanPlace(belt_grid_path[0], belt_direction, map))
+    {
+        map.SetBuilding(belt_grid_path[0], current_building, belt_direction, which_belt);
+        buildings.push_back(current_building);
+    }
+}
+
+void PlayScene::HandleBeltGridPlacement()
+{
+    for (int i = 0; i < belt_grid_path.size(); i++)
+    {
+        int which_belt = WhichBeltImg(i);
+        int belt_direction = 0;
+
+        // Determine belt direction based on the belt type
+        switch (which_belt)
+        {
+        case BELT_A:
+        case BELT_S_A:
+        case BELT_W_A:
+            belt_direction = LEFT;
+            break;
+        case BELT_S:
+        case BELT_A_S:
+        case BELT_D_S:
+            belt_direction = DOWN;
+            break;
+        case BELT_W:
+        case BELT_A_W:
+        case BELT_D_W:
+            belt_direction = UP;
+            break;
+        case BELT_D:
+        case BELT_S_D:
+        case BELT_W_D:
+            belt_direction = RIGHT;
+            break;
+        default:
+            break;
+        }
+
+        qDebug() << "belt_grid_path[" << i << "]: " << belt_grid_path[i].j << "," << belt_grid_path[i].i;
+
+        // Create a new belt and check if it can be placed
+        Building *current_building = new Belt(belt_grid_path[i], which_belt, belt_direction);
+        qDebug() << "Building pos before SetBuilding: " << current_building->pos.j << "," << current_building->pos.i;
+        if (current_building->CanPlace(belt_grid_path[i], belt_direction, map))
+        {
+            if (upgrade == BELT)
+            {
+                current_building->FirstRequire_ms = BELT_SPEED_2;
+            }
+            map.SetBuilding(belt_grid_path[i], current_building, belt_direction, which_belt);
+            buildings.push_back(current_building);
+        }
+    }
+}
+
+void PlayScene::HandleBeltPlacement()
+{
+    if (belt_grid_path.size() >= 2)
+    {
+        HandleBeltGridPlacement();
+    }
+    else
+    {
+        HandleSingleBeltPlacement();
+    }
+
+    // Clear the belt grid path and update the scene
+    ClearBeltGridPath();
+    update();
+    current_building_name = NONE;
+}
+
+void PlayScene::HandleRightButtonRelease(QMouseEvent *e)
+{
+    if (e->button() == Qt::RightButton)
+    {
         right_button_pressed = false;
     }
 }
+
+void PlayScene::mouseReleaseEvent(QMouseEvent *e)
+{
+    dragging = false;
+
+    if (is_placing_belt)
+    {
+        is_placing_belt = false;
+        HandleBeltPlacement();  // Handle the belt placement logic
+    }
+
+    HandleRightButtonRelease(e);  // Handle right button release
+}
+
 void PlayScene::FactoryRunning()
 {
     timer.start();
     // 监听定时器
     connect(&timer, &QTimer::timeout, this, [=]()
             {
-        //重新绘制图片
-        update();
-        if(buildings.size())
-        {
-            for(auto &building : buildings)
-            {
-                if(building->name != HUB && building->name != TRASH)
+                //重新绘制图片
+                update();
+                if(buildings.size())
                 {
-                    building->UpdateTickableState(map);
-                }
-            }
-        } });
+                    for(auto &building : buildings)
+                    {
+                        if(building->name != HUB && building->name != TRASH)
+                        {
+                            building->UpdateTickableState(map);
+                        }
+                    }
+                } });
 }
+
 void PlayScene::UpgradeHub()
 {
     hub->pos.i = HEIGHT / 2 - 2;
@@ -1032,10 +1106,10 @@ void PlayScene::LoadSave()
     {
         hub = new Hub;
         hub->name = HUB;
-        hub->pos.i = HEIGHT / 2;
-        hub->pos.j = WIDTH / 2;
+        hub->pos.i = 7;
+        hub->pos.j = 12;
         hub->direction = UP;
-        GridVec hubvec(WIDTH / 2, HEIGHT / 2);
+        GridVec hubvec(12, 7);
         Building *smallhub = hub;
         map.SetBuilding(hubvec, smallhub, hub->direction, hub->name);
         buildings.push_back(smallhub);
@@ -1182,6 +1256,18 @@ void PlayScene::music()
 }
 void PlayScene::setScaleFactor(double fac){
     scaleFactor = fac;
+    if (scroll_offset.x()>0 ){
+        scroll_offset.setX(0);
+    }
+    if(scroll_offset.y()>0){
+        scroll_offset.setY(0);
+    }
+    int maxX = (WIDGET_WIDTH-WIDTH*CELLSIZE*scaleFactor)/scaleFactor;
+    printf("maxX=%d",maxX);
+    int maxY = (WIDGET_HEIGHT-HEIGHT*CELLSIZE*scaleFactor)/scaleFactor;
+    fflush(stdout);
+    scroll_offset.setX((scroll_offset.x() < maxX) ? maxX:scroll_offset.x());
+    scroll_offset.setY((scroll_offset.y() < maxY) ? maxY:scroll_offset.y());
     update();
 }
 void PlayScene::wheelEvent(QWheelEvent *event){
@@ -1192,8 +1278,8 @@ void PlayScene::wheelEvent(QWheelEvent *event){
     } else {
         setScaleFactor(scaleFactor - scaleFactorStep);
     }
-    if (scaleFactor < 0.5) {
-        setScaleFactor(0.5);
+    if (scaleFactor < 0.8) {
+        setScaleFactor(0.8);
     } else if (scaleFactor > 2.0) {
         setScaleFactor(2.0);
     }

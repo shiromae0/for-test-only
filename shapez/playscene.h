@@ -225,14 +225,29 @@ public:
     /**
      * \brief 鼠标点击事件重构
      */
+
+    void HandleLeftButtonPress(QMouseEvent *e,int grid_i, int grid_j);
+    void HandleRightButtonPress(int grid_i, int grid_j);
+
     void mousePressEvent(QMouseEvent *e);
     /**
      * \brief 鼠标移动事件
      */
+
+    void HandleBuildingPlacement(QMouseEvent *e, int grid_i, int grid_j);
+    void HandleDragging(QMouseEvent *e);
+    void HandleRightButtonDrag(int grid_i, int grid_j);
+
     void mouseMoveEvent(QMouseEvent *e);
     /**
      * \brief  鼠标释放事件
      */
+
+    void HandleBeltPlacement();
+    void HandleSingleBeltPlacement();
+    void HandleBeltGridPlacement();
+    void HandleRightButtonRelease(QMouseEvent *e);
+
     void mouseReleaseEvent(QMouseEvent *e);
     /**
      * \brief  键盘事件重构
