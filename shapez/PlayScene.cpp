@@ -1222,19 +1222,19 @@ void PlayScene::LoadSave()
     switch (round)
     {
     case 1:
-        hub->need_shape_name = CYCLE;
+        *hub->need_shape_name = CYCLE;
         hub->need = NEED_CYCLE;
         break;
     case 2:
-        hub->need_shape_name = RECT;
+        *hub->need_shape_name = RECT;
         hub->need = NEED_RECT;
         break;
     case 3:
-        hub->need_shape_name = LEFT_CYCLE;
+        *hub->need_shape_name = LEFT_CYCLE;
         hub->need = NEED_LEFT_CYCLE;
         break;
     case 4:
-        hub->need_shape_name = RIGHT_CYCLE;
+        *hub->need_shape_name = RIGHT_CYCLE;
         hub->need = NEED_RIGHT_CYCLE;
         break;
     default:

@@ -44,6 +44,8 @@ cmake_minimum_required(VERSION 3.5)
             StartScene.h StartScene.cpp
             WinScene.h WinScene.cpp
             HelpScene.h HelpScene.cpp
+
+
         )
     # Define target properties for Android with Qt 6 as:
     #    set_property(TARGET MyShapez APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

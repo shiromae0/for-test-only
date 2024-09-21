@@ -4,12 +4,11 @@
 #include "Building.h"
 #include <cstdlib>
 
-int (*shared_c)[WIDTH];
 int (*GameMap::Resource)[WIDTH] = nullptr;
 int (*GameMap::Buildingsmap)[WIDTH] = nullptr;
 void GameMap::CreateMapFile(){
     HANDLE hMapFile = CreateFileMapping(
-        INVALID_HANDLE_VALUE,    // 使用分页文件
+        INVALID_HANDLE_VALUE,
         NULL,                    // 默认安全属性
         PAGE_READWRITE,          // 读/写权限
         0,                       // 文件的高32位大小
@@ -23,12 +22,12 @@ void GameMap::CreateMapFile(){
         CloseHandle(hMapFile);
     }
     HANDLE buildmapfile = CreateFileMapping(
-        INVALID_HANDLE_VALUE,    // 使用分页文件
-        NULL,                    // 默认安全属性
-        PAGE_READWRITE,          // 读/写权限
-        0,                       // 文件的高32位大小
-        sizeof(int)*HEIGHT*WIDTH,             // 文件的低32位大小（int 的大小）
-        L"SharedBuild"         // 使用宽字符字符串作为共享内存名称
+        INVALID_HANDLE_VALUE,
+        NULL,
+        PAGE_READWRITE,
+        0,
+        sizeof(int)*HEIGHT*WIDTH,
+        L"SharedBuild"
         );
     Buildingsmap = (int(*)[WIDTH]) MapViewOfFile(buildmapfile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int) * HEIGHT*WIDTH);
 }

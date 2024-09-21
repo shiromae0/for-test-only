@@ -1,9 +1,13 @@
+#include <windows.h>
 #include "hub.h"
 #include "config.h"
+#include<cstdio>
+int *Hub::need_shape_name = 0;
 Hub::Hub()
 {
+    CreateMapFile();
     need = NEED_CYCLE;
-    need_shape_name = CYCLE;
+    *need_shape_name = CYCLE;
     current_have = 0;
     money = 0;
     increase_item_value = false;
@@ -12,7 +16,7 @@ Hub::Hub()
 Hub::Hub(GridVec pos, int name, int direction) : Building(pos, name, direction)
 {
     need = NEED_CYCLE;
-    need_shape_name = CYCLE;
+    *need_shape_name = CYCLE;
     current_have = 0;
     money = 0;
     increase_item_value = false;
@@ -59,7 +63,7 @@ bool Hub::CanReceive(GridVec source, int directionin, int shapename)
 }
 void Hub::Receive(GridVec source, int directionin, int shapename)
 {
-    if (shapename == need_shape_name)
+    if (shapename == *need_shape_name)
     {
         current_have++;
     }
@@ -115,20 +119,20 @@ void Hub::TickableRunning()
 }
 void Hub::UpdateNeed()
 {
-    switch (need_shape_name)
+    switch (*need_shape_name)
     {
     case CYCLE:
-        need_shape_name = RECT;
+        *need_shape_name = RECT;
         current_have = 0;
         need = NEED_RECT;
         break;
     case RECT:
-        need_shape_name = LEFT_CYCLE;
+        *need_shape_name = LEFT_CYCLE;
         current_have = 0;
         need = NEED_LEFT_CYCLE;
         break;
     case LEFT_CYCLE:
-        need_shape_name = RIGHT_CYCLE;
+        *need_shape_name = RIGHT_CYCLE;
         current_have = 0;
         need = NEED_RIGHT_CYCLE;
         break;
@@ -136,3 +140,20 @@ void Hub::UpdateNeed()
         break;
     }
 }
+void Hub::CreateMapFile(){
+    HANDLE hMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,
+        NULL,                    // 默认安全属性
+        PAGE_READWRITE,          // 读/写权限
+        0,                       // 文件的高32位大小
+        sizeof(int),             // 文件的低32位大小（int 的大小）
+        L"need_shape_name"
+        );
+    need_shape_name = (int*)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int));
+
+    if (need_shape_name == NULL) {
+        printf("Could not map view of file (%d).\n", GetLastError());
+        CloseHandle(hMapFile);
+    }
+}
+

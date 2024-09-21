@@ -16,7 +16,7 @@ public:
     /**
      * \brief 当前等级需要的物品类型
      */
-    int need_shape_name;
+    static int *need_shape_name;
 
     /**
      * \brief 当前等级已提交物品个数
@@ -36,6 +36,7 @@ public:
     void TickableRunning() override;
     void UpdateTickableState(GameMap &gamemap) override;
     void UpdateNeed();
+    void CreateMapFile();
 };
 
 #endif // HUB_H
