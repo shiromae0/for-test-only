@@ -4,6 +4,7 @@ C:/Users/34506/Desktop/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug
   C:/Qt/6.7.2/mingw_64/include/QtCore/QFile \
   C:/Qt/6.7.2/mingw_64/include/QtCore/QList \
   C:/Qt/6.7.2/mingw_64/include/QtCore/QObject \
+  C:/Qt/6.7.2/mingw_64/include/QtCore/QQueue \
   C:/Qt/6.7.2/mingw_64/include/QtCore/QRect \
   C:/Qt/6.7.2/mingw_64/include/QtCore/QSettings \
   C:/Qt/6.7.2/mingw_64/include/QtCore/QSize \
@@ -102,6 +103,7 @@ C:/Users/34506/Desktop/DECO3801/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug
   C:/Qt/6.7.2/mingw_64/include/QtCore/qpoint.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qpointer.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qprocessordetection.h \
+  C:/Qt/6.7.2/mingw_64/include/QtCore/qqueue.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qrect.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qrefcount.h \
   C:/Qt/6.7.2/mingw_64/include/QtCore/qregularexpression.h \

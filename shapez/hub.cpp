@@ -5,7 +5,7 @@
 #include "PlayScene.h"
 
 int *Hub::need_shape_name = 0;
-Hub::Hub()
+Hub::Hub(QObject* parent) : QObject(parent)
 {
     CreateMapFile();
     need = NEED_CYCLE;
@@ -18,9 +18,9 @@ Hub::Hub()
     last_receive_time.start();
     last_received_shape = NONE;  // 初始化为 NONE
     shape_update_timer.start();
-
+    receivedTimestamps.clear();
 }
-Hub::Hub(GridVec pos, int name, int direction) : Building(pos, name, direction)
+Hub::Hub(GridVec pos, int name, int direction, QObject* parent) : Building(pos, name, direction)
 {
     need = NEED_CYCLE;
     *need_shape_name = CYCLE;
@@ -71,34 +71,32 @@ bool Hub::CanReceive(GridVec source, int directionin, int shapename)
 void Hub::Receive(GridVec source, int directionin, int shapename)
 {
     PlayScene *scene = static_cast<PlayScene*>(this->parent());
+    shape_update_timer.restart();
 
-    // 检查当前接收到的物体类型是否发生改变
+    // 记录接收到物体的时间戳
+    QTime currentTime = QTime::currentTime();
+    receivedTimestamps.enqueue(currentTime);
+
+    // 清理超过10秒的时间戳
+    while (!receivedTimestamps.isEmpty() && receivedTimestamps.head().secsTo(currentTime) > 10) {
+        receivedTimestamps.dequeue();
+    }
+    updateReceivedObjectsCount();
+    // 更新当前接收到的形状
     if (shapename != last_received_shape) {
         if (scene) {
-            scene->current_received_shape = shapename;  // 更新物体类型
+            scene->current_received_shape = shapename;
         }
-        last_received_shape = shapename;  // 更新最后接收到的物体类型
-        shape_update_timer.restart();     // 重置计时器
+        last_received_shape = shapename;
+        shape_update_timer.restart();
     }
 
-    // 检查计时器是否超过 10 秒未接收到物体
-    if (shape_update_timer.elapsed() >= 10000) {
-        if (scene) {
-            scene->current_received_shape = NONE;  // 10 秒未接收到物体，更新为 NONE
-        }
-        shape_update_timer.restart();  // 重启计时器
-        last_received_shape = NONE;    // 重置最后接收到的物体类型为 NONE
-    }
+    // 更新需求形状数量
     if (shapename == *need_shape_name)
     {
         current_have++;
     }
-    // 检查是否超过一秒
-    if (last_receive_time.elapsed() >= 10000) {
-        resetReceiveCounter();
-    }
-    // 增加接收到的物体计数
-    received_objects_last_second++;
+
     if (!increase_item_value)
     {
         switch (shapename)
@@ -139,8 +137,8 @@ void Hub::Receive(GridVec source, int directionin, int shapename)
             break;
         }
     }
-    return;
 }
+
 void Hub::UpdateTickableState(GameMap &gamemap)
 {
     return;
@@ -192,5 +190,19 @@ void Hub::resetReceiveCounter()
 {
     received_objects_last_second = 0;
     last_receive_time.restart();  // 重启计时器
+}
+void Hub::updateReceivedObjectsCount()
+{
+    QTime currentTime = QTime::currentTime();
+
+    // 清理超过10秒的时间戳
+    while (!receivedTimestamps.isEmpty() && receivedTimestamps.head().secsTo(currentTime) > 10) {
+        receivedTimestamps.dequeue();
+    }
+
+    // 输出过去10秒内收到的物体数量
+    received_objects_last_second = receivedTimestamps.size();
+
+    qDebug() << "Objects received in the last 10 seconds: " << received_objects_last_second;
 }
 

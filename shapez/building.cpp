@@ -35,19 +35,19 @@ bool Building::CanPlace(GridVec click, int picdirection, GameMap &gamemap)
         return false;
     }
     // 如果在矿地上，或有障碍物，返回false
-    if (gamemap.GetResource(click) != NONE)
+    if (gamemap.GetResource(click) == BARRIER)
     {
         return false;
     }
-    //    // 如果点击的是hub，返回false
-    //    if(gamemap.GetBuilding(click) != nullptr)
-    //    {
-    //        if(gamemap.GetBuilding(click)->name == HUB)
-    //        {
-    //            return false;
-    //        }
-    //    }
-    // 如果有其他建筑，返回false
+    else if (gamemap.GetResource(click) == CYCLE)
+    {
+        return true;
+    }
+    else if (gamemap.GetResource(click) == RECT)
+    {
+        return true;
+    }
+
     std::vector<GridVec> allpos = BuildingAllPos();
     for (auto pos : allpos)
     {

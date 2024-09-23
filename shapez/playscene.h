@@ -318,8 +318,13 @@ public:
     void initializeView();
     QElapsedTimer elapsedTimer;  // 新增一个计时器
     void updateHubStats();  // 新增一个函数，用于更新Hub接收物体的统计
-     QTimer *shape_output_timer;
+    QTimer *shape_output_timer;
     void outputCurrentShape();
+    void draw_current_shape();
+    void checkResetReceivedShape();
+    int total_objects_last_ten_seconds;  // 记录过去十秒内收到的物体总数
+    QVector<int> objects_per_second;     // 记录每秒收到的物体数量
+    QTimer *ten_second_timer;
 };
 
 #endif // PLAYSCENE_H

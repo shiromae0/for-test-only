@@ -114,6 +114,11 @@ PlayScene::PlayScene()
     shape_output_timer = new QTimer(this);
     connect(shape_output_timer, &QTimer::timeout, this, &PlayScene::outputCurrentShape);
     shape_output_timer->start(1000);  // 每秒触发一次
+    connect(shape_output_timer, &QTimer::timeout, this, &PlayScene::checkResetReceivedShape);
+    hub = new Hub(this);
+    QTimer* updateTimer = new QTimer(this);
+    connect(updateTimer, &QTimer::timeout, this, &PlayScene::updateHubStats);  // 每秒调用 updateHubStats
+    updateTimer->start(1000);  // 1000 毫秒 == 1 秒
 }
 
 void PlayScene::draw_cells()
@@ -334,23 +339,7 @@ void PlayScene::draw_hub_text()
         hubPainter.setFont(QFont("楷体", 35, QFont::Bold));
         hubPainter.drawText(hub->pos.j * CELLSIZE + 40, hub->pos.i * CELLSIZE + 45, QString::number(hub->current_have) + QString("/") + QString::number(hub->need));
     }
-    switch (current_received_shape) {
-    case CYCLE:
-        hubPainter.drawText(hub->pos.j * CELLSIZE + 35, hub->pos.i * CELLSIZE + 60, "CYCLE");
-        break;
-    case RECT:
-        hubPainter.drawText(hub->pos.j * CELLSIZE + 35, hub->pos.i * CELLSIZE + 60, "RECT");
-        break;
-    case LEFT_CYCLE:
-        hubPainter.drawText(hub->pos.j * CELLSIZE + 35, hub->pos.i * CELLSIZE + 60, "LEFT CYCLE");
-        break;
-    case RIGHT_CYCLE:
-        hubPainter.drawText(hub->pos.j * CELLSIZE + 35, hub->pos.i * CELLSIZE + 60, "RIGHT CYCLE");
-        break;
-    default:
-        hubPainter.drawText(hub->pos.j * CELLSIZE + 35, hub->pos.i * CELLSIZE + 60, "NONE");
-        break;
-    }
+
 }
 void PlayScene::draw_item()
 {
@@ -538,6 +527,7 @@ void PlayScene::paintEvent(QPaintEvent *)
     //cur_x = ((cur_x / CELLSIZE) - related_j_offset + 0.5) * CELLSIZE;
     //cur_y = ((cur_y / CELLSIZE) - related_i_offset + 0.5) * CELLSIZE;
     draw_overlay(cur_x, cur_y);
+    draw_current_shape();
 }
 
 void PlayScene::HandleLeftButtonPress(QMouseEvent *e, int grid_i, int grid_j)
@@ -1035,10 +1025,20 @@ void PlayScene::FactoryRunning()
 }
 void PlayScene::updateHubStats()
 {
-    qDebug() << "Hub received objects in the last second: " << hub->received_objects_last_second;
+    QPainter shapePainter(this);
 
+    // 固定在窗口右上角，设定绘制位置 (假设右上角的偏移为 10 像素)
+    int x = this->width() - 100;  // 距离窗口右边缘 100 像素
+    int y = 50;
+
+    // 在窗口右上角显示 10 秒内接收到的物体总数
+    shapePainter.setFont(QFont("Arial", 20));  // 设置字体大小
+    shapePainter.drawText(x, y, "Objects in 10s: " + QString::number(hub->received_objects_last_second));
+    qDebug() << "Hub received objects in the last second: " << hub->received_objects_last_second;
+    hub->updateReceivedObjectsCount();
     // 更新后，重置 Hub 的计数器
     hub->resetReceiveCounter();
+    update();
 }
 
 void PlayScene::UpgradeHub()
@@ -1111,7 +1111,7 @@ void PlayScene::LoadSave()
             int direction = setting.value("direction").toInt();
             if (name == HUB)
             {
-                hub = new Hub;
+                hub = new Hub(this);
                 hub->name = name;
                 hub->direction = direction;
                 hub->pos = cur;
@@ -1153,7 +1153,7 @@ void PlayScene::LoadSave()
     }
     if (!saved)
     {
-        hub = new Hub;
+        hub = new Hub(this);
         hub->name = HUB;
         hub->pos.i = 75;
         hub->pos.j = 120;
@@ -1395,3 +1395,46 @@ void PlayScene::outputCurrentShape() {
         break;
     }
 }
+void PlayScene::draw_current_shape() {
+    QPainter shapePainter(this);
+
+    // 固定在窗口右上角，设定绘制位置 (右上角的偏移)
+    int x = this->width() - 200;  // 距离窗口右边缘 200 像素
+    int y = 50;
+
+    // 绘制接收到的物体数量
+    shapePainter.setFont(QFont("Arial", 20));  // 设置字体大小
+    shapePainter.drawText(x, y, "Objects in 10s: " + QString::number(hub->received_objects_last_second));
+
+    // 在同一位置下方显示 current_received_shape
+    y += 30;  // 调整y坐标，防止文字重叠
+    switch (current_received_shape) {
+    case CYCLE:
+        shapePainter.drawText(x, y, "CYCLE");
+        break;
+    case RECT:
+        shapePainter.drawText(x, y, "RECT");
+        break;
+    case LEFT_CYCLE:
+        shapePainter.drawText(x, y, "LEFT CYCLE");
+        break;
+    case RIGHT_CYCLE:
+        shapePainter.drawText(x, y, "RIGHT CYCLE");
+        break;
+    default:
+        shapePainter.drawText(x, y, "NONE");
+        break;
+    }
+}
+
+void PlayScene::checkResetReceivedShape() {
+    // 如果已经超过 10 秒没有接收到物体
+    if (hub && hub->shape_update_timer.elapsed() >= 10000) {
+        if (current_received_shape != NONE) {
+            std::cout << "No objects received in the last 10 seconds, resetting shape to NONE." << std::endl;
+            current_received_shape = NONE;
+            hub->resetReceiveCounter();  // 重置接收计数器
+        }
+    }
+}
+
