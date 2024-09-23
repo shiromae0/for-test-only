@@ -27,6 +27,7 @@ public:
      * \brief 根据当前关卡，绘制需收集的item、确认按钮
      */
     void paintEvent(QPaintEvent *e);
+
 };
 
 #endif // ROUNDSCENE_H

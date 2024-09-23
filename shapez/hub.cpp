@@ -2,6 +2,8 @@
 #include "hub.h"
 #include "config.h"
 #include<cstdio>
+#include "PlayScene.h"
+
 int *Hub::need_shape_name = 0;
 Hub::Hub()
 {
@@ -12,6 +14,11 @@ Hub::Hub()
     money = 0;
     increase_item_value = false;
     upgradehub = false;
+    received_objects_last_second = 0;  // 初始化为0
+    last_receive_time.start();
+    last_received_shape = NONE;  // 初始化为 NONE
+    shape_update_timer.start();
+
 }
 Hub::Hub(GridVec pos, int name, int direction) : Building(pos, name, direction)
 {
@@ -63,10 +70,35 @@ bool Hub::CanReceive(GridVec source, int directionin, int shapename)
 }
 void Hub::Receive(GridVec source, int directionin, int shapename)
 {
+    PlayScene *scene = static_cast<PlayScene*>(this->parent());
+
+    // 检查当前接收到的物体类型是否发生改变
+    if (shapename != last_received_shape) {
+        if (scene) {
+            scene->current_received_shape = shapename;  // 更新物体类型
+        }
+        last_received_shape = shapename;  // 更新最后接收到的物体类型
+        shape_update_timer.restart();     // 重置计时器
+    }
+
+    // 检查计时器是否超过 10 秒未接收到物体
+    if (shape_update_timer.elapsed() >= 10000) {
+        if (scene) {
+            scene->current_received_shape = NONE;  // 10 秒未接收到物体，更新为 NONE
+        }
+        shape_update_timer.restart();  // 重启计时器
+        last_received_shape = NONE;    // 重置最后接收到的物体类型为 NONE
+    }
     if (shapename == *need_shape_name)
     {
         current_have++;
     }
+    // 检查是否超过一秒
+    if (last_receive_time.elapsed() >= 10000) {
+        resetReceiveCounter();
+    }
+    // 增加接收到的物体计数
+    received_objects_last_second++;
     if (!increase_item_value)
     {
         switch (shapename)
@@ -155,5 +187,10 @@ void Hub::CreateMapFile(){
         printf("Could not map view of file (%d).\n", GetLastError());
         CloseHandle(hMapFile);
     }
+}
+void Hub::resetReceiveCounter()
+{
+    received_objects_last_second = 0;
+    last_receive_time.restart();  // 重启计时器
 }
 

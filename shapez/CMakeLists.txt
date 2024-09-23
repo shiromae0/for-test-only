@@ -44,6 +44,8 @@ cmake_minimum_required(VERSION 3.5)
             StartScene.h StartScene.cpp
             WinScene.h WinScene.cpp
             HelpScene.h HelpScene.cpp
+            TransportRateCalculator.h
+            TransportRateCalculator.cpp
 
 
         )

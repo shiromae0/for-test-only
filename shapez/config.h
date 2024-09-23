@@ -10,10 +10,10 @@
 #define LOGO_PATH ":/res/logo.png"  // logo
 #define WIN_PATH ":/res/win.png"    // win图案
 /******************游戏界面背景*******************/
-#define GAME_WIDTH 1200 // 可放置物体区域宽度
-#define GAME_HEIGHT 750 // 可放置物体区域高度
-#define WIDTH 24        // 可放置物体区域横向网格数
-#define HEIGHT 15       // 可放置物体区域纵向网格数
+#define GAME_WIDTH 12000 // 可放置物体区域宽度
+#define GAME_HEIGHT 7500 // 可放置物体区域高度
+#define WIDTH 240        // 可放置物体区域横向网格数
+#define HEIGHT 150       // 可放置物体区域纵向网格数
 #define CELLSIZE 50     // 每个格子的边长
 #define ITEM_SIZE 30    // 物品大小
 /******************矿地资源*******************/
@@ -35,18 +35,18 @@
 #define MINER_S_PATH "://res/miner_S.png" // 朝下
 #define MINER_W_PATH "://res/miner_W.png" // 朝上
 /****************不同方向的传送带******************/
-#define BELT_A_PATH "://res/belt_A.png"
-#define BELT_A_S_PATH "://res/belt_A_S.png"
-#define BELT_A_W_PATH "://res/belt_A_W.png"
-#define BELT_D_PATH "://res/belt_D.png"
-#define BELT_D_S_PATH "://res/belt_D_S.png"
-#define BELT_D_W_PATH "://res/belt_D_W.png"
-#define BELT_S_PATH "://res/belt_S.png"
-#define BELT_S_A_PATH "://res/belt_S_A.png"
-#define BELT_S_D_PATH "://res/belt_S_D.png"
-#define BELT_W_PATH "://res/belt_W.png"
-#define BELT_W_A_PATH "://res/belt_W_A.png"
-#define BELT_W_D_PATH "://res/belt_W_D.png"
+#define BELT_A_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_A.gif"
+#define BELT_A_S_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_A_S.gif"
+#define BELT_A_W_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_A_W.gif"
+#define BELT_D_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_D.gif"
+#define BELT_D_S_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_D_S.gif"
+#define BELT_D_W_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_D_W.gif"
+#define BELT_S_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_S.gif"
+#define BELT_S_A_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_S_A.gif"
+#define BELT_S_D_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_S_D.gif"
+#define BELT_W_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_W.gif"
+#define BELT_W_A_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_W_A.gif"
+#define BELT_W_D_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_W_D.gif"
 /****************不同方向的切割机******************/
 #define CUTTER_A_PATH "://res/cutter_A.png" // 朝左
 #define CUTTER_D_PATH "://res/cutter_D.png" // 朝右
@@ -91,6 +91,10 @@
 #define RECT_PATH "://res/rect.png"               // 方形物品
 #define LEFT_CYCLE_PATH "://res/left_cycle.png"   // 左圆形物品
 #define RIGHT_CYCLE_PATH "://res/right_cycle.png" // 右圆形物品
+#define AIM1_PATH "://res/aim1.png"
+#define AIM2_PATH "://res/aim2.png"
+#define AIM3_PATH "://res/aim3.png"
+#define AIM4_PATH "://res/aim4.png"
 /******************名字宏*******************/
 #define NONE 0
 // 方向

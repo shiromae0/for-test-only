@@ -1,5 +1,7 @@
 // main.cpp是入口文件
 #include "WindowControl.h"
+#include "RoundScene.h"
+#include "PlayScene.h"
 
 #include <QApplication>
 #include <QResource>
