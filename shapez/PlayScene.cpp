@@ -517,7 +517,6 @@ void PlayScene::draw_overlay(int x, int y)
 }
 void PlayScene::paintEvent(QPaintEvent *)
 {
-
     draw_cells();
     draw_map_resources();
     draw_building();
@@ -1025,19 +1024,16 @@ void PlayScene::FactoryRunning()
 }
 void PlayScene::updateHubStats()
 {
-    QPainter shapePainter(this);
-
-    // 固定在窗口右上角，设定绘制位置 (假设右上角的偏移为 10 像素)
-    int x = this->width() - 100;  // 距离窗口右边缘 100 像素
-    int y = 50;
-
-    // 在窗口右上角显示 10 秒内接收到的物体总数
-    shapePainter.setFont(QFont("Arial", 20));  // 设置字体大小
-    shapePainter.drawText(x, y, "Objects in 10s: " + QString::number(hub->received_objects_last_second));
+    // 更新物体接收统计
     qDebug() << "Hub received objects in the last second: " << hub->received_objects_last_second;
+
+    // 更新收到的物体数量
     hub->updateReceivedObjectsCount();
-    // 更新后，重置 Hub 的计数器
+
+    // 重置 Hub 的接收计数器
     hub->resetReceiveCounter();
+
+    // 请求刷新窗口以更新 UI 显示（触发 paintEvent）
     update();
 }
 
