@@ -35,18 +35,18 @@
 #define MINER_S_PATH "://res/miner_S.png" // 朝下
 #define MINER_W_PATH "://res/miner_W.png" // 朝上
 /****************不同方向的传送带******************/
-#define BELT_A_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_A.gif"
-#define BELT_A_S_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_A_S.gif"
-#define BELT_A_W_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_A_W.gif"
-#define BELT_D_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_D.gif"
-#define BELT_D_S_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_D_S.gif"
-#define BELT_D_W_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_D_W.gif"
-#define BELT_S_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_S.gif"
-#define BELT_S_A_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_S_A.gif"
-#define BELT_S_D_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_S_D.gif"
-#define BELT_W_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_W.gif"
-#define BELT_W_A_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_W_A.gif"
-#define BELT_W_D_PATH "C:\\Users\\34506\\Desktop\\shapez\\res\\belt_W_D.gif"
+#define BELT_A_PATH "://res/belt_A.png"
+#define BELT_A_S_PATH "://res/belt_A_S.png"
+#define BELT_A_W_PATH "://res/belt_A_W.png"
+#define BELT_D_PATH "://res/belt_D.png"
+#define BELT_D_S_PATH "://res/belt_D_S.png"
+#define BELT_D_W_PATH "://res/belt_D_W.png"
+#define BELT_S_PATH "://res/belt_S.png"
+#define BELT_S_A_PATH "://res/belt_S_A.png"
+#define BELT_S_D_PATH "://res/belt_S_D.png"
+#define BELT_W_PATH "://res/belt_W.png"
+#define BELT_W_A_PATH "://res/belt_W_A.png"
+#define BELT_W_D_PATH "://res/belt_W_D.png"
 /****************不同方向的切割机******************/
 #define CUTTER_A_PATH "://res/cutter_A.png" // 朝左
 #define CUTTER_D_PATH "://res/cutter_D.png" // 朝右

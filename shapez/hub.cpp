@@ -188,7 +188,6 @@ void Hub::CreateMapFile(){
 }
 void Hub::resetReceiveCounter()
 {
-    received_objects_last_second = 0;
     last_receive_time.restart();  // 重启计时器
 }
 void Hub::updateReceivedObjectsCount()
