@@ -6,7 +6,7 @@
 #include "Trash.h"
 #include "config.h"
 #include <QPainter>
-
+#include <iostream>
 void PlayScene::CreateMapFile(){
     Qpointmapx = new int;
     Qpointmapy = new int;
