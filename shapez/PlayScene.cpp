@@ -1,17 +1,81 @@
+#include <windows.h>
 #include "playscene.h"
 #include "Miner.h"
 #include "Belt.h"
 #include "Cutter.h"
 #include "Trash.h"
-// #include "math.h"
-#include <iostream>
 #include "config.h"
 #include <QPainter>
+#include <iostream>
+void PlayScene::CreateMapFile(){
+    Qpointmapx = new int;
+    Qpointmapy = new int;
+    HANDLE hMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,   // 创建匿名文件映射
+        NULL,                   // 默认安全属性
+        PAGE_READWRITE,         // 读写权限
+        0,                      // 高位大小
+        sizeof(int) * 2,        // 两个 int 的大小（x 和 y）
+        L"scrolloffset"   // 共享内存名称
+        );
+
+    if (hMapFile == NULL) {
+        return;
+    }
+    int* pMappedMemory = (int*) MapViewOfFile(
+        hMapFile,
+        FILE_MAP_ALL_ACCESS,
+        0,
+        0,
+        sizeof(int) * 2  // 两个 int 大小的空间
+        );
+    if (pMappedMemory == NULL) {
+        CloseHandle(hMapFile);
+        return;
+    }
+
+    // 将 x 和 y 的指针指向共享内存
+    Qpointmapx = &pMappedMemory[0];
+    Qpointmapy = &pMappedMemory[1];
+    //CloseHandle(hMapFile);
+    scaleFcator_map = new double;
+
+    HANDLE ScaleMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,   // 创建匿名文件映射
+        NULL,                   // 默认安全属性
+        PAGE_READWRITE,         // 读写权限
+        0,                      // 高位大小
+        sizeof(double),         // 一个 double 的大小
+        L"scaleFactor"          // 共享内存名称
+        );
+
+    if (ScaleMapFile == NULL) {
+        return;
+    }
+
+    double* sMappedMemory = (double*) MapViewOfFile(
+        ScaleMapFile,
+        FILE_MAP_ALL_ACCESS,
+        0,
+        0,
+        sizeof(double)          // double 大小的空间
+        );
+
+    if (sMappedMemory == NULL) {
+        CloseHandle(ScaleMapFile);  // 使用 ScaleMapFile 而不是 hMapFile
+        return;
+    }
+
+    scaleFcator_map = sMappedMemory;  // 不需要取地址
+
+}
 
 PlayScene::PlayScene()
 
 {
+    CreateMapFile();
     // 初始化像素画
+    *scaleFcator_map = 1.0;
     hub_small_img.load(HUB_SMALL_PATH); // 交付中心
     hub_big_img.load(HUB_BIG_PATH);
     cycle_mine_field_img.load(CYCLE_MINE_PATH); // 矿地
@@ -730,6 +794,8 @@ void PlayScene::HandleDragging(QMouseEvent *e)
     scroll_offset.setY((scroll_offset.y() < maxY) ? maxY : scroll_offset.y());
 
     start_pos = e->pos();  // Update the starting position for the next movement
+    *Qpointmapx = scroll_offset.x();
+    *Qpointmapy = scroll_offset.y();
     update();  // Refresh the display
 }
 
@@ -1317,6 +1383,8 @@ void PlayScene::setScaleFactor(double fac){
     fflush(stdout);
     scroll_offset.setX((scroll_offset.x() < maxX) ? maxX:scroll_offset.x());
     scroll_offset.setY((scroll_offset.y() < maxY) ? maxY:scroll_offset.y());
+    *Qpointmapx = scroll_offset.x();
+    *Qpointmapy = scroll_offset.y();
     update();
 }
 void PlayScene::wheelEvent(QWheelEvent *event) {
@@ -1341,6 +1409,7 @@ void PlayScene::wheelEvent(QWheelEvent *event) {
     } else if (scaleFactor > 2.0) {
         setScaleFactor(2.0);
     }
+    *scaleFcator_map = scaleFactor;
 
     // 重新调整偏移量，确保视口的中心点不变
     scroll_offset.setX((WIDGET_WIDTH / 2) / scaleFactor - viewCenterX);
