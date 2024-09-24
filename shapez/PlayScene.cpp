@@ -69,7 +69,9 @@ void PlayScene::CreateMapFile(){
     scaleFcator_map = sMappedMemory;  // 不需要取地址
 
 }
+
 PlayScene::PlayScene()
+
 {
     CreateMapFile();
     // 初始化像素画
@@ -170,6 +172,17 @@ PlayScene::PlayScene()
     cur_y = 0;
     //右键拖动删除
     right_button_pressed = false;
+    QTimer::singleShot(0, this, &PlayScene::initializeView);
+    elapsedTimer.start();  // 启动计时器
+    current_received_shape = NONE;
+    shape_output_timer = new QTimer(this);
+    connect(shape_output_timer, &QTimer::timeout, this, &PlayScene::outputCurrentShape);
+    shape_output_timer->start(1000);  // 每秒触发一次
+    connect(shape_output_timer, &QTimer::timeout, this, &PlayScene::checkResetReceivedShape);
+    hub = new Hub(this);
+    QTimer* updateTimer = new QTimer(this);
+    connect(updateTimer, &QTimer::timeout, this, &PlayScene::updateHubStats);  // 每秒调用 updateHubStats
+    updateTimer->start(1000);  // 1000 毫秒 == 1 秒
 }
 
 void PlayScene::draw_cells()
@@ -218,6 +231,7 @@ void PlayScene::draw_map_resources()
         }
     }
 }
+
 void PlayScene::draw_building()
 {
     if (buildings.size() > 0)
@@ -235,11 +249,27 @@ void PlayScene::draw_building()
                 {
                     // 未升级的hub
                     painter.drawPixmap(building->pos.j * CELLSIZE, building->pos.i * CELLSIZE, CELLSIZE * 2, CELLSIZE * 2, hub_small_img);
+
+                    // 计算未升级hub的中心点并绘制缩小后的aim_img
+                    int center_x = building->pos.j * CELLSIZE + CELLSIZE; // 中心点的x坐标
+                    int center_y = building->pos.i * CELLSIZE + CELLSIZE; // 中心点的y坐标
+
+                    // 缩小后的大小
+                    int aim_width = CELLSIZE / 1.5;
+                    int aim_height = CELLSIZE / 1.5;
+
+                    // 居中绘制缩小后的aim_img
+                    painter.drawPixmap(center_x - aim_width / 2, center_y - aim_height / 2, aim_width, aim_height, aim_img);
                 }
                 else
                 {
                     // 升级后的hub
                     painter.drawPixmap(building->pos.j * CELLSIZE, building->pos.i * CELLSIZE, CELLSIZE * 4, CELLSIZE * 4, hub_big_img);
+
+                    // 计算升级后hub的中心点并绘制aim_img
+                    int center_x = building->pos.j * CELLSIZE + 2 * CELLSIZE; // 中心点的x坐标
+                    int center_y = building->pos.i * CELLSIZE + 2 * CELLSIZE; // 中心点的y坐标
+                    painter.drawPixmap(center_x - CELLSIZE / 2, center_y - CELLSIZE / 2, CELLSIZE, CELLSIZE, aim_img); // 正常大小绘制
                 }
                 break;
             case TRASH:
@@ -365,16 +395,15 @@ void PlayScene::draw_hub_text()
     if (!hub->upgradehub)
     {
         // 未升级的hub
-        hubPainter.drawText(hub->pos.j * CELLSIZE + 35, hub->pos.i * CELLSIZE + 40, QString("￥ ") + QString::number(hub->money));
-        hubPainter.drawText(hub->pos.j * CELLSIZE + 35, hub->pos.i * CELLSIZE + 60, QString::number(hub->current_have) + QString("/") + QString::number(hub->need));
+        hubPainter.drawText(hub->pos.j * CELLSIZE + 35, hub->pos.i * CELLSIZE + 32, QString::number(hub->current_have) + QString("/") + QString::number(hub->need));
     }
     else
     {
         // 升级后的hub
         hubPainter.setFont(QFont("楷体", 35, QFont::Bold));
-        hubPainter.drawText(hub->pos.j * CELLSIZE + 36, hub->pos.i * CELLSIZE + 90, QString("￥") + QString::number(hub->money));
-        hubPainter.drawText(hub->pos.j * CELLSIZE + 40, hub->pos.i * CELLSIZE + 145, QString::number(hub->current_have) + QString("/") + QString::number(hub->need));
+        hubPainter.drawText(hub->pos.j * CELLSIZE + 40, hub->pos.i * CELLSIZE + 45, QString::number(hub->current_have) + QString("/") + QString::number(hub->need));
     }
+
 }
 void PlayScene::draw_item()
 {
@@ -552,7 +581,6 @@ void PlayScene::draw_overlay(int x, int y)
 }
 void PlayScene::paintEvent(QPaintEvent *)
 {
-
     draw_cells();
     draw_map_resources();
     draw_building();
@@ -562,6 +590,7 @@ void PlayScene::paintEvent(QPaintEvent *)
     //cur_x = ((cur_x / CELLSIZE) - related_j_offset + 0.5) * CELLSIZE;
     //cur_y = ((cur_y / CELLSIZE) - related_i_offset + 0.5) * CELLSIZE;
     draw_overlay(cur_x, cur_y);
+    draw_current_shape();
 }
 
 void PlayScene::HandleLeftButtonPress(QMouseEvent *e, int grid_i, int grid_j)
@@ -1042,6 +1071,10 @@ void PlayScene::FactoryRunning()
     // 监听定时器
     connect(&timer, &QTimer::timeout, this, [=]()
             {
+                if (elapsedTimer.elapsed() >= 10000) {  // 检查是否经过了一秒
+                    updateHubStats();  // 更新统计
+                    elapsedTimer.restart();  // 重置计时器，开始下一秒的统计
+                }
                 //重新绘制图片
                 update();
                 if(buildings.size())
@@ -1054,6 +1087,20 @@ void PlayScene::FactoryRunning()
                         }
                     }
                 } });
+}
+void PlayScene::updateHubStats()
+{
+    // 更新物体接收统计
+    qDebug() << "Hub received objects in the last second: " << hub->received_objects_last_second;
+
+    // 更新收到的物体数量
+    hub->updateReceivedObjectsCount();
+
+    // 重置 Hub 的接收计数器
+    hub->resetReceiveCounter();
+
+    // 请求刷新窗口以更新 UI 显示（触发 paintEvent）
+    update();
 }
 
 void PlayScene::UpgradeHub()
@@ -1126,7 +1173,7 @@ void PlayScene::LoadSave()
             int direction = setting.value("direction").toInt();
             if (name == HUB)
             {
-                hub = new Hub;
+                hub = new Hub(this);
                 hub->name = name;
                 hub->direction = direction;
                 hub->pos = cur;
@@ -1168,12 +1215,12 @@ void PlayScene::LoadSave()
     }
     if (!saved)
     {
-        hub = new Hub;
+        hub = new Hub(this);
         hub->name = HUB;
-        hub->pos.i = 7;
-        hub->pos.j = 12;
+        hub->pos.i = 75;
+        hub->pos.j = 120;
         hub->direction = UP;
-        GridVec hubvec(12, 7);
+        GridVec hubvec(75, 120);
         Building *smallhub = hub;
         map.SetBuilding(hubvec, smallhub, hub->direction, hub->name);
         buildings.push_back(smallhub);
@@ -1288,18 +1335,22 @@ void PlayScene::LoadSave()
     case 1:
         *hub->need_shape_name = CYCLE;
         hub->need = NEED_CYCLE;
+        aim_img.load(AIM1_PATH);
         break;
     case 2:
         *hub->need_shape_name = RECT;
         hub->need = NEED_RECT;
+        aim_img.load(AIM2_PATH);
         break;
     case 3:
         *hub->need_shape_name = LEFT_CYCLE;
         hub->need = NEED_LEFT_CYCLE;
+        aim_img.load(AIM3_PATH);
         break;
     case 4:
         *hub->need_shape_name = RIGHT_CYCLE;
         hub->need = NEED_RIGHT_CYCLE;
+        aim_img.load(AIM4_PATH);
         break;
     default:
         break;
@@ -1336,18 +1387,119 @@ void PlayScene::setScaleFactor(double fac){
     *Qpointmapy = scroll_offset.y();
     update();
 }
-void PlayScene::wheelEvent(QWheelEvent *event){
+void PlayScene::wheelEvent(QWheelEvent *event) {
+    // 获取当前滚轮的滚动值
     int delta = event->angleDelta().y();
     double scaleFactorStep = 0.1;
+
+    // 获取当前视口的中心位置
+    int viewCenterX = (WIDGET_WIDTH / 2) / scaleFactor - scroll_offset.x();
+    int viewCenterY = (WIDGET_HEIGHT / 2) / scaleFactor - scroll_offset.y();
+
+    // 根据滚轮方向增加或减少缩放因子
     if (delta > 0) {
         setScaleFactor(scaleFactor + scaleFactorStep);
     } else {
         setScaleFactor(scaleFactor - scaleFactorStep);
     }
-    if (scaleFactor < 0.8) {
-        setScaleFactor(0.8);
+
+    // 限制缩放范围
+    if (scaleFactor < 0.4) {
+        setScaleFactor(0.4);
     } else if (scaleFactor > 2.0) {
         setScaleFactor(2.0);
     }
     *scaleFcator_map = scaleFactor;
+
+    // 重新调整偏移量，确保视口的中心点不变
+    scroll_offset.setX((WIDGET_WIDTH / 2) / scaleFactor - viewCenterX);
+    scroll_offset.setY((WIDGET_HEIGHT / 2) / scaleFactor - viewCenterY);
+
+    // 刷新视图
+    update();
 }
+void PlayScene::initializeView() {
+    // 计算地图的宽度和高度（格子数 * 单个格子的大小）
+    int mapWidth = 240 * 50;  // 地图的总宽度
+    int mapHeight = 150 * 50; // 地图的总高度
+
+    // 计算地图中心点（地图的中点）
+    int mapCenterX = mapWidth / 2;
+    int mapCenterY = mapHeight / 2;
+
+    // 计算窗口的中心位置
+    int windowCenterX = WIDGET_WIDTH / 2;
+    int windowCenterY = WIDGET_HEIGHT / 2;
+
+    // 设置 scroll_offset，使得窗口中心对齐到地图中心
+    scroll_offset.setX(windowCenterX - (mapCenterX / scaleFactor));
+    scroll_offset.setY(windowCenterY - (mapCenterY / scaleFactor));
+
+    // 刷新视图
+    update();
+}
+void PlayScene::outputCurrentShape() {
+    switch (current_received_shape) {
+    case CYCLE:
+        std::cout << "Current received shape: CYCLE" << std::endl;
+        break;
+    case RECT:
+        std::cout << "Current received shape: RECT" << std::endl;
+        break;
+    case LEFT_CYCLE:
+        std::cout << "Current received shape: LEFT CYCLE" << std::endl;
+        break;
+    case RIGHT_CYCLE:
+        std::cout << "Current received shape: RIGHT CYCLE" << std::endl;
+        break;
+    case NONE:
+        std::cout << "Current received shape: NONE" << std::endl;
+        break;
+    default:
+        std::cout << "Current received shape: UNKNOWN" << std::endl;
+        break;
+    }
+}
+void PlayScene::draw_current_shape() {
+    QPainter shapePainter(this);
+
+    // 固定在窗口右上角，设定绘制位置 (右上角的偏移)
+    int x = this->width() - 200;  // 距离窗口右边缘 200 像素
+    int y = 50;
+
+    // 绘制接收到的物体数量
+    shapePainter.setFont(QFont("Arial", 20));  // 设置字体大小
+    shapePainter.drawText(x, y, "Objects in 10s: " + QString::number(hub->received_objects_last_second));
+
+    // 在同一位置下方显示 current_received_shape
+    y += 30;  // 调整y坐标，防止文字重叠
+    switch (current_received_shape) {
+    case CYCLE:
+        shapePainter.drawText(x, y, "CYCLE");
+        break;
+    case RECT:
+        shapePainter.drawText(x, y, "RECT");
+        break;
+    case LEFT_CYCLE:
+        shapePainter.drawText(x, y, "LEFT CYCLE");
+        break;
+    case RIGHT_CYCLE:
+        shapePainter.drawText(x, y, "RIGHT CYCLE");
+        break;
+    default:
+        shapePainter.drawText(x, y, "NONE");
+        break;
+    }
+}
+
+void PlayScene::checkResetReceivedShape() {
+    // 如果已经超过 10 秒没有接收到物体
+    if (hub && hub->shape_update_timer.elapsed() >= 10000) {
+        if (current_received_shape != NONE) {
+            std::cout << "No objects received in the last 10 seconds, resetting shape to NONE." << std::endl;
+            current_received_shape = NONE;
+            hub->resetReceiveCounter();  // 重置接收计数器
+        }
+    }
+}
+

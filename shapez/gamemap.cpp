@@ -51,22 +51,173 @@ int* GameMap::getResource() {
 }
 void GameMap::FirstMap()
 {
+    int centerX = 75;  // 中心行
+    int centerY = 120; // 中心列
     // 初始化资源
-    Resource[11][3] = CYCLE;
-    Resource[12][2] = CYCLE;
-    Resource[12][3] = CYCLE;
-    Resource[13][2] = CYCLE;
-    Resource[13][3] = CYCLE;
-    Resource[13][4] = CYCLE;
-    Resource[14][3] = CYCLE;
-    Resource[2][20] = RECT;
-    Resource[2][21] = RECT;
-    Resource[2][22] = RECT;
-    Resource[3][19] = RECT;
-    Resource[3][20] = RECT;
-    Resource[3][21] = RECT;
-    Resource[4][20] = RECT;
-    Resource[4][21] = RECT;
+    // 设置距离中心 10-20 个格子距离的 CYCLE 资源
+    Resource[centerX - 15][centerY - 10] = CYCLE;
+    Resource[centerX - 15][centerY - 9] = CYCLE;
+    Resource[centerX - 15][centerY - 8] = CYCLE;
+    Resource[centerX - 16][centerY - 9] = CYCLE;
+    Resource[centerX - 16][centerY - 8] = CYCLE;
+    Resource[centerX - 17][centerY - 8] = CYCLE;
+    Resource[centerX - 14][centerY - 10] = CYCLE;
+    Resource[centerX - 14][centerY - 9] = CYCLE;
+    Resource[centerX - 13][centerY - 10] = CYCLE;
+    Resource[centerX - 14][centerY - 8] = CYCLE;
+    Resource[centerX - 17][centerY - 9] = CYCLE;
+    Resource[centerX - 16][centerY - 10] = CYCLE;
+    Resource[centerX - 15][centerY - 7] = CYCLE;
+    Resource[centerX - 15][centerY - 6] = CYCLE;
+    Resource[centerX - 16][centerY - 7] = CYCLE;
+    Resource[centerX - 17][centerY - 7] = CYCLE;
+    Resource[centerX - 14][centerY - 7] = CYCLE;
+    Resource[centerX - 13][centerY - 9] = CYCLE;
+    Resource[centerX - 12][centerY - 10] = CYCLE;
+    Resource[centerX - 13][centerY - 8] = CYCLE;
+    Resource[centerX - 12][centerY - 8] = CYCLE;
+    Resource[centerX - 11][centerY - 9] = CYCLE;
+    Resource[centerX - 10][centerY - 10] = CYCLE;
+    Resource[centerX - 12][centerY - 9] = CYCLE;
+    Resource[centerX - 17][centerY - 6] = CYCLE;
+    Resource[centerX - 16][centerY - 6] = CYCLE;
+    Resource[centerX - 15][centerY - 5] = CYCLE;
+    Resource[centerX - 14][centerY - 6] = CYCLE;
+    Resource[centerX - 13][centerY - 7] = CYCLE;
+    Resource[centerX - 13][centerY - 6] = CYCLE;
+    Resource[centerX - 12][centerY - 7] = CYCLE;
+    Resource[centerX - 16][centerY - 5] = CYCLE;
+    Resource[centerX - 17][centerY - 5] = CYCLE;
+    Resource[centerX - 18][centerY - 5] = CYCLE;
+    Resource[centerX - 19][centerY - 6] = CYCLE;
+    Resource[centerX - 20][centerY - 6] = CYCLE;
+    Resource[centerX - 19][centerY - 7] = CYCLE;
+    Resource[centerX - 18][centerY - 7] = CYCLE;
+    Resource[centerX - 19][centerY - 8] = CYCLE;
+    Resource[centerX - 20][centerY - 7] = CYCLE;
+    Resource[centerX - 21][centerY - 7] = CYCLE;
+    Resource[centerX - 20][centerY - 8] = CYCLE;
+    Resource[centerX - 19][centerY - 9] = CYCLE;
+    Resource[centerX - 18][centerY - 10] = CYCLE;
+    Resource[centerX - 17][centerY - 11] = CYCLE;
+    Resource[centerX - 16][centerY - 11] = CYCLE;
+
+    // 新增的 CYCLE 资源
+    Resource[centerX - 10][centerY + 15] = CYCLE;
+    Resource[centerX - 11][centerY + 14] = CYCLE;
+    Resource[centerX - 12][centerY + 13] = CYCLE;
+    Resource[centerX - 13][centerY + 12] = CYCLE;
+    Resource[centerX - 14][centerY + 11] = CYCLE;
+    Resource[centerX - 15][centerY + 10] = CYCLE;
+    Resource[centerX - 16][centerY + 9] = CYCLE;
+    Resource[centerX - 17][centerY + 8] = CYCLE;
+    Resource[centerX - 18][centerY + 7] = CYCLE;
+    Resource[centerX - 10][centerY - 15] = CYCLE;
+    Resource[centerX - 11][centerY - 14] = CYCLE;
+    Resource[centerX - 12][centerY - 13] = CYCLE;
+    Resource[centerX - 13][centerY - 12] = CYCLE;
+    Resource[centerX - 14][centerY - 11] = CYCLE;
+    Resource[centerX - 15][centerY - 10] = CYCLE;
+    Resource[centerX - 16][centerY - 9] = CYCLE;
+
+    // 设置特定位置的 RECT 资源，调整到地图中心 10-20 个格子距离
+    Resource[centerX - 63][centerY - 100] = RECT;
+    Resource[centerX - 63][centerY - 99] = RECT;
+    Resource[centerX - 63][centerY - 98] = RECT;
+    Resource[centerX - 62][centerY - 101] = RECT;
+    Resource[centerX - 62][centerY - 100] = RECT;
+    Resource[centerX - 62][centerY - 99] = RECT;
+    Resource[centerX - 61][centerY - 100] = RECT;
+    Resource[centerX - 61][centerY - 99] = RECT;
+
+    // 添加其他区域资源，调整到地图中心 10-20 格子的距离
+    Resource[centerX - 15][centerY + 20] = CYCLE;
+    Resource[centerX - 14][centerY + 20] = CYCLE;
+    Resource[centerX - 13][centerY + 20] = CYCLE;
+    Resource[centerX - 12][centerY + 21] = CYCLE;
+    Resource[centerX - 12][centerY + 22] = CYCLE;
+    Resource[centerX - 11][centerY + 20] = CYCLE;
+    Resource[centerX - 10][centerY + 20] = CYCLE;
+    Resource[centerX - 9][centerY + 20] = CYCLE;
+    Resource[centerX - 8][centerY + 20] = CYCLE;
+    Resource[centerX - 15][centerY + 21] = CYCLE;
+    Resource[centerX - 15][centerY + 22] = CYCLE;
+    Resource[centerX - 15][centerY + 23] = CYCLE;
+    Resource[centerX - 15][centerY + 24] = CYCLE;
+    Resource[centerX - 14][centerY + 24] = CYCLE;
+    Resource[centerX - 13][centerY + 24] = CYCLE;
+    Resource[centerX - 12][centerY + 24] = CYCLE;
+    Resource[centerX - 11][centerY + 24] = CYCLE;
+
+    // 新增的 RECT 资源
+    Resource[centerX + 35][centerY - 20] = RECT;
+    Resource[centerX + 36][centerY - 20] = RECT;
+    Resource[centerX + 37][centerY - 21] = RECT;
+    Resource[centerX + 38][centerY - 22] = RECT;
+    Resource[centerX + 39][centerY - 23] = RECT;
+    Resource[centerX + 40][centerY - 24] = RECT;
+    Resource[centerX + 41][centerY - 25] = RECT;
+
+    // 再设置一个区域
+    Resource[centerX + 15][centerY + 10] = RECT;
+    Resource[centerX + 16][centerY + 10] = RECT;
+    Resource[centerX + 17][centerY + 10] = RECT;
+    Resource[centerX + 18][centerY + 11] = RECT;
+    Resource[centerX + 19][centerY + 11] = RECT;
+    Resource[centerX + 20][centerY + 10] = RECT;
+    Resource[centerX + 15][centerY + 11] = RECT;
+    Resource[centerX + 15][centerY + 12] = RECT;
+    Resource[centerX + 15][centerY + 13] = RECT;
+    Resource[centerX + 16][centerY + 12] = RECT;
+    Resource[centerX + 17][centerY + 12] = RECT;
+    Resource[centerX + 18][centerY + 12] = RECT;
+    Resource[centerX + 19][centerY + 13] = RECT;
+    Resource[centerX + 20][centerY + 12] = RECT;
+
+    // 设置更多区域，调整到地图中心 10-20 格子的距离
+    Resource[centerX + 25][centerY - 20] = CYCLE;
+    Resource[centerX + 26][centerY - 20] = CYCLE;
+    Resource[centerX + 27][centerY - 19] = CYCLE;
+    Resource[centerX + 28][centerY - 18] = CYCLE;
+    Resource[centerX + 29][centerY - 17] = CYCLE;
+    Resource[centerX + 30][centerY - 16] = CYCLE;
+    Resource[centerX + 31][centerY - 15] = CYCLE;
+
+    Resource[centerX - 5][centerY - 30] = RECT;
+    Resource[centerX - 4][centerY - 30] = RECT;
+    Resource[centerX - 3][centerY - 31] = RECT;
+    Resource[centerX - 2][centerY - 32] = RECT;
+    Resource[centerX - 1][centerY - 33] = RECT;
+    Resource[centerX][centerY - 34] = RECT;
+    Resource[centerX + 1][centerY - 35] = RECT;
+    // 添加更多距离中心 5-10 格子的资源块
+    Resource[centerX + 5][centerY + 5] = CYCLE;
+    Resource[centerX + 6][centerY + 5] = CYCLE;
+    Resource[centerX + 7][centerY + 6] = CYCLE;
+    Resource[centerX + 8][centerY + 7] = CYCLE;
+    Resource[centerX + 9][centerY + 8] = CYCLE;
+    Resource[centerX + 10][centerY + 9] = CYCLE;
+    Resource[centerX + 11][centerY + 10] = CYCLE;
+    Resource[centerX - 5][centerY - 5] = CYCLE;
+    Resource[centerX - 6][centerY - 5] = CYCLE;
+    Resource[centerX - 7][centerY - 6] = CYCLE;
+    Resource[centerX - 8][centerY - 7] = CYCLE;
+    Resource[centerX - 9][centerY - 8] = CYCLE;
+    Resource[centerX - 10][centerY - 9] = CYCLE;
+    Resource[centerX - 11][centerY - 10] = CYCLE;
+
+    Resource[centerX + 6][centerY - 6] = RECT;
+    Resource[centerX + 7][centerY - 7] = RECT;
+    Resource[centerX + 8][centerY - 8] = RECT;
+    Resource[centerX + 9][centerY - 9] = RECT;
+    Resource[centerX + 10][centerY - 10] = RECT;
+
+    Resource[centerX - 6][centerY + 6] = RECT;
+    Resource[centerX - 7][centerY + 7] = RECT;
+    Resource[centerX - 8][centerY + 8] = RECT;
+    Resource[centerX - 9][centerY + 9] = RECT;
+    Resource[centerX - 10][centerY + 10] = RECT;
+
     Resource[1][3] = BARRIER;
     Resource[2][4] = BARRIER;
     Resource[4][2] = BARRIER;

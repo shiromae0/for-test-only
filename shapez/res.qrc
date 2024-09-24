@@ -75,5 +75,9 @@
         <file>res/belt_blue_S_D.png</file>
         <file>res/belt_blue_W_A.png</file>
         <file>res/help.png</file>
+	<file>res/aim1.png</file>
+	<file>res/aim2.png</file>
+	<file>res/aim3.png</file>
+	<file>res/aim4.png</file>
     </qresource>
 </RCC>

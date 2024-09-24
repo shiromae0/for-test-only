@@ -14,7 +14,7 @@ RoundScene::RoundScene()
     confirm.setParent(this);
     confirm.setFixedSize(200, 100);
     confirm.setStyleSheet("QPushButton{image: url(:/res/confirm.png)}");
-}
+    }
 
 void RoundScene::paintEvent(QPaintEvent *e)
 {

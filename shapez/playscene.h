@@ -11,8 +11,11 @@
 #include "GameMap.h"
 #include "Hub.h"
 #include <QTime>
-
-
+#include "RoundScene.h"
+#include <QMovie>
+#include <QLabel>
+#include <QList>
+#include <QElapsedTimer> // 新增引入
 class PlayScene : public Scene
 {
 public:
@@ -20,6 +23,11 @@ public:
      * \brief  初始化像素画、按钮，加载未增加矿地的地图，当前未放置任何建筑，未局部升级建筑，关卡为1，计时器，工厂运转，实时捕获鼠标位置
      */
     PlayScene();
+
+    QList<QMovie*> belt_movies;   // 用于存储 QMovie 对象的 QList
+    QList<QLabel*> belt_labels;   // 用于存储 QLabel 对象的 QList
+
+
     /**
      * \brief  计时器，画面更新频率
      */
@@ -92,6 +100,7 @@ public:
      * \brief  右键拖动删除
      */
     bool right_button_pressed;
+    int current_received_shape;
 
     double scaleFactor = 1.0;
     double *scaleFcator_map;
@@ -172,6 +181,7 @@ public:
     QPixmap rect_img;
     QPixmap left_cycle_img;
     QPixmap right_cycle_img;
+    QPixmap aim_img;
 
     int last_mouse_x;
     int last_mouse_y;
@@ -297,9 +307,19 @@ public:
     void blockInitializer();
     void setScaleFactor(double fac);
     void wheelEvent(QWheelEvent *event);
+
     void CreateMapFile();
 
-
+    void initializeView();
+    QElapsedTimer elapsedTimer;  // 新增一个计时器
+    void updateHubStats();  // 新增一个函数，用于更新Hub接收物体的统计
+    QTimer *shape_output_timer;
+    void outputCurrentShape();
+    void draw_current_shape();
+    void checkResetReceivedShape();
+    int total_objects_last_ten_seconds;  // 记录过去十秒内收到的物体总数
+    QVector<int> objects_per_second;     // 记录每秒收到的物体数量
+    QTimer *ten_second_timer;
 };
 
 #endif // PLAYSCENE_H
