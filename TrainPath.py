@@ -127,7 +127,7 @@ resource = np.array([
 ])
 build = np.full((15, 24), -1)
 build[7:9, 12:14] = 21  # 在第8-9行，第13-14列设置为21
-
+build[0,0] = 5
         
 class GridWorld:
     def __init__(self, start, end, resource_map, build_map):
@@ -155,13 +155,13 @@ class GridWorld:
     def step(self, action):
         x, y = self.position
         old_position = self.position
-        if action == 0 and x > 0 and self.resource_map[x-1][y] == 0 and self.build_map[x-1][y] == -1:  # move up
+        if action == 0 and x > 0 and self.resource_map[x-1][y] == 0 and (self.build_map[x-1][y] == -1 or self.build_map[x-1][y] == 21):  # move up
             x -= 1
-        elif action == 1 and x < self.shape[0] - 1 and self.resource_map[x + 1][y] == 0 and self.build_map[x + 1][y] == -1:  # move down
+        elif action == 1 and x < self.shape[0] - 1 and self.resource_map[x + 1][y] == 0 and (self.build_map[x + 1][y] == -1 or self.build_map[x + 1][y] == 21):  # move down
             x += 1
-        elif action == 2 and y > 0 and self.resource_map[x][y - 1] == 0 and self.build_map[x][y - 1] == -1:  # move left
+        elif action == 2 and y > 0 and self.resource_map[x][y - 1] == 0 and (self.build_map[x][y - 1] == -1 or self.build_map[x][y - 1] == 21):  # move left
             y -= 1
-        elif action == 3 and y < self.shape[1] - 1 and self.resource_map[x][y + 1] == 0 and self.build_map[x][y + 1] == -1:  # move right
+        elif action == 3 and y < self.shape[1] - 1 and self.resource_map[x][y + 1] == 0 and (self.build_map[x][y + 1] == -1 or self.build_map[x][y + 1] == 21):  # move right
             y += 1
 
         self.position = (x, y)
@@ -207,17 +207,21 @@ def train(start,end,res,build):
     model = DQN()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     memory = deque(maxlen=1000)
-    episodes = 500
+    episodes = 100
     gamma = 0.9
     epsilon = 1.0 # 开始时随机探索
     epsilon_decay = 0.995
     min_epsilon = 0.01
+    done_flag = False
     for episode in range(episodes):
         state = env.reset()
         state = torch.FloatTensor(state).unsqueeze(0)
         total_reward = 0
         done = False
-        while not done:
+        max_steps = 5000
+        step = 0
+        while not done and step <max_steps:
+            step+=1
             if random.random() < epsilon:
                 action = random.randint(0, 3)
             else:
@@ -225,11 +229,16 @@ def train(start,end,res,build):
                     q_values = model(state)
                     action = torch.argmax(q_values).item()
             next_state, reward, done = env.step(action)
+            if done == True:
+                done_flag = True
             next_state = torch.FloatTensor(next_state).unsqueeze(0)
             memory.append((state, action, reward, next_state, done))
             state = next_state
             total_reward += reward
-
+            if step >= max_steps and done_flag == False:
+                return False
+            else:
+                print(step)
             if len(memory) > 20:
                 batch = random.sample(memory, 20)
                 batch_state, batch_action, batch_reward, batch_next_state, batch_done = zip(*batch)
@@ -250,8 +259,9 @@ def train(start,end,res,build):
                 optimizer.step()
 
             if done:
-
-                print(f'Agent Path: {path}')
                 epsilon = max(min_epsilon, epsilon * epsilon_decay)
                 print(f'Episode {episode}: Total reward {total_reward}, Epsilon {epsilon}, Loss {loss.item()}')
     return env.get_path()
+
+
+print(train((5,5),(10,3),resource,build))

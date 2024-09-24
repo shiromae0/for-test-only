@@ -94,10 +94,12 @@ public:
     bool right_button_pressed;
 
     double scaleFactor = 1.0;
+    double *scaleFcator_map;
     bool dragging = false;
     QPoint start_pos;
     QPoint scroll_offset = QPoint(0,0);
-
+    int *Qpointmapx;
+    int *Qpointmapy;
     /**************音乐***************/
     QMediaPlayer *player;
     QAudioOutput *audioOutput;
@@ -177,16 +179,6 @@ public:
 
     QPoint reserved_start_pos;
     QPoint mouseReleasePosition = QPoint(0,0);
-    int absolute_i_offset = 0;
-    int absolute_j_offset = 0;
-    int related_i_offset = 0;
-    int related_j_offset = 0;
-    int coordinate_error_x = 0;
-    int coordinate_error_y = 0;
-    bool first_drag = false;
-    int pixel_offset_x = 0;
-    int pixel_offset_y = 0;
-
     int mapcell [24][16];
 
     /**
@@ -305,6 +297,7 @@ public:
     void blockInitializer();
     void setScaleFactor(double fac);
     void wheelEvent(QWheelEvent *event);
+    void CreateMapFile();
 
 
 };
