@@ -1427,7 +1427,6 @@ void PlayScene::checkResetReceivedShape() {
     // 如果已经超过 10 秒没有接收到物体
     if (hub && hub->shape_update_timer.elapsed() >= 10000) {
         if (current_received_shape != NONE) {
-            std::cout << "No objects received in the last 10 seconds, resetting shape to NONE." << std::endl;
             current_received_shape = NONE;
             hub->resetReceiveCounter();  // 重置接收计数器
         }
