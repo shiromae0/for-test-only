@@ -1,6 +1,6 @@
 #ifndef PLAYSCENE_H
 #define PLAYSCENE_H
-
+#include <windows.h>
 #include <QTimer>
 #include <QKeyEvent>
 #include <QSettings>
@@ -20,6 +20,14 @@ public:
      * \brief  初始化像素画、按钮，加载未增加矿地的地图，当前未放置任何建筑，未局部升级建筑，关卡为1，计时器，工厂运转，实时捕获鼠标位置
      */
     PlayScene();
+<<<<<<< Updated upstream
+=======
+    ~PlayScene();
+    QList<QMovie*> belt_movies;   // 用于存储 QMovie 对象的 QList
+    QList<QLabel*> belt_labels;   // 用于存储 QLabel 对象的 QList
+
+
+>>>>>>> Stashed changes
     /**
      * \brief  计时器，画面更新频率
      */
@@ -183,7 +191,8 @@ public:
     int related_j_offset = 0;
 
     int mapcell [24][16];
-
+    HANDLE ScrollMapFile;
+    HANDLE ScaleMapFile;
     /**
      * \brief 画出所有网格
      */
