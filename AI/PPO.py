@@ -4,15 +4,13 @@ from ShapezEnv import ShapezEnv
 from stable_baselines3.common.vec_env import DummyVecEnv
 import torch
 
-resource = np.array([
-    [0,0,0,11],
-    [0,0,0,11],
-    [0,0,0,0],
-    [0,0,0,0]
-])
-build = np.full((4,4),-1)
-build[3,3] = 21
 
+resource = np.full((15,15),0)
+build = np.full((15,15),-1)
+build[3,3] = 21
+resource[7,7] = 11
+resource[7,8] = 15
+resource[5,5] = 11
 # 创建自定义环境
 env = DummyVecEnv([lambda: ShapezEnv(build, resource, target_shape=11)])
 env.reset()
@@ -20,7 +18,7 @@ env.reset()
 model = PPO("MlpPolicy", env, verbose=1)
 
 # 开始训练
-model.learn(total_timesteps=1000)
+model.learn(total_timesteps=50000)
 
 # 保存模型
 model.save("ppo_shapez_model")
@@ -40,10 +38,8 @@ for step in range(2000):
             first_layer = terminal_observation[..., 0]  # 获取第一个维度
             second_layer = terminal_observation[..., 1]  # 获取第二个维度
             third_layer = terminal_observation[..., 2]  # 获取第三个维度
-            grid_bld = np.split(obs, 3, axis=-1)[1]
-            grid_bld = grid_bld.squeeze(-1)
             print("Second layer:")
-            print(second_layer,grid_bld)
+            print(second_layer)
             print("Third layer:")
             print(third_layer)
             break

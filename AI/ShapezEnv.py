@@ -52,7 +52,7 @@ class Conveyor(Machine):
 
 class ShapezEnv(gymnasium.Env):
     def __init__(self, build, res, target_shape):
-        self.max_step = 20
+        self.max_step = 500
         self.steps = 0
         self.original_bld = np.array(build)
 
@@ -197,21 +197,25 @@ class ShapezEnv(gymnasium.Env):
         for position, machine in self.machines.items():
             if isinstance(machine, Miner):  # 找到矿机，开始从资源生成点追踪
                 current_position = position
+                current_machine = machine
                 current_shape = self.grid_rsc[position]  # 获取资源的初始形状
+                positions = []
                 while True:
-                    # 获取下一个位置，根据传送带的方向前进
-                    if current_position == self._get_next_position(current_position, machine.direction):
+                    if current_position in positions:
                         return False
-                    next_position = self._get_next_position(current_position, machine.direction)
-
+                    positions.append(current_position)
+                    # 获取下一个位置，根据传送带的方向前进
+                    if current_position == self._get_next_position(current_position, current_machine.direction):
+                        return False
+                    next_position = self._get_next_position(current_position, current_machine.direction)
                     #print(current_position,next_position,machine.direction,machine.type)
                     # 检查下一个位置是否有机器
                     if next_position in self.machines:
-                        next_machine = self.machines[next_position]
-                        if isinstance(next_machine, Conveyor):
+                        current_machine = self.machines[next_position]
+                        if isinstance(current_machine, Conveyor):
                             # 传送带：继续前进
                             current_position = next_position
-                        elif isinstance(next_machine, Hub):
+                        elif isinstance(current_machine, Hub):
                             # 检查资源是否到达 hub，并且形状是否符合目标
                             if current_shape == self.target_shape:
                                # print(f"资源从 {position} 成功到达 hub，形状符合目标")
@@ -328,14 +332,36 @@ class ShapezEnv(gymnasium.Env):
             done = False# 或者也可以直接标记为 done
             return self._get_obs(), reward, done, truncated, info
         CanPlace,reward = self.handle_place(machine_type,(x,y),direction)
-        if self.check_goal():
+        if self.check_goal() == True:
             done = True  # 如果达到目标状态，标记为完成
-            reward += 0x3f3f3f3f
-            print("done")
+            reward += 200
+            for key,machine in self.machines.items():
+                print(key,machine.direction)
         # 返回观察值、奖励、是否结束、是否被截断和信息
         return self._get_obs(), reward, done, truncated,info
 
-
-
-
-
+resource = np.array([
+    [0,0,0,11],
+    [0,0,0,11],
+    [0,0,0,0],
+    [0,0,0,0]
+])
+build = np.array([[-1, -1, 31, 22],
+                   [-1, -1, -1, 31],
+                   [31, -1, 31, 31],
+                   [31, -1, -1, 21]])
+dir  = np.array([[-1, -1,  4,  2],
+                   [-1, -1, -1,  1],
+                   [ 1, -1,  4,  3],
+                   [ 2, -1, -1, -1]])
+# env = ShapezEnv(build, resource, target_shape=11)
+# env.reset()
+# env.grid_direct = dir
+# env.machines[0,3] = Miner((0,3),2)
+# env.machines[0,2] = Conveyor((0,2),4)
+# env.machines[1,3] = Conveyor((1,3),1)
+# env.machines[2,2] = Conveyor((2,2),4)
+# env.machines[2,3] = Conveyor((2,3),3)
+# env.machines[2,0] = Conveyor((2,0),1)
+# env.machines[3,0] = Conveyor((3,0),2)
+# print(env.check_goal())
