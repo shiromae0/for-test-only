@@ -52,7 +52,7 @@ class Conveyor(Machine):
 
 class ShapezEnv(gymnasium.Env):
     def __init__(self, build, res, target_shape):
-        self.max_step = 1000000
+        self.max_step = 20
         self.steps = 0
         self.original_bld = np.array(build)
 
@@ -90,10 +90,6 @@ class ShapezEnv(gymnasium.Env):
         """
         返回当前环境的观察状态，将 grid_rsc、grid_bld 和 grid_direct 叠加在一起。
         """
-        print(self.grid_rsc.shape)
-        print(self.grid_bld.shape)
-        print(self.grid_direct.shape)
-
         return np.stack((self.grid_rsc, self.grid_bld, self.grid_direct), axis=-1)
 
     def CanPlaceConveyor(self, position: Tuple[int, int], direction: int) -> bool:
@@ -115,28 +111,28 @@ class ShapezEnv(gymnasium.Env):
             return True
         elif direction == 5 or direction == 6:
             pre_pos = (x + 1, y)
-            if pre_pos in self.machines and isinstance(self.machines[pre_pos], Conveyor):
+            if pre_pos in self.machines and isinstance(self.machines[pre_pos], Conveyor) and x + 1 < self.grid_rsc.shape[0]:
                 next_conveyor_direction = self.machines[pre_pos].direction
                 if next_conveyor_direction in [1, 9, 11]:
                     return True
             return False
         elif direction == 7 or direction == 8:
             pre_pos = (x - 1, y)
-            if pre_pos in self.machines and isinstance(self.machines[pre_pos], Conveyor):
+            if pre_pos in self.machines and isinstance(self.machines[pre_pos], Conveyor) and x - 1 >= 0 :
                 next_conveyor_direction = self.machines[pre_pos].direction
                 if next_conveyor_direction in [2, 10, 12]:
                     return True
             return False
         elif direction == 9 or direction == 10:
             pre_pos = (x , y + 1)
-            if pre_pos in self.machines and isinstance(self.machines[pre_pos], Conveyor):
+            if pre_pos in self.machines and isinstance(self.machines[pre_pos], Conveyor) and y + 1 < self.grid_rsc.shape[1]:
                 next_conveyor_direction = self.machines[pre_pos].direction
                 if next_conveyor_direction in [3,5,7]:
                     return True
             return False
         elif direction == 11 or direction == 12:
             pre_pos = (x , y - 1)
-            if pre_pos in self.machines and isinstance(self.machines[pre_pos], Conveyor):
+            if pre_pos in self.machines and isinstance(self.machines[pre_pos], Conveyor) and y-1 >= 0:
                 next_conveyor_direction = self.machines[pre_pos].direction
                 if next_conveyor_direction in [4,6,8]:
                     return True
@@ -151,7 +147,7 @@ class ShapezEnv(gymnasium.Env):
             return True
 
     def CanRemove(self,position):
-        if self.grid_bld[position] != -1:
+        if self.grid_bld[position] != -1 and self.grid_bld[position] != 21:
             return True
         return False
     def handle_place(self,machine_type,position,direction):
@@ -161,8 +157,7 @@ class ShapezEnv(gymnasium.Env):
         #param:direction:the machine's direction
         #return:Canplace: to show if we can handle the action successfully
         #return:reward:the reward of the action
-
-
+        new_machine = Machine
         Canplace = False
         reward = 0
         if machine_type == 0: #action is remove
@@ -175,19 +170,23 @@ class ShapezEnv(gymnasium.Env):
                 reward = -50
             return Canplace,reward
         else:
-            if self.grid_bld[position] != -1: #cannot place the building if the position already exist a building
+            if position in self.machines: #cannot place the building if the position already exist a building
                 Canplace = False
                 reward = -50
                 return Canplace,reward
             if machine_type == 31:
                 Canplace = self.CanPlaceConveyor(position, direction)
-                self.machines[position] = Conveyor(position,direction)
+                new_machine = Conveyor(position,direction)
             if machine_type == 22:
                 Canplace = self.CanPlaceMiner(position)
-                self.machines[position] = Miner(position,direction)
+                new_machine = Miner(position,direction)
+        if Canplace:
+            self.machines[position] = new_machine
+            self.grid_bld[position] = machine_type
+            self.grid_direct[position] = direction
             reward = 5
-        self.grid_bld[position] = machine_type
-        self.grid_direct = direction
+        else:
+            reward = -50
         return Canplace,reward
 
 
@@ -201,10 +200,10 @@ class ShapezEnv(gymnasium.Env):
                 current_shape = self.grid_rsc[position]  # 获取资源的初始形状
                 while True:
                     # 获取下一个位置，根据传送带的方向前进
-
+                    if current_position == self._get_next_position(current_position, machine.direction):
+                        return False
                     next_position = self._get_next_position(current_position, machine.direction)
-                    if next_position == (3,3) and  next_position in self.machines:
-                        print(type(self.machines[next_position]))
+
                     #print(current_position,next_position,machine.direction,machine.type)
                     # 检查下一个位置是否有机器
                     if next_position in self.machines:
@@ -240,13 +239,12 @@ class ShapezEnv(gymnasium.Env):
                     self.processed_resource += 1
 
     def reset(self, *, seed: Optional[int] = None, options: Optional[dict] = None) -> Tuple[np.ndarray, dict]:
-        # 通过 seed 控制环境的随机性
         if seed is not None:
             np.random.seed(seed)
-        # 处理 options 中的额外初始化选项
         if options is not None:
             pass
-        # 重置环境状态
+
+        # reset the env
         self.steps = 0
         self.grid_bld = self.original_bld.copy()  # 确保不会修改原始建筑物矩阵
         self.grid_direct = np.full(self.grid_bld.shape, -1)  # 重置 grid_direct
@@ -284,15 +282,14 @@ class ShapezEnv(gymnasium.Env):
            #define RIGHT_DOWN 12
            """
         x, y = position
-        if direction == 1 or direction == 9 or direction == 10:  # 向上
+        if (direction == 1 or direction == 9 or direction == 10) and x - 1 >= 0:  # 向上
             return (x - 1, y)
-        elif direction == 4 or direction == 6 or direction == 8:  # 向右
+        elif (direction == 4 or direction == 6 or direction == 8) and y + 1 < self.grid_rsc.shape[1]:  # 向右
             return (x, y + 1)
-        elif direction == 2 or direction == 11 or direction == 12:  # 向下
+        elif (direction == 2 or direction == 11 or direction == 12) and x + 1 < self.grid_rsc.shape[0]:  # 向下
             return (x + 1, y)
-        elif direction == 3 or direction == 5 or direction == 7:  # 向左
+        elif (direction == 3 or direction == 5 or direction == 7) and y - 1 >= 0:  # 向左
             return (x, y - 1)
-        print("dire = ",direction)
         return position
 
     def _create_valid_action_space(self):
@@ -317,11 +314,10 @@ class ShapezEnv(gymnasium.Env):
         return valid_actions
 
     def step(self, action):
-        if self.steps%1000==0:
-            print(self.steps)
         self.steps += 1
         action_idx, x, y = action
         machine_type, direction = self.valid_actions[action_idx]  # 获取机器类型和方向
+        #print(machine_type,direction,x,y)
         reward = 0.0
         done = False
         truncated = False  # 添加 truncated 标记
@@ -329,9 +325,9 @@ class ShapezEnv(gymnasium.Env):
         # 如果达到最大步数，标记为 truncated
         if self.steps >= self.max_step:
             truncated = True
-            done = True  # 或者也可以直接标记为 done
-        self.handle_place(machine_type,(x,y),direction)
-
+            done = False# 或者也可以直接标记为 done
+            return self._get_obs(), reward, done, truncated, info
+        CanPlace,reward = self.handle_place(machine_type,(x,y),direction)
         if self.check_goal():
             done = True  # 如果达到目标状态，标记为完成
             reward += 0x3f3f3f3f
