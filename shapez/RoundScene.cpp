@@ -49,6 +49,12 @@ void RoundScene::paintEvent(QPaintEvent *e)
         painter.setFont(QFont("楷体", 45, QFont::Bold));
         painter.drawText(WIDGET_WIDTH / 2 - 50, WIDGET_HEIGHT / 2 + 100, QString("*50"));
         break;
+    case 5:
+        painter.setFont(QFont("楷体", 55, QFont::Bold));
+        painter.drawText(WIDGET_WIDTH / 2 - 110, WIDGET_HEIGHT / 2 - 150, QString("第五关"));
+        painter.drawPixmap(WIDGET_WIDTH / 2 - 50, WIDGET_HEIGHT / 2 - 100, 100, 100, cycle_img);
+        painter.setFont(QFont("楷体", 45, QFont::Bold));
+        painter.drawText(WIDGET_WIDTH / 2 - 100, WIDGET_HEIGHT / 2 + 100, QString("4 in 10s"));
     default:
         break;
     }

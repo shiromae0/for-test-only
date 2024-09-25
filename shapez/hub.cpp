@@ -14,7 +14,7 @@ Hub::Hub(QObject* parent) : QObject(parent)
     money = 0;
     increase_item_value = false;
     upgradehub = false;
-    received_objects_last_second = 0;  // 初始化为0
+    received_objects_last_10_second = new int(0);  // 初始化为0
     last_receive_time.start();
     last_received_shape = NONE;  // 初始化为 NONE
     shape_update_timer.start();
@@ -200,8 +200,8 @@ void Hub::updateReceivedObjectsCount()
     }
 
     // 输出过去10秒内收到的物体数量
-    received_objects_last_second = receivedTimestamps.size();
+    *received_objects_last_10_second = receivedTimestamps.size();
 
-    qDebug() << "Objects received in the last 10 seconds: " << received_objects_last_second;
+    qDebug() << "Objects received in the last 10 seconds: " << *(received_objects_last_10_second);
 }
 

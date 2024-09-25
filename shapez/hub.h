@@ -29,7 +29,7 @@ public:
 
     int money;
     // 新增：过去一秒接收到的物体数量
-    int received_objects_last_second;
+    int* received_objects_last_10_second;
 
     // 新增：过去一秒的时间标记
     QElapsedTimer last_receive_time;
@@ -51,8 +51,9 @@ public:
     void resetReceiveCounter();
     void updateReceivedObjectsCount();
     QQueue<QTime> receivedTimestamps;  // 存储接收物体的时间戳
-
-    // 过去10秒内接收的物体数量
+    ~Hub() {
+        delete received_objects_last_10_second;
+    }
 };
 
 #endif // HUB_H

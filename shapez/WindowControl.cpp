@@ -28,40 +28,42 @@ WindowControl::~WindowControl()
     delete choose;
     delete shop;
 }
-void WindowControl::CheckPassCertainRound()
-{
-    // 开启计时器
+void WindowControl::CheckPassCertainRound() {
     timer.start();
-    // 每1s检查一下有没有通过某一关
-    connect(&timer, &QTimer::timeout, this, [=]()
-            {
-        if(play->hub->current_have >= play->hub->need)
-        {
-            //如果通过了某关
-            //更新关卡数
-            round->level++;
-            play->round++;
-            if(round->level >= 5)
-            {
-                round->level = 5;
-                play->round = 5;
-                play->close();
-                choose->close();
-                round->close();
-                win->show();
-                QSettings setting("Parameter.ini", QSettings::IniFormat);
-                setting.clear();
-            }
-            else
-            {
-                //请用户选择局部强化的建筑
+    connect(&timer, &QTimer::timeout, this, [=]() {
+        if (play->round == 5) {
+            // 使用新条件: 10秒内收到4个cycle
+            if (*(play->hub->received_objects_last_10_second) >= 4 && play->current_received_shape == CYCLE) {
+                round->level++;
+                play->round++;
                 play->close();
                 choose->show();
-                //hub更新目标
                 play->hub->UpdateNeed();
             }
-        } });
+        } else {
+            // 其他关卡的条件保持不变
+            if (play->hub->current_have >= play->hub->need) {
+                round->level++;
+                play->round++;
+                if (round->level >= 6) {
+                    round->level = 6;
+                    play->round = 6;
+                    play->close();
+                    choose->close();
+                    round->close();
+                    win->show();
+                    QSettings setting("Parameter.ini", QSettings::IniFormat);
+                    setting.clear();
+                } else {
+                    play->close();
+                    choose->show();
+                    play->hub->UpdateNeed();
+                }
+            }
+        }
+    });
 }
+
 void WindowControl::ChooseUpgradeMiner()
 {
     // 更新miner，belt，cutter速率

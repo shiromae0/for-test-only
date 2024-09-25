@@ -245,6 +245,24 @@ void PlayScene::draw_building()
             switch (building->name)
             {
             case HUB:
+                switch (round)
+                {
+                case 1:
+                    aim_img.load(AIM1_PATH);
+                    break;
+                case 2:
+                    aim_img.load(AIM2_PATH);
+                    break;
+                case 3:
+                    aim_img.load(AIM3_PATH);
+                    break;
+                case 4:
+                    aim_img.load(AIM4_PATH);
+                    break;
+                default:
+                    aim_img.load(AIM1_PATH);
+                    break;
+                }
                 if (!hub->upgradehub)
                 {
                     // 未升级的hub
@@ -260,6 +278,7 @@ void PlayScene::draw_building()
 
                     // 居中绘制缩小后的aim_img
                     painter.drawPixmap(center_x - aim_width / 2, center_y - aim_height / 2, aim_width, aim_height, aim_img);
+                    update();
                 }
                 else
                 {
@@ -270,6 +289,7 @@ void PlayScene::draw_building()
                     int center_x = building->pos.j * CELLSIZE + 2 * CELLSIZE; // 中心点的x坐标
                     int center_y = building->pos.i * CELLSIZE + 2 * CELLSIZE; // 中心点的y坐标
                     painter.drawPixmap(center_x - CELLSIZE / 2, center_y - CELLSIZE / 2, CELLSIZE, CELLSIZE, aim_img); // 正常大小绘制
+                    update();
                 }
                 break;
             case TRASH:
@@ -1091,7 +1111,7 @@ void PlayScene::FactoryRunning()
 void PlayScene::updateHubStats()
 {
     // 更新物体接收统计
-    qDebug() << "Hub received objects in the last second: " << hub->received_objects_last_second;
+    qDebug() << "Hub received objects in the last second: " << *(hub->received_objects_last_10_second);
 
     // 更新收到的物体数量
     hub->updateReceivedObjectsCount();
@@ -1335,26 +1355,27 @@ void PlayScene::LoadSave()
     case 1:
         *hub->need_shape_name = CYCLE;
         hub->need = NEED_CYCLE;
-        aim_img.load(AIM1_PATH);
         break;
     case 2:
         *hub->need_shape_name = RECT;
         hub->need = NEED_RECT;
-        aim_img.load(AIM2_PATH);
         break;
     case 3:
         *hub->need_shape_name = LEFT_CYCLE;
         hub->need = NEED_LEFT_CYCLE;
-        aim_img.load(AIM3_PATH);
         break;
     case 4:
         *hub->need_shape_name = RIGHT_CYCLE;
         hub->need = NEED_RIGHT_CYCLE;
-        aim_img.load(AIM4_PATH);
+        break;
+    case 5:
+        *hub->need_shape_name = CYCLE;
+        hub->need = NEED_RIGHT_CYCLE;
         break;
     default:
         break;
     }
+    update();
 }
 void PlayScene::closeEvent(QCloseEvent *)
 {
@@ -1464,12 +1485,12 @@ void PlayScene::draw_current_shape() {
     QPainter shapePainter(this);
 
     // 固定在窗口右上角，设定绘制位置 (右上角的偏移)
-    int x = this->width() - 200;  // 距离窗口右边缘 200 像素
+    int x = this->width() - 250;  // 距离窗口右边缘 200 像素
     int y = 50;
 
     // 绘制接收到的物体数量
     shapePainter.setFont(QFont("Arial", 20));  // 设置字体大小
-    shapePainter.drawText(x, y, "Objects in 10s: " + QString::number(hub->received_objects_last_second));
+    shapePainter.drawText(x, y, "Objects in 10s: " + QString::number(*(hub->received_objects_last_10_second)));
 
     // 在同一位置下方显示 current_received_shape
     y += 30;  // 调整y坐标，防止文字重叠

@@ -46,5 +46,5 @@ def load_scaleFactor():
             existing_shm.close()
 
 #print(load_shared_arrays()[1])
-#print(load_scroll_offset())
-print(load_scaleFactor())
+print(load_scroll_offset())
+##print(load_scaleFactor())
