@@ -183,6 +183,7 @@ PlayScene::PlayScene()
     QTimer* updateTimer = new QTimer(this);
     connect(updateTimer, &QTimer::timeout, this, &PlayScene::updateHubStats);  // 每秒调用 updateHubStats
     updateTimer->start(1000);  // 1000 毫秒 == 1 秒
+    addTopLeftButton();
 }
 
 void PlayScene::draw_cells()
@@ -258,6 +259,9 @@ void PlayScene::draw_building()
                     break;
                 case 4:
                     aim_img.load(AIM4_PATH);
+                    break;
+                case 5:
+                    aim_img.load(AIM1_PATH);
                     break;
                 default:
                     aim_img.load(AIM1_PATH);
@@ -1440,6 +1444,7 @@ void PlayScene::wheelEvent(QWheelEvent *event) {
     update();
 }
 void PlayScene::initializeView() {
+    setScaleFactor(1.0);
     // 计算地图的宽度和高度（格子数 * 单个格子的大小）
     int mapWidth = 240 * 50;  // 地图的总宽度
     int mapHeight = 150 * 50; // 地图的总高度
@@ -1521,5 +1526,24 @@ void PlayScene::checkResetReceivedShape() {
             hub->resetReceiveCounter();  // 重置接收计数器
         }
     }
+}
+void PlayScene::addTopLeftButton() {
+    // 创建一个按钮并设置其父窗口为 PlayScene
+    QPushButton *topLeftButton = new QPushButton(this);
+
+    // 设置按钮的大小和位置（左上角）
+    topLeftButton->setGeometry(0, 0, 100, 100);  // 调整按钮大小和位置
+
+    // 去掉按钮的边框，这样看起来像是一个纯图片的区域
+    topLeftButton->setStyleSheet("QPushButton { border: none; }");
+
+    // 设置按钮的图片 (请替换为你的图片路径)
+    QPixmap pixmap("://res/locate.png");  // 图片路径
+    QIcon ButtonIcon(pixmap);
+    topLeftButton->setIcon(ButtonIcon);
+    topLeftButton->setIconSize(pixmap.rect().size());  // 设置图片大小为按钮的图标大小
+
+    // 连接按钮的点击信号到 PlayScene 的 initializeView 方法
+    connect(topLeftButton, &QPushButton::clicked, this, &PlayScene::initializeView);
 }
 

@@ -79,5 +79,6 @@
 	<file>res/aim2.png</file>
 	<file>res/aim3.png</file>
 	<file>res/aim4.png</file>
+	<file>res/locate.png</file>
     </qresource>
 </RCC>

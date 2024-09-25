@@ -11,7 +11,6 @@
 #include "GameMap.h"
 #include "Hub.h"
 #include <QTime>
-#include "RoundScene.h"
 #include <QMovie>
 #include <QLabel>
 #include <QList>
@@ -320,6 +319,7 @@ public:
     int total_objects_last_ten_seconds;  // 记录过去十秒内收到的物体总数
     QVector<int> objects_per_second;     // 记录每秒收到的物体数量
     QTimer *ten_second_timer;
+    void addTopLeftButton();
 };
 
 #endif // PLAYSCENE_H
