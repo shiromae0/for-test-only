@@ -1,0 +1,9 @@
+F:/AI/github/for-test-only/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapez.dir
+F:/AI/github/for-test-only/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+F:/AI/github/for-test-only/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+F:/AI/github/for-test-only/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/list_install_components.dir
+F:/AI/github/for-test-only/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/install.dir
+F:/AI/github/for-test-only/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/install/local.dir
+F:/AI/github/for-test-only/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/install/strip.dir
+F:/AI/github/for-test-only/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapez_autogen_timestamp_deps.dir
+F:/AI/github/for-test-only/shapez/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/CMakeFiles/MyShapez_autogen.dir
