@@ -81,7 +81,7 @@ class ShapezEnv(gymnasium.Env):
         self.observation_space = spaces.Box(
             low=0,
             high=np.max([np.max(self.grid_rsc), np.max(self.grid_bld), np.max(self.grid_direct)]),
-            shape=(grid_shape[0], grid_shape[1], 3),  # 3 表示堆叠了 3 个网格
+            shape=(grid_shape[0], grid_shape[1], 1),  # 2 表示堆叠了 2 个网格
             dtype=np.int32
         )
 
@@ -90,7 +90,7 @@ class ShapezEnv(gymnasium.Env):
         """
         返回当前环境的观察状态，将 grid_rsc、grid_bld 和 grid_direct 叠加在一起。
         """
-        return np.stack((self.grid_rsc, self.grid_bld, self.grid_direct), axis=-1)
+        return np.stack((self.grid_bld), axis=-1)
 
     def CanPlaceConveyor(self, position: Tuple[int, int], direction: int) -> bool:
         # direction
@@ -146,10 +146,17 @@ class ShapezEnv(gymnasium.Env):
         else:
             return True
 
+    def exract_buildings(self,postion):
+        machine_type = self.grid_bld[postion]//100
+        direction = self.grid_direct[postion]%100
+        return machine_type,direction
+
+
     def CanRemove(self,position):
         if self.grid_bld[position] != -1 and self.grid_bld[position] != 21:
             return True
         return False
+    
     def handle_place(self,machine_type,position,direction):
         #handle the place event
         #param:machine_type:the number of the machine
@@ -182,8 +189,7 @@ class ShapezEnv(gymnasium.Env):
                 new_machine = Miner(position,direction)
         if Canplace:
             self.machines[position] = new_machine
-            self.grid_bld[position] = machine_type
-            self.grid_direct[position] = direction
+            self.grid_bld[position] = machine_type * 100 + direction
             reward = 5
         else:
             reward = -50
