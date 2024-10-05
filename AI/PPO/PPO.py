@@ -4,6 +4,7 @@ from ShapezEnv import ShapezEnv
 from stable_baselines3.common.vec_env import DummyVecEnv
 import torch
 
+
 resource = np.array([
     [0,0,0,11],
     [0,0,0,11],
@@ -11,8 +12,7 @@ resource = np.array([
     [0,0,0,0]
 ])
 build = np.full((4,4),-1)
-build[3,3] = 21
-
+build[3,3] = 2101
 # 创建自定义环境
 env = DummyVecEnv([lambda: ShapezEnv(build, resource, target_shape=11)])
 env.reset()
@@ -31,25 +31,15 @@ for step in range(5000):
     action, _states = model.predict(obs)
     obs, reward, done,info = env.step(action)
     if done:
-        print("Goal reached!", "Reward:", reward)
-        #print(info['terminal_observation'])
-        # 访问列表中的第一个字典
-        first_item = info[0]
+        if info[0]["TimeLimit.truncated"] == True:
 
-        # 通过键 'terminal_observation' 访问数组
-        stack = first_item['terminal_observation']
-        grid_rsc, grid_bld, grid_direct = np.split(stack, 3, axis=-1)
-
-        # 由于分割后的数组会增加一个维度，需要去掉最后一个维度
-        grid_rsc = np.squeeze(grid_rsc, axis=-1)
-        grid_bld = np.squeeze(grid_bld, axis=-1)
-        grid_direct = np.squeeze(grid_direct, axis=-1)
-
-        # 打印结果以确认
-        print("grid_rsc:\n", grid_rsc)
-        print("grid_bld:\n", grid_bld)
-        print("grid_direct:\n", grid_direct)
-        break
+            print("Truncated")
+        else:
+            print("Goal reached!", "Reward:", reward)
+            # 假设 info 是一个列表，提取第一个字典中的 'terminal_observation'
+            terminal_observation = info[0]['terminal_observation']
+            print(terminal_observation)
+            break
 
 # 评估模型
 # from stable_baselines3.common.evaluation import evaluate_policy
