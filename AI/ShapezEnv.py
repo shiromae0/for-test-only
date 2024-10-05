@@ -81,16 +81,13 @@ class ShapezEnv(gymnasium.Env):
         self.observation_space = spaces.Box(
             low=0,
             high=np.max([np.max(self.grid_rsc), np.max(self.grid_bld), np.max(self.grid_direct)]),
-            shape=(grid_shape[0], grid_shape[1], 1),  # 2 表示堆叠了 2 个网格
+            shape=(grid_shape[0], grid_shape[1]),  # 2 表示堆叠了 2 个网格
             dtype=np.int32
         )
 
 
     def _get_obs(self) -> np.ndarray:
-        """
-        返回当前环境的观察状态，将 grid_rsc、grid_bld 和 grid_direct 叠加在一起。
-        """
-        return np.stack((self.grid_bld), axis=-1)
+        return self.grid_bld
 
     def CanPlaceConveyor(self, position: Tuple[int, int], direction: int) -> bool:
         # direction
@@ -132,7 +129,7 @@ class ShapezEnv(gymnasium.Env):
             return False
         elif direction == 11 or direction == 12:
             pre_pos = (x , y - 1)
-            if pre_pos in self.machines and isinstance(self.machines[pre_pos], Conveyor) and y-1 >= 0:
+            if pre_pos in self.machines and isinstance(self.machines[pre_pos], Conveyor) and y - 1 >= 0:
                 next_conveyor_direction = self.machines[pre_pos].direction
                 if next_conveyor_direction in [4,6,8]:
                     return True
@@ -146,14 +143,15 @@ class ShapezEnv(gymnasium.Env):
         else:
             return True
 
-    def exract_buildings(self,postion):
-        machine_type = self.grid_bld[postion]//100
-        direction = self.grid_direct[postion]%100
+    def extract_buildings(self, position):
+        #extract the machine type and direction in the specific position
+        machine_type = self.grid_bld[position] // 100
+        direction = self.grid_direct[position] % 100
         return machine_type,direction
 
 
     def CanRemove(self,position):
-        if self.grid_bld[position] != -1 and self.grid_bld[position] != 21:
+        if self.grid_bld[position] != -1 and self.grid_bld[position]//100 != 21:
             return True
         return False
     
@@ -263,7 +261,7 @@ class ShapezEnv(gymnasium.Env):
         # 清空 machines 字典
         self.machines.clear()
         # 找到所有 Hub（值为 21 的位置）
-        hub_positions = np.argwhere(self.grid_bld == 21)
+        hub_positions = np.argwhere(self.grid_bld//100 == 21)
         # 将这些位置的 Hub 添加到 machines 字典中
         for pos in hub_positions:
             position = tuple(pos)  # 将数组转换为 tuple 类型的坐标
@@ -346,20 +344,20 @@ class ShapezEnv(gymnasium.Env):
         # 返回观察值、奖励、是否结束、是否被截断和信息
         return self._get_obs(), reward, done, truncated,info
 
-resource = np.array([
-    [0,0,0,11],
-    [0,0,0,11],
-    [0,0,0,0],
-    [0,0,0,0]
-])
-build = np.array([[-1, -1, 31, 22],
-                   [-1, -1, -1, 31],
-                   [31, -1, 31, 31],
-                   [31, -1, -1, 21]])
-dir  = np.array([[-1, -1,  4,  2],
-                   [-1, -1, -1,  1],
-                   [ 1, -1,  4,  3],
-                   [ 2, -1, -1, -1]])
+# resource = np.array([
+#     [0,0,0,11],
+#     [0,0,0,11],
+#     [0,0,0,0],
+#     [0,0,0,0]
+# ])
+# build = np.array([[-1, -1, 31, 22],
+#                    [-1, -1, -1, 31],
+#                    [31, -1, 31, 31],
+#                    [31, -1, -1, 21]])
+# dir  = np.array([[-1, -1,  4,  2],
+#                    [-1, -1, -1,  1],
+#                    [ 1, -1,  4,  3],
+#                    [ 2, -1, -1, -1]])
 # env = ShapezEnv(build, resource, target_shape=11)
 # env.reset()
 # env.grid_direct = dir
