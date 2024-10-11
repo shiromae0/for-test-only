@@ -6,6 +6,7 @@ import torch
 from stable_baselines3 import PPO
 from stable_baselines3.ppo import MlpPolicy
 import torch.nn.functional as F
+import getmap
 class Machine:
     def __init__(self,type,position, direction = -1):
         self.position = position
@@ -77,13 +78,14 @@ class CustomMlpPolicy(MlpPolicy):
         return actions, values, log_prob
 
 
+array = []
+resource = getmap.load_shared_arrays()[0]
+build = getmap.load_shared_arrays()[1]
+target_shape = getmap.load_needed_shape()
+Height = build.shape[0]
+Width = build.shape[1]
+build[build != -1] *= 100
 
-build = np.full((100,100),-1)
-resource = np.full((100,100),0)
-resource[8,8] = 11
-build[9,8] = 2400
-#build[9,8] = 2400
-build[3,3] = 2100
 Env = ShapezEnv(build,resource,target_shape=11)
 act_list = Env.create_valid_action_space()
 # 创建自定义环境
@@ -108,29 +110,34 @@ model.save("ppo_shapez_model")
 
 obs = env.reset()
 
-def return_array(obs):
-    for step in range(10000):
-        action, _states = model.predict(obs)
-        action = np.atleast_1d(action)
-        obs, reward, done,info = env.step(action)
-        if done:
-            if info[0]["TimeLimit.truncated"] == True:
-                obs = info[0]['terminal_observation']
-                print("Truncated")
-                # print(obs)
-            else:
-                print("Goal reached!", "Reward:", reward)
-                # 假设 info 是一个列表，提取第一个字典中的 'terminal_observation'
-                terminal_observation = info[0]['terminal_observation']
-                array = terminal_observation[:10000].reshape((100, 100))
-                np.set_printoptions(threshold=100000)
-                #print(info)
-                # print(terminal_observation)
-                # np.save('array_data.npy', array)
-                # print("Array saved to array_data.npy!")
 
-                print(array)
-                return array
+for step in range(10000):
+    action, _states = model.predict(obs)
+    action = np.atleast_1d(action)
+    obs, reward, done,info = env.step(action)
+    if done:
+        if info[0]["TimeLimit.truncated"] == True:
+            obs = info[0]['terminal_observation']
+            print("Truncated")
+            # print(obs)
+        else:
+            print("Goal reached!", "Reward:", reward)
+            # 假设 info 是一个列表，提取第一个字典中的 'terminal_observation'
+            terminal_observation = info[0]['terminal_observation']
+            array = terminal_observation[:Height*Width].reshape((Height, Width))
+            np.set_printoptions(threshold=100000)
+            break
+            #print(info)
+            # print(terminal_observation)
+            # np.save('array_data.npy', array)
+            # print("Array saved to array_data.npy!")
+
+            # print(array)
+def return_array():
+    coordinates = np.where(array != -1)
+    for y, x in zip(coordinates[0], coordinates[1]):
+        print(f"坐标: ({y}, {x}), 值: {array[y, x]}")
+    return array
 
 
 # 评估模型

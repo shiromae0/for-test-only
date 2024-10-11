@@ -99,6 +99,7 @@ class ShapezEnv(gymnasium.Env):
         queue = deque([(start_x, start_y)])
         visited = set()
         visited.add((start_x, start_y))
+        visited.add(start)
         prev = {(start_x,start_y):start}
         prev[start] = None
         while queue:
@@ -191,7 +192,6 @@ class ShapezEnv(gymnasium.Env):
             np.random.seed(seed)
         if options is not None:
             pass
-
         # reset the env
         self.steps = 0
         self.grid_bld = self.original_bld.copy()  # 确保不会修改原始建筑物矩阵
@@ -252,7 +252,6 @@ class ShapezEnv(gymnasium.Env):
         ]
         # print(self.action_list)
         self.action_space = spaces.Discrete(len(self.action_list))
-        print("action space:", self.action_space)
         return
 
     def CanPlaceConveyor(self, position: Tuple[int, int], direction: int) -> bool:
@@ -390,8 +389,6 @@ class ShapezEnv(gymnasium.Env):
     def step(self, action):
         self.steps += 1
         action_type, selected_position = self.action_list[action]
-        # if len(self.machines) > 8:
-        #     print(self.grid_bld)
         machine_type = action_type[0]
         direction = action_type[1]
         x,y = selected_position
@@ -402,13 +399,14 @@ class ShapezEnv(gymnasium.Env):
         # 如果达到最大步数，标记为 truncated
         if self.steps >= self.max_step:
             print("Truncated")
+            print(self.machines)
             truncated = True
             done = False# 或者也可以直接标记为 done
             return self._get_obs(), reward, done, truncated, info
 
         reward = self.handle_place_event(machine_type,(x,y),direction)
         if self.check_goal() == True:
-            #print(self.steps)
+            print("Done")
             done = True  # 如果达到目标状态，标记为完成
             reward += 500
         return self._get_obs(), reward, done, truncated,info
@@ -460,14 +458,16 @@ class ShapezEnv(gymnasium.Env):
             if self.state == 0:
                 if machine_type == 22:
                     if self.CanPlaceMiner(position):
-                        self.grid_bld[position] = 2200 + direction
-                        new_machine = Miner(position,direction,self.grid_rsc[position])
-                        self.machines.append(new_machine)
                         dest = self.find_closet_hub(position)
-                        if not self.bfs(position, direction,dest):
+                        if not (self.bfs(position, direction,dest) or self.grid_bld[position] != self.target_shape):
+                            print("fail")
                             reward = -20
                         else:
+                            self.grid_bld[position] = 2200 + direction
+                            new_machine = Miner(position,direction,self.grid_rsc[position])
+                            self.machines.append(new_machine)
                             self.state = 1
+                            print("bfs,",position,direction,dest)
                             self.path.append(self.bfs(position,direction,dest))
                             self.place_conveyor()
                             reward += self.calculate_miner_reward(position,direction)
