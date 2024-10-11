@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 from stable_baselines3 import PPO
 from ShapezEnv import ShapezEnv
@@ -6,7 +8,7 @@ import torch
 from stable_baselines3 import PPO
 from stable_baselines3.ppo import MlpPolicy
 import torch.nn.functional as F
-import getmap
+# import getmap
 class Machine:
     def __init__(self,type,position, direction = -1):
         self.position = position
@@ -79,15 +81,24 @@ class CustomMlpPolicy(MlpPolicy):
 
 
 array = []
-resource = getmap.load_shared_arrays()[0]
-build = getmap.load_shared_arrays()[1]
-target_shape = getmap.load_needed_shape()
+# resource = getmap.load_shared_arrays()[0]
+# build = getmap.load_shared_arrays()[1]
+# target_shape = getmap.load_needed_shape()
+resource = np.full((5,5),0)
+build = np.full((5,5),-1)
+resource[3,3] = 11
+build [3,4] = 3101
+build [4,3] = 3101
+build [2,3] = 3101
+build [3,2] = 3101
+
+build [1,1] = 21
 Height = build.shape[0]
 Width = build.shape[1]
 build[build != -1] *= 100
 
 Env = ShapezEnv(build,resource,target_shape=11)
-act_list = Env.create_valid_action_space()
+act_list = Env.action_list
 # 创建自定义环境
 env = DummyVecEnv([lambda: ShapezEnv(build, resource, target_shape=11)])
 env.reset()
@@ -110,20 +121,24 @@ model.save("ppo_shapez_model")
 
 obs = env.reset()
 
-
+actions = []
 for step in range(10000):
     action, _states = model.predict(obs)
     action = np.atleast_1d(action)
     obs, reward, done,info = env.step(action)
+    actions.append(tuple(act_list[action[0]]))
+
     if done:
         if info[0]["TimeLimit.truncated"] == True:
             obs = info[0]['terminal_observation']
             print("Truncated")
-            # print(obs)
+            actions.clear()
         else:
+            actions.append(info[0]['path'])
             print("Goal reached!", "Reward:", reward)
             # 假设 info 是一个列表，提取第一个字典中的 'terminal_observation'
             terminal_observation = info[0]['terminal_observation']
+
             array = terminal_observation[:Height*Width].reshape((Height, Width))
             np.set_printoptions(threshold=100000)
             break
@@ -133,6 +148,7 @@ for step in range(10000):
             # print("Array saved to array_data.npy!")
 
             # print(array)
+print(actions)
 def return_array():
     coordinates = np.where(array != -1)
     for y, x in zip(coordinates[0], coordinates[1]):

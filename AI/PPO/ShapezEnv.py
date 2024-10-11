@@ -269,6 +269,7 @@ class ShapezEnv(gymnasium.Env):
         # define RIGHT_UP 11
         # define RIGHT_DOWN 12
         x, y = position
+        pre_pos = None
         if direction <= 4:
             return True
         elif direction == 5 or direction == 6:
@@ -399,7 +400,6 @@ class ShapezEnv(gymnasium.Env):
         # 如果达到最大步数，标记为 truncated
         if self.steps >= self.max_step:
             print("Truncated")
-            print(self.machines)
             truncated = True
             done = False# 或者也可以直接标记为 done
             return self._get_obs(), reward, done, truncated, info
@@ -409,6 +409,12 @@ class ShapezEnv(gymnasium.Env):
             print("Done")
             done = True  # 如果达到目标状态，标记为完成
             reward += 500
+            print(self.path)
+            info['path'] = []
+            for path in self.path:
+                for pos in path:
+                    info['path'].append(pos)
+            print(info)
         return self._get_obs(), reward, done, truncated,info
 
     def calculate_miner_reward(self,position,direction):
@@ -467,7 +473,6 @@ class ShapezEnv(gymnasium.Env):
                             new_machine = Miner(position,direction,self.grid_rsc[position])
                             self.machines.append(new_machine)
                             self.state = 1
-                            print("bfs,",position,direction,dest)
                             self.path.append(self.bfs(position,direction,dest))
                             self.place_conveyor()
                             reward += self.calculate_miner_reward(position,direction)
