@@ -59,8 +59,9 @@ class MaskedMultiInputPolicy(MultiInputPolicy):
 
 resource = np.full((100, 100), 0)
 build = np.full((100, 100), -1)
-resource[9, 9] = 11
-build[98, 98] = 2100
+resource[80, 80] = 11
+build[0,0] = 2100
+build[0,1] = 2100
 
 
 def linear_schedule(initial_value):
