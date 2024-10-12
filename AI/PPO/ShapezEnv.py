@@ -14,7 +14,7 @@ def distance(point1, point2):
 
 class ShapezEnv(gymnasium.Env):
     def __init__(self, build, res, target_shape):
-        self.max_step = 2000
+        self.max_step = 100
         self.steps = 0
         self.original_bld = np.array(build)
 
@@ -71,21 +71,24 @@ class ShapezEnv(gymnasium.Env):
                     min_distance = distance
                     closet_pos = (hub_x, hub_y)
         return closet_pos
-    def iscircle(self,pos,direct):
-        current_pos = pos
-        current_direct = direct
-        visited = []
-        visited.append(pos)
-        current_pos = self._get_next_position(current_pos,current_direct)
-        while True:
-            if current_pos == self._get_next_position(current_pos,current_direct) or self.grid_bld[current_pos]//100 == 21:
-                return False
-            if current_pos in visited:
-                return True
-            current_direct = self.extract_buildings(current_pos)[1]
-            visited.append(current_pos)
 
-            current_pos = self._get_next_position(current_pos,current_direct)
+
+    # def iscircle(self,pos,direct):
+    #     current_pos = pos
+    #     current_direct = direct
+    #     visited = []
+    #     visited.append(pos)
+    #     current_pos = self._get_next_position(current_pos,current_direct)
+    #     while True:
+    #         if current_pos == self._get_next_position(current_pos,current_direct) or self.grid_bld[current_pos]//100 == 21:
+    #             return False
+    #         if current_pos in visited:
+    #             return True
+    #         current_direct = self.extract_buildings(current_pos)[1]
+    #         visited.append(current_pos)
+    #
+    #         current_pos = self._get_next_position(current_pos,current_direct)
+
     def CanPlaceConveyor(self, position: Tuple[int, int], direction: int) -> bool:
         # direction
         # define UP 1
@@ -222,12 +225,17 @@ class ShapezEnv(gymnasium.Env):
                 reward += 10
                 break
             pre_pos = self._get_pre_position(current_pos,current_direct)
-            pre_direct = self.extract_buildings([pre_pos])[1]
+            # print(self.grid_bld)
+            # print(pre_pos)
+            pre_direct = self.machines[pre_pos].direction
+
             if self._get_next_position(pre_pos,pre_direct) != current_pos:
                 #the conveyor is neighbor but not connected,wrong direction
                 # print("not connected")
                 reward = 0
                 break
+            current_pos = pre_pos
+            current_direct = self.machines[pre_pos].direction
             reward += 1
         hub_pos = self.find_closet_hub(position)
         next_pos = self._get_next_position(position,direction)
@@ -396,6 +404,20 @@ class ShapezEnv(gymnasium.Env):
             return (x, y - 1)
         return position
 
+    def get_possible_cutter_actions(self):
+        rows, cols = self.grid_bld.shape
+        possible_actions = []
+        for r in range(rows):
+            for c in range(cols):
+                if c + 1 < cols and self.grid_bld[r, c] == -1 and self.grid_bld[r, c + 1] == -1:
+                    # 水平放置，direction为 1 或者 2,
+                    possible_actions.append(((23,1),(r, c)))
+                    possible_actions.append(((23, 2), (r, c)))
+                if r + 1 < rows and self.grid_bld[r, c] == -1 and self.grid_bld[r + 1, c] == -1:
+                    possible_actions.append(((23, 3),(r, c)))
+                    possible_actions.append(((23, 4), (r, c)))
+        return possible_actions
+
     def create_valid_action_space(self):
         """
         创建有效的动作空间，机器类型和对应方向的组合。
@@ -425,8 +447,19 @@ class ShapezEnv(gymnasium.Env):
         # handle the remove action spaces
         action_spaces[(0, -1)] = []
         action_spaces[(0, -1)].extend(all_pos)
-        action_spaces[(24, 0)] = []
-        action_spaces[(24, 0)].extend(all_pos)
+        #handle the Trash action spapces
+        # action_spaces[(24, 0)] = []
+        # action_spaces[(24, 0)].extend(all_pos)
+        #handle the Cutter action spaces
+        # cutter_act = self.get_possible_cutter_actions()
+        # for action in cutter_act:
+        #     act,pos = action
+        #     if act not in action_spaces:
+        #         action_spaces[act] = []
+        #     action_spaces[act].append(pos)
+        # print("action spaces:")
+        # print(action_spaces)
+        # print()
         return action_spaces
 
     def create_action_space(self):
@@ -501,8 +534,8 @@ class ShapezEnv(gymnasium.Env):
                     idx = self.act_dict[(31, direction + 1), next_pos]
                     index.append(idx)
                 #place possible trasher
-                idx = self.act_dict[(24, 0), next_pos]
-                index.append(idx)
+                # idx = self.act_dict[(24, 0), next_pos]
+                # index.append(idx)
         res_pos = np.argwhere(self.grid_rsc != 0)
         for pos in res_pos:
             for direction in range(4):
@@ -535,7 +568,6 @@ class ShapezEnv(gymnasium.Env):
             return self._get_obs(), 0, False, False, {}
         self.steps += 1
         action_type, position = self.action_list[action]
-
         position = (position[0],position[1])
         machine_type = action_type[0]
         direction = action_type[1]
@@ -547,10 +579,12 @@ class ShapezEnv(gymnasium.Env):
         # print(self.grid_bld)
         # 如果达到最大步数，标记为 truncated
         if self.steps >= self.max_step:
-            print(self.grid_bld)
+            # print(self.grid_bld)
+            # print(self.total_reward)
+            print("Trun")
             truncated = True
             done = False  # 或者也可以直接标记为 done
-            print(self.total_reward)
+
             return self._get_obs(), reward, done, truncated, info
         reward = self.handle_place(machine_type, position, direction)
         self.total_reward += reward

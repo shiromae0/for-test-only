@@ -1,13 +1,44 @@
-import numpy as np
 from stable_baselines3 import PPO
 from stable_baselines3.ppo import MultiInputPolicy
 
 from shapezenv import ShapezEnv
-from stable_baselines3.common.vec_env import DummyVecEnv
 import torch
 from stable_baselines3.common.callbacks import BaseCallback
+from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
 
+import numpy as np
+import torch as th
 
+from stable_baselines3.common.type_aliases import PyTorchObs
+import collections
+import copy
+import warnings
+from abc import ABC, abstractmethod
+from functools import partial
+from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
+from gymnasium import spaces
+from torch import nn
+
+from stable_baselines3.common.distributions import (
+    BernoulliDistribution,
+    CategoricalDistribution,
+    DiagGaussianDistribution,
+    Distribution,
+    MultiCategoricalDistribution,
+    StateDependentNoiseDistribution,
+    make_proba_distribution,
+)
+from stable_baselines3.common.preprocessing import get_action_dim, is_image_space, maybe_transpose, preprocess_obs
+from stable_baselines3.common.torch_layers import (
+    BaseFeaturesExtractor,
+    CombinedExtractor,
+    FlattenExtractor,
+    MlpExtractor,
+    NatureCNN,
+    create_mlp,
+)
+from stable_baselines3.common.type_aliases import PyTorchObs, Schedule
+from stable_baselines3.common.utils import get_device, is_vectorized_observation, obs_as_tensor
 class ActionMaskCallback(BaseCallback):
     def __init__(self, env, verbose=0):
         super(ActionMaskCallback, self).__init__(verbose)
@@ -17,49 +48,104 @@ class ActionMaskCallback(BaseCallback):
         action_mask = self.env.get_action_mask()
         self.model.policy.set_action_mask(action_mask)
         return True
-
-
 class MaskedMultiInputPolicy(MultiInputPolicy):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, callback=None, **kwargs):
         super(MaskedMultiInputPolicy, self).__init__(*args, **kwargs)
         self.action_mask = None
+        self.callback = callback  # 将 callback 存储为类的成员
 
     def set_action_mask(self, action_mask):
         self.action_mask = action_mask
 
-    def forward(self, obs: torch.Tensor, deterministic: bool = False):
-        features = self.extract_features(obs)
-        # 获取策略和价值的潜在向量
-        latent_pi, latent_vf = self.mlp_extractor(features)
-        # 获取动作分布
-        distribution = self._get_action_dist_from_latent(latent_pi)
-        # 使用动作掩码过滤无效动作
-        if self.action_mask is not None:
-            # 对于离散动作空间，修改分布的概率
-            masked_probs = distribution.distribution.probs * torch.tensor(self.action_mask, device=self.device)
-            # 避免除以零
-            masked_probs_sum = masked_probs.sum(dim=-1, keepdim=True)
-            # 确保总概率为 1
-            masked_probs = masked_probs / masked_probs_sum
-            # 更新分布的概率
-            distribution.distribution.probs = masked_probs
+    # def get_distribution(self, obs: PyTorchObs) -> Distribution:
+    #     """
+    #     Get the current policy distribution given the observations, with optional action masking.
+    #
+    #     :param obs: The input observations
+    #     :return: The action distribution with applied action mask
+    #     """
+    #     # 提取特征
+    #     features = super().extract_features(obs, self.pi_features_extractor)
+    #
+    #     # 获取 actor 的潜在特征
+    #     latent_pi = self.mlp_extractor.forward_actor(features)
+    #
+    #     # 生成动作分布
+    #     action_distribution = self._get_action_dist_from_latent(latent_pi)
+    #
+    #     # 如果存在动作掩码，应用到动作分布上
+    #     if self.action_mask is not None:
+    #         # 获取分布的 logits，并应用掩码
+    #         logits = action_distribution.distribution.logits
+    #         action_mask_tensor = th.tensor(self.action_mask, dtype=th.float32).to(logits.device)
+    #         masked_logits = logits + (action_mask_tensor - 1) * 1e9  # 将非法动作的概率设置为极低
+    #         action_distribution.distribution = th.distributions.Categorical(logits=masked_logits)
+    #     print(action_distribution)
+    #     return action_distribution
 
-        # 根据是否是确定性动作选择
-        if deterministic:
-            actions = distribution.get_actions(deterministic=True)
+    def _get_action_dist_from_latent(self, latent_pi: th.Tensor) -> Distribution:
+        """
+        Retrieve action distribution given the latent codes, with optional action masking.
+
+        :param latent_pi: Latent code for the actor
+        :return: Action distribution
+        """
+        mean_actions = self.action_net(latent_pi)
+        if self.callback is not None:
+            self.callback._on_step()
+        if isinstance(self.action_dist, DiagGaussianDistribution):
+            print("diagGaussian")
+            return self.action_dist.proba_distribution(mean_actions, self.log_std)
+
+        elif isinstance(self.action_dist, CategoricalDistribution):
+            # print("Cate")
+            # Here mean_actions are the logits before the softmax
+            action_logits = mean_actions
+
+            # 如果存在动作掩码，将其转换为 PyTorch 张量并应用掩码
+            if self.action_mask is not None:
+                # one_indices = [index for index, value in enumerate(self.action_mask) if value == 1]
+                # print(f"Indices of 1s in action_mask: {one_indices}")
+                # 确保 action_mask 位于与 action_logits 相同的设备上
+                action_mask_tensor = th.tensor(self.action_mask, dtype=th.float32).to(action_logits.device)
+                action_logits = action_logits + (action_mask_tensor - 1) * 1e9
+                # valid_indices = (action_logits != -1e9).nonzero(as_tuple=True)
+                # 打印不为 -1e9 的索引
+                # print(valid_indices)
+            else:
+                print("error")
+            return self.action_dist.proba_distribution(action_logits=action_logits)
+
+        elif isinstance(self.action_dist, MultiCategoricalDistribution):
+            # Here mean_actions are the flattened logits
+            print("Mutil")
+            action_logits = mean_actions
+
+            # 如果存在动作掩码，将其转换为 PyTorch 张量并应用掩码
+            if self.action_mask is not None:
+                action_mask_tensor = th.tensor(self.action_mask, dtype=th.float32).to(action_logits.device)
+                action_logits = action_logits + (action_mask_tensor - 1) * 1e9
+
+            return self.action_dist.proba_distribution(action_logits=action_logits)
+
+        elif isinstance(self.action_dist, BernoulliDistribution):
+            print("Berno")
+            # Here mean_actions are the logits (before rounding to get the binary actions)
+            return self.action_dist.proba_distribution(action_logits=mean_actions)
+
+        elif isinstance(self.action_dist, StateDependentNoiseDistribution):
+            print("state")
+            return self.action_dist.proba_distribution(mean_actions, self.log_std, latent_pi)
+
         else:
-            actions = distribution.get_actions()
-        # 计算 log 概率
-        log_prob = distribution.log_prob(actions)
-        # 计算价值估计
-        values = self.value_net(latent_vf)
-
-        return actions, values, log_prob
+            raise ValueError("Invalid action distribution")
 
 
-resource = np.full((20, 20), 0)
-build = np.full((20, 20), -1)
-resource[19, 19] = 11
+
+
+resource = np.full((10, 10), 0)
+build = np.full((10, 10), -1)
+resource[8, 8] = 11
 build[0,0] = 2100
 build[0,1] = 2100
 
@@ -75,34 +161,39 @@ def linear_schedule(initial_value):
 # 创建自定义环境
 env = ShapezEnv(build, resource, target_shape=11)
 env.reset()
+act_list = env.action_list
 # 创建PPO模型，使用多层感知机策略
-
+print(act_list[175])
 # model = model.load("ppo_shapez_model")
 
 # 开始训练
 callback = ActionMaskCallback(env)
-model = PPO(MaskedMultiInputPolicy, env, verbose=1)
+model = PPO(MaskedMultiInputPolicy, env, verbose=1, policy_kwargs={'callback': callback})
 model.set_env(env)
-model.learn(total_timesteps=100000, callback=callback)
+model.learn(total_timesteps=10000, callback=callback)
 
 # 保存模型
 model.save("ppo_shapez_model")
 
 # 测试模型
 obs, info = env.reset()
-for step in range(5000):
+callback = ActionMaskCallback(env)
+for step in range(10000):
+    if step == 0:
+        print("start")
     action, _states = model.predict(obs)
+    print("action =",act_list[action])
     result = env.step(action)
     obs, reward, done, truncated, info = env.step(action)
-    if done:
-        if truncated == True:
-            print("Truncated")
-        elif done == True:
-            print("Goal reached!", "Reward:", reward)
-            # 假设 info 是一个列表，提取第一个字典中的 'terminal_observation'
-            terminal_observation = info[0]['terminal_observation']
-            print(terminal_observation)
-            break
+    # print(obs["grid"])
+    if truncated == True:
+        env.reset()
+        print("Truncated")
+    elif done == True:
+        print("Goal reached!", "Reward:", reward)
+        # 假设 info 是一个列表，提取第一个字典中的 'terminal_observation'
+        print(obs["grid"])
+        break
 
 # 评估模型
 # from stable_baselines3.common.evaluation import evaluate_policy
