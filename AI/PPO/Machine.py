@@ -18,7 +18,6 @@ class Cutter(Machine):
         super().__init__(position, direction)
         self.type = 23
 
-
 class Trash(Machine):
     def __init__(self, position, direction):
         super().__init__(position, direction)

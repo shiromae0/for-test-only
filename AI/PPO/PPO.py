@@ -57,9 +57,9 @@ class MaskedMultiInputPolicy(MultiInputPolicy):
         return actions, values, log_prob
 
 
-resource = np.full((100, 100), 0)
-build = np.full((100, 100), -1)
-resource[80, 80] = 11
+resource = np.full((20, 20), 0)
+build = np.full((20, 20), -1)
+resource[19, 19] = 11
 build[0,0] = 2100
 build[0,1] = 2100
 
