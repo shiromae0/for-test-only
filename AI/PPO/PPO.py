@@ -163,7 +163,6 @@ env = ShapezEnv(build, resource, target_shape=11)
 env.reset()
 act_list = env.action_list
 # 创建PPO模型，使用多层感知机策略
-print(act_list[175])
 # model = model.load("ppo_shapez_model")
 
 # 开始训练

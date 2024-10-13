@@ -5,6 +5,7 @@ class Machine:
         self.type = -1
 
 
+
 class Miner(Machine):
     def __init__(self, position, direction):
         super().__init__(position, direction)
