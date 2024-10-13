@@ -176,31 +176,37 @@ act_list = env.action_list
 callback = ActionMaskCallback(env)
 model = PPO(MaskedMultiInputPolicy, env, verbose=1, policy_kwargs={'callback': callback})
 model.set_env(env)
-model.learn(total_timesteps=100000, callback=callback)
+model.learn(total_timesteps=5000, callback=callback)
 
 # 保存模型
 model.save("ppo_shapez_model")
 
 # 测试模型
-obs, info = env.reset()
-callback = ActionMaskCallback(env)
-for step in range(10000):
-    if step == 0:
-        print("start")
-    action, _states = model.predict(obs)
-    print("action =",act_list[action])
-    result = env.step(action)
-    obs, reward, done, truncated, info = env.step(action)
-    # print(obs["grid"])
-    if truncated == True:
-        env.reset()
-        print("Truncated")
-    elif done == True:
-        print("Goal reached!", "Reward:", reward)
-        # 假设 info 是一个列表，提取第一个字典中的 'terminal_observation'
-        print(obs["grid"])
-        break
 
+def get_agent_act_list():
+    obs, info = env.reset()
+    callback = ActionMaskCallback(env)
+    agent_act = []
+    for step in range(10000):
+        if step == 0:
+            print("start")
+        action, _states = model.predict(obs)
+        print("action =",act_list[action])
+        result = env.step(action)
+        obs, reward, done, truncated, info = env.step(action)
+        agent_act.append(act_list[action])
+        # print(obs["grid"])
+        if truncated == True:
+            env.reset()
+            agent_act = []
+            print("Truncated")
+        elif done == True:
+            print("Goal reached!", "Reward:", reward)
+            # 假设 info 是一个列表，提取第一个字典中的 'terminal_observation'
+            print(obs["grid"])
+            break
+    return agent_act
+print(get_agent_act_list())
 # 评估模型
 # from stable_baselines3.common.evaluation import evaluate_policy
 # mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10)

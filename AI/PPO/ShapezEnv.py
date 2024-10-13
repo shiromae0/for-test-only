@@ -558,7 +558,6 @@ class ShapezEnv(gymnasium.Env):
             self.reward_grid[position] = reward
             self.grid_bld[position] = 24 * 100
         elif machine_type == 23:
-
             new_machine = Cutter(position,direction)
             self.grid_bld[position] = 23 * 100 + direction
             sub_pos = new_machine.sub_pos
