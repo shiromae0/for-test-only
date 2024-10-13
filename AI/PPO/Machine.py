@@ -1,27 +1,37 @@
 class Machine:
-    def __init__(self, position, direction=-1, shape=None, num=0):
+    def __init__(self, position, direction=-1):
         self.position = position
         self.direction = direction
-        self.shape = shape  # 添加 shape 属性
-        self.num = num      # 添加 num 属性
         self.type = -1
 
 
 class Miner(Machine):
-    def __init__(self, position, direction, shape=0, num=0):
-        super().__init__(position, direction, shape, num)
+    def __init__(self, position, direction):
+        super().__init__(position, direction)
         self.type = 22
 
 
 class Cutter(Machine):
-    def __init__(self, position, direction, shape=0, num=0):
-        super().__init__(position, direction, shape, num)
+    def __init__(self, position, direction):
+        super().__init__(position, direction)
         self.type = 23
+        x, y = self.position
+        direction_map = {
+            1: (0, 1),  # 向上，副出口在下
+            2: (0, -1),  # 向下，副出口在上
+            3: (-1, 0),  # 向左，副出口在右
+            4: (1, 0)  # 向右，副出口在左
+        }
+
+        # 通过方向查找对应的坐标偏移
+        if self.direction in direction_map:
+            dx, dy = direction_map[self.direction]
+            self.sub_pos = (x + dx, y + dy)
 
 
 class Trash(Machine):
-    def __init__(self, position, direction, shape=0, num=0):
-        super().__init__(position, direction, shape, num)
+    def __init__(self, position, direction):
+        super().__init__(position, direction)
         self.type = 24
 
 
@@ -49,7 +59,7 @@ class Conveyor(Machine):
     #define RIGHT_DOWN 12
     """
 
-    def __init__(self, position, direction, shape=0, num=0):
-        super().__init__(position, direction, shape, num)
+    def __init__(self, position, direction):
+        super().__init__(position, direction)
         self.type = 31
         self.direction = direction

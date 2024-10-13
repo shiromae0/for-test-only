@@ -169,7 +169,7 @@ act_list = env.action_list
 callback = ActionMaskCallback(env)
 model = PPO(MaskedMultiInputPolicy, env, verbose=1, policy_kwargs={'callback': callback})
 model.set_env(env)
-model.learn(total_timesteps=10000, callback=callback)
+model.learn(total_timesteps=100000, callback=callback)
 
 # 保存模型
 model.save("ppo_shapez_model")
