@@ -17,7 +17,8 @@ class ShapezEnv(gymnasium.Env):
         self.max_step = 100
         self.steps = 0
         self.original_bld = np.array(build)
-
+        self.path = []
+        self.path_num = 0
         self.grid_rsc = np.array(res)
         self.grid_bld = self.original_bld.copy()
         self.reward_grid = np.full(self.grid_bld.shape, -1)
@@ -174,7 +175,6 @@ class ShapezEnv(gymnasium.Env):
         # else:
         #     reward = reward * 2
         # return reward
-
     def calculate_trash_reward(self,position):
         start = self._get_pre_position(position,0)
         reward = -10
@@ -192,6 +192,12 @@ class ShapezEnv(gymnasium.Env):
                 reward += 10
             #todo:handle main and sub entrance for cutter
         return reward
+
+    def get_shape_and_path_num(self,position,direction):
+        pre_pos = self._get_pre_position(position,direction)
+        shape = self.machines[pre_pos].shape
+        num = self.machines[pre_pos].num
+        return shape,num
     def handle_place(self, machine_type, position, direction):
         # handle the place event
         # param:machine_type:the number of the machine
@@ -210,17 +216,22 @@ class ShapezEnv(gymnasium.Env):
             # reward = self.calculate_miner_reward(position,direction)
             self.reward_grid[position] = reward
             self.grid_bld[position] = 22 * 100 + direction
-            new_machine = Miner(position,direction)
+            new_machine = Miner(position,direction,self.grid_rsc[position],self.path_num)
             self.machines[position] = new_machine
+            nw_path = [position]
+            self.path_num += 1
+            self.path.append(nw_path)
         elif machine_type == 31:#placing conveyor
             # reward = self.calculate_conveyor_reward(position,direction)
             self.grid_bld[position] = 31 * 100 + direction
-            new_machine = Conveyor(position,direction)
+            print("cur act is ",position,direction)
+            shape,path_num = self.get_shape_and_path_num(position,direction)
+            new_machine = Conveyor(position,direction,shape,path_num)
             self.machines[position] = new_machine
             self.reward_grid[position] = reward
         elif machine_type == 24:
             # reward = self.calculate_trash_reward(position)
-            new_machine = Trash(position,direction)
+            new_machine = Trash(position,direction,0,0)
             self.machines[position] = new_machine
             self.reward_grid[position] = reward
             self.grid_bld[position] = 24 * 100
@@ -298,6 +309,8 @@ class ShapezEnv(gymnasium.Env):
         self.total_useful_resource = 0
         # 清空 machines 字典
         self.machines.clear()
+        self.path_num = 0
+        self.path.clear()
         # 找到所有 Hub（值为 21 的位置）
         hub_positions = np.argwhere(self.grid_bld // 100 == 21)
         # 将这些位置的 Hub 添加到 machines 字典中
@@ -420,15 +433,15 @@ class ShapezEnv(gymnasium.Env):
         action_spaces[(24, 0)] = []
         action_spaces[(24, 0)].extend(all_pos)
         # handle the Cutter action spaces
-        cutter_act = self.get_possible_cutter_actions()
-        for action in cutter_act:
-            act,pos = action
-            if act not in action_spaces:
-                action_spaces[act] = []
-            action_spaces[act].append(pos)
-        print("action spaces:")
-        print(action_spaces)
-        print()
+        # cutter_act = self.get_possible_cutter_actions()
+        # for action in cutter_act:
+        #     act,pos = action
+        #     if act not in action_spaces:
+        #         action_spaces[act] = []
+        #     action_spaces[act].append(pos)
+        # print("action spaces:")
+        # print(action_spaces)
+        # print()
         return action_spaces
 
     def create_action_space(self):
@@ -476,7 +489,8 @@ class ShapezEnv(gymnasium.Env):
         if self.grid_bld[position] != -1:  # current place has buildings
             return False
         pre_pos = self._get_pre_position(position, direction)
-        if pre_pos == None or self.grid_bld[pre_pos] // 100 == 21:  # out of boundary or pre_pos is hub
+        if pre_pos == None or self.grid_bld[pre_pos] // 100 == 21 or  self.grid_bld[pre_pos] == -1:
+            # out of boundary or pre_pos is hub or pre_pos is not a building
             return False
         start_pos = self.get_start_pos(position, direction)
         # print(start_pos)
@@ -524,7 +538,7 @@ class ShapezEnv(gymnasium.Env):
         machine_type,direction = self.extract_buildings(position)
         # print(f"machine = {machine_type},direction = {direction},isfirst = {self._is_first_building(position,direction)}")
         return self._is_first_building(position,direction)
-    
+
     def check_action_valid(self, machine_type, position, direction):
         if machine_type == 0:
             # print(machine_type,position,direction)
@@ -535,11 +549,11 @@ class ShapezEnv(gymnasium.Env):
                 return True
             # else:
             #     print("cant place conyeor at pos",position,"direct",direction)
-        elif machine_type == 23:
-            if self.CanPlaceCutter(position,direction):
-                return True
-            else:
-                return False
+        # elif machine_type == 23:
+        #     if self.CanPlaceCutter(position,direction):
+        #         return True
+        #     else:
+        #         return False
         else:
             #handle other machines
             if self.grid_bld[position] == -1:
@@ -562,9 +576,9 @@ class ShapezEnv(gymnasium.Env):
                 for direction in range(12):
                     #place possible conveyor
                     # print("possbile next=",next_pos)
-                    if direction < 4:
-                        idx = self.act_dict[(23, direction + 1), next_pos]
-                        index.append(idx)
+                    # if direction < 4:
+                    #     idx = self.act_dict[(23, direction + 1), next_pos]
+                    #     index.append(idx)
                     idx = self.act_dict[(31, direction + 1), next_pos]
                     index.append(idx)
                 #place possible trasher
@@ -614,16 +628,16 @@ class ShapezEnv(gymnasium.Env):
         # print(self.grid_bld)
         # 如果达到最大步数，标记为 truncated
         if self.steps >= self.max_step:
-
             # print(self.total_reward)
             print("Trun")
             truncated = True
             done = False  # 或者也可以直接标记为 done
-
             return self._get_obs(), reward, done, truncated, info
         reward = self.handle_place(machine_type, position, direction)
         print(action_type,position)
         print(self.grid_bld)
+        for machine in self.machines.items():
+            print(machine[0],machine[1].shape,machine[1].num)
         self.total_reward += reward
         if self.check_goal() == True:
             done = True  # 如果达到目标状态，标记为完成
