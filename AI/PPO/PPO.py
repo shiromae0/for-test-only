@@ -143,12 +143,19 @@ class MaskedMultiInputPolicy(MultiInputPolicy):
 
 
 
-resource = np.full((10, 10), 0)
-build = np.full((10, 10), -1)
-resource[8, 8] = 11
-build[0,0] = 2100
-build[0,1] = 2100
+# resource = np.full((10, 10), 0)
+build = np.full((5, 5), -1)
+# resource[8, 8] = 11
+# build[0,0] = 2100
+build[4,4] = 2100
 
+resource = np.array([
+    [11, 0, 0, 0, 0],             # (0,0) 位置的资源形状为 11
+    [0, 0, 0, 0, 0],
+    [11, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
+])
 
 def linear_schedule(initial_value):
     def func(progress_remaining):
@@ -159,7 +166,7 @@ def linear_schedule(initial_value):
 
 
 # 创建自定义环境
-env = ShapezEnv(build, resource, target_shape=11)
+env = ShapezEnv(build, resource, target_shape=13)
 env.reset()
 act_list = env.action_list
 # 创建PPO模型，使用多层感知机策略

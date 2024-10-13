@@ -1,3 +1,4 @@
+import os
 from typing import Optional, Tuple
 
 import gymnasium
@@ -14,7 +15,7 @@ def distance(point1, point2):
 
 class ShapezEnv(gymnasium.Env):
     def __init__(self, build, res, target_shape):
-        self.max_step = 100
+        self.max_step = 1000
         self.steps = 0
         self.original_bld = np.array(build)
         self.path = []
@@ -25,6 +26,7 @@ class ShapezEnv(gymnasium.Env):
         self.machines = {}
         self.target_shape = target_shape
         self.total_reward = 0
+        self.act_list = []
         # 获取网格的大小
         grid_shape = self.grid_rsc.shape
 
@@ -66,6 +68,7 @@ class ShapezEnv(gymnasium.Env):
             pass
         # reset the env
         self.last_action_index = -1
+        self.act_list.clear()
         self.total_reward = 0
         self.reward_grid = np.full(self.grid_bld.shape, -1)
         self.steps = 0
@@ -94,6 +97,7 @@ class ShapezEnv(gymnasium.Env):
             self.steps += 1
             return self._get_obs(), 0, False, False, {}
         self.steps += 1
+        self.act_list.append(action)
         action_type, position = self.action_list[action]
         position = (position[0],position[1])
         machine_type = action_type[0]
@@ -138,47 +142,123 @@ class ShapezEnv(gymnasium.Env):
         """
         检查是否有资源从矿机通过传送带等路径成功到达 hub，并符合目标形状。
         """
+        goal_found = False
         for position, machine in self.machines.items():
             if isinstance(machine, Miner):  # 找到矿机，开始从资源生成点追踪
                 current_position = position
                 current_machine = machine
                 current_shape = self.grid_rsc[position]  # 获取资源的初始形状
+                # print(f"起点是矿机，位置: {current_position}, 初始形状: {current_shape}")
                 positions = []
+
                 while True:
                     if current_position in positions:
-                        return False
+                        # print(f"发现循环路径，位置: {current_position}")
+                        break
                     positions.append(current_position)
-                    # 获取下一个位置，根据传送带的方向前进
-                    if current_position == self._get_next_position(current_position, current_machine.direction):
-                        return False
+
+                    # # 获取下一个位置，根据传送带的方向前进
+                    # if current_position == self._get_next_position(current_position, current_machine.direction):
+                    #     return False
+
                     next_position = self._get_next_position(current_position, current_machine.direction)
-                    # print(current_position,next_position,machine.direction,machine.type)
+                    # print(f"当前机器: {current_machine.__class__.__name__}, 位置: {current_position}, 下一步: {next_position}")
+
+                    # print(f"123123123: {next_position}")
                     # 检查下一个位置是否有机器
                     if next_position in self.machines:
                         current_machine = self.machines[next_position]
+                        # print(f"下一步机器类型: {current_machine.__class__.__name__}, 位置: {next_position}")
+
                         if isinstance(current_machine, Conveyor):
                             # 传送带：继续前进
+                            # print(f"传送带继续前进，当前资源位置: {current_position}")
                             current_position = next_position
+                            # print(f"资源到达传送带后更新，当前位置: {current_position}")
+                            # continue
+
                         elif isinstance(current_machine, Hub):
-                            # 检查资源是否到达 hub，并且形状是否符合目标
+                            # print(f"到达 Hub, 位置: {next_position}, 当前形状: {current_shape}, 目标形状: {self.target_shape}")
+                            # 直接到达 Hub，检查形状是否符合目标
                             if current_shape == self.target_shape:
-                                # print(f"资源从 {position} 成功到达 hub，形状符合目标")
-                                return True
+                                goal_found = True  # 找到成功路径
+                            break  # 跳出当前矿机路径的检查，继续检查其他矿机
+
+                        elif isinstance(current_machine, Cutter):
+                            # 存在cutter的情况
+                            # print(f"资源到达 Cutter，位置: {current_position}, 当前形状: {current_shape}")
+                            current_position = next_position
+
+                            # main_exit_info, side_exit_info = \
+                            #     self.place_cutter(current_position, current_shape, current_machine.direction)
+                            # main_exit_pos, main_exit_shape = main_exit_info
+                            # side_exit_pos, side_exit_shape = side_exit_info
+
+                            # print(f"经过 Cutter, 主出口位置: {main_exit_pos}, 主出口形状: {main_exit_shape}")
+                            # print(f"副出口位置: {side_exit_pos}, 副出口形状: {side_exit_shape}")
+                            main_exit_pos, side_exit_pos = \
+                                self.get_cutter_pos(current_position, current_machine.direction)
+                            main_exit_shape, side_exit_shape = self.process_cut(current_shape)
+
+                            if main_exit_pos in self.machines:
+                                main_exit_result = self._track_path_to_end(main_exit_pos)
                             else:
-                                # print(f"资源到达 hub，但形状不符合目标 {self.target_shape}")
-                                return False
-                        elif isinstance(current_machine,Trash):
-                            # meet the trash
-                            return False
+                                print(f"错误：位置 {main_exit_pos} 没有找到机器")
+                                main_exit_result = 'none'
+
+                            if side_exit_pos in self.machines:
+                                side_exit_result = self._track_path_to_end(side_exit_pos)
+                            else:
+                                print(f"错误：位置 {side_exit_pos} 没有找到机器")
+                                side_exit_result = 'none'
+
+                            # 分别判断主出口和副出口的终点
+                            # main_exit_result = self._track_path_to_end(main_exit_pos)  # 主出口的终点
+                            # side_exit_result = self._track_path_to_end(side_exit_pos)  # 副出口的终点
+
+                            # 有一个路径无解，就返回false
+                            if main_exit_result == 'none' or side_exit_result == 'none':
+                                break
+                                # 两个都到达trash，也返回false
+                            if main_exit_result == 'trash' and side_exit_result == 'trash':
+                                break
+
+                            if main_exit_result == 'hub' and main_exit_shape == self.target_shape:
+                                goal_found = True  # 主出口路径到达 Hub 且形状符合目标
+                            if side_exit_result == 'hub' and side_exit_shape == self.target_shape:
+                                goal_found = True  # 副出口路径到达 Hub 且形状符合目标
+                            break  # 跳出当前矿机路径的检查，继续检查其他矿机
+
+                            # # 如果到达hub但形状不匹配
+                            # return False
                         else:
-                            # print("遇到了其他建筑，停止")
-                            return False
+                            # 遇到了其他建筑，停止
+                            # return False
+                            break
                     else:
                         # 如果路径中断或没有传送带，停止追踪
-                        # print("资源路径中断")
+                        # return False
                         break
-                # print()
-        return False
+        return goal_found
+
+        #                 elif isinstance(current_machine, Hub):
+        #                     # 检查资源是否到达 hub，并且形状是否符合目标
+
+        #                     if current_shape == self.target_shape:
+        #                         # print(f"资源从 {position} 成功到达 hub，形状符合目标")
+        #                         return True
+        #                     else:
+        #                         # print(f"资源到达 hub，但形状不符合目标 {self.target_shape}")
+        #                         return False
+        #                 else:
+        #                     # print("遇到了其他建筑，停止")
+        #                     return False
+        #             else:
+        #                 # 如果路径中断或没有传送带，停止追踪
+        #                 # print("资源路径中断")
+        #                 break
+        #         # print()
+        # return False
 
     def create_valid_action_space(self):
         """
@@ -198,8 +278,9 @@ class ShapezEnv(gymnasium.Env):
             action_spaces[valid_action].extend(res_pos)
 
         # handle the conveyor belt action spaces
-        for index in np.ndindex(self.grid_rsc.shape):
-            all_pos.append(index)
+        for index in np.ndindex(self.grid_bld.shape):
+            if self.grid_bld[index] //100 != 21:
+                all_pos.append(index)
         for direction in range(12):
             valid_action = (31, direction + 1)
             action_spaces[valid_action] = []
@@ -265,6 +346,18 @@ class ShapezEnv(gymnasium.Env):
             pre_dir = self.extract_buildings(pre_pos)
 
     def calculate_miner_reward(self,position,direction):
+        hub_positions = np.argwhere(self.grid_bld == 2100)
+        if hub_positions.size > 0:
+            hub_pos = hub_positions[0]
+        else:
+            # 处理没有找到 hub 的情况
+            print("No hub found in grid_bld.")
+            print(self.grid_bld)
+            for num, in enumerate(self.act_list):
+               print("valid_act = ",self.action_list[num])
+            print()
+            hub_pos = None  # 或者根据你的需求处理
+
         hub_pos = np.argwhere(self.grid_bld == 2100)[0]
         x_pos = True if position[0] < hub_pos[0] else False
         y_pos = True if position[1] < hub_pos[1] else False
@@ -301,43 +394,42 @@ class ShapezEnv(gymnasium.Env):
 
         return distance_reward + direction_reward
     def calculate_conveyor_reward(self,position,direction):
-        return 1
         reward = 0
         current_pos = position
         current_direct = direction
-        # while True:
-        #     if self.grid_bld[current_pos] == -1:
-        #         #connected to coneveyor but not connected to the start
-        #         reward = -3
-        #         break
-        #     current_machine = self.extract_buildings(current_pos)[0]
-        #     if current_machine == 22:
-        #         reward += 10
-        #         break
-        #     pre_pos = self._get_pre_position(current_pos,current_direct)
-        #     # print(self.grid_bld)
-        #     # print(pre_pos)
-        #     if pre_pos == None :
-        #         return -1
-        #     pre_direct = self.machines[pre_pos].direction
-        #     if self._get_next_position(pre_pos,pre_direct) != current_pos:
-        #         #the conveyor is neighbor but not connected,wrong direction
-        #         # print("not connected")
-        #         reward = 0
-        #         break
-        #     current_pos = pre_pos
-        #     current_direct = self.machines[pre_pos].direction
-        #     reward += 1
-        # hub_pos = self.find_closet_hub(position)
-        # next_pos = self._get_next_position(position,direction)
-        # if hub_pos == None or next_pos == None:
-        #     #no valid closet hub
-        #     return 0
-        # if distance(hub_pos,position) < distance(hub_pos,next_pos):
-        #     reward = reward / 2
-        # else:
-        #     reward = reward * 2
-        # return reward
+        while True:
+            if self.grid_bld[current_pos] == -1:
+                #connected to coneveyor but not connected to the start
+                reward = -3
+                break
+            current_machine = self.extract_buildings(current_pos)[0]
+            if current_machine == 22:
+                reward += 10
+                break
+            pre_pos = self._get_pre_position(current_pos,current_direct)
+            # print(self.grid_bld)
+            # print(pre_pos)
+            if pre_pos == None :
+                return -1
+            pre_direct = self.machines[pre_pos].direction
+            if self._get_next_position(pre_pos,pre_direct) != current_pos:
+                #the conveyor is neighbor but not connected,wrong direction
+                # print("not connected")
+                reward = 0
+                break
+            current_pos = pre_pos
+            current_direct = self.machines[pre_pos].direction
+            reward += 1
+        hub_pos = self.find_closet_hub(position)
+        next_pos = self._get_next_position(position,direction)
+        if hub_pos == None or next_pos == None:
+            #no valid closet hub
+            return 0
+        if distance(hub_pos,position) < distance(hub_pos,next_pos):
+            reward = reward / 2
+        else:
+            reward = reward * 2
+        return reward
     def calculate_trash_reward(self,position):
         start = self._get_pre_position(position,0)
         reward = -10
@@ -404,7 +496,7 @@ class ShapezEnv(gymnasium.Env):
             self.reward_grid[position] = -1
             return reward
         elif machine_type == 22: #placing miner
-            # reward = self.calculate_miner_reward(position,direction)
+            reward = self.calculate_miner_reward(position,direction)
             self.reward_grid[position] = reward
             self.grid_bld[position] = 22 * 100 + direction
             new_machine = Miner(position,direction)
@@ -481,6 +573,23 @@ class ShapezEnv(gymnasium.Env):
                     possible_pos.append(pre_pos)
             return tuple(possible_pos)
         else:
+            # handle the cutter previous position
+            if position in self.machines:
+                n = self.grid_bld.shape[0]
+                m = self.grid_bld.shape[1]
+                if isinstance(self.machines[position], Cutter):
+                    if self.machines[position].sub_pos == position:
+                        # current position is the sub_pos of cutter
+                        x, y = position
+                        if direction == 1 and x + 1 < n and y - 1 >= 0:
+                            return (x + 1, y - 1)
+                        elif direction == 2 and x - 1 >= 0 and y + 1 < m:
+                            return (x - 1, y + 1)
+                        elif direction == 3 and x + 1 < n and y + 1 < m:
+                            return (x + 1, y + 1)
+                        elif direction == 4 and x - 1 >= 0 and y - 1 >= 0:
+                            return (x - 1, y - 1)
+
             return self.handle_direction(position,direction)
 
     def start_retrieve(self, start_position, start_direction):
@@ -524,7 +633,6 @@ class ShapezEnv(gymnasium.Env):
                     possible_actions.append(((23,4), (r, c)))
         return possible_actions
 
-
     def _is_first_building(self, position, direction):
         #check if the position is the first conyeyor of the path and connected to the miner
         if self._get_next_position(position, direction) == None:#next pos out of bound
@@ -556,7 +664,7 @@ class ShapezEnv(gymnasium.Env):
            #define LEFT_DOWN 11
            #define RIGHT_DOWN 12
            """
-        if self.grid_bld[position] != -1:  # current place has buildings
+        if self.grid_bld[position] != -1 or self.grid_bld[position] // 100 == 21:  # current place has buildings
             return False
         pre_pos = self._get_pre_position(position, direction)
         if pre_pos == None or self.grid_bld[pre_pos] // 100 == 21 or self.grid_bld[pre_pos] == -1:
@@ -595,14 +703,11 @@ class ShapezEnv(gymnasium.Env):
         else:
             return True
 
-    def CanRemove(self, position):
-        if self.grid_bld[position] != -1 and self.grid_bld[position] / 100 != 21:
-            return True
-        return False
     def can_remove(self,position):
         #check if the remove action is valid in position
         #param:position, represents the target delete position
         if self.grid_bld[position] == -1 or self.grid_bld[position]//100 == 21: # no building can't remove or the building is destination
+
             return False
         #otherwise, there is a buidling except destination
         machine_type,direction = self.extract_buildings(position)
@@ -619,7 +724,7 @@ class ShapezEnv(gymnasium.Env):
         dx, dy = direction_map[direction]
         main_pos = position
         sub_pos = (x + dx, y + dy)
-        if self.grid_bld[main_pos] != -1 or self.grid_bld[sub_pos] != -1:
+        if self.grid_bld[main_pos] != -1 or self.grid_bld[sub_pos] != -1 or self.grid_bld[sub_pos]//100 == 21 or self.grid_bld[main_pos]//100 == 21:
             return False
         pre_pos = self._get_pre_position(position, direction)
         if pre_pos == None or self.grid_bld[pre_pos] // 100 != 31:
@@ -640,10 +745,14 @@ class ShapezEnv(gymnasium.Env):
     def check_action_valid(self, machine_type, position, direction):
         if machine_type == 0:
             # print(machine_type,position,direction)
+            if position == (4,4) and self.can_remove(position) == True:
+                print("can remove hub,",self.grid_bld)
             return self.can_remove(position)
         elif machine_type == 31:
             if self.CanPlaceConveyor(position, direction):
-                # print("canplace conveyor at pos",position)
+                if position == (4,4):
+                    print("canplace conveyor at pos",position)
+                    print(self.grid_bld)
                 return True
             # else:
             #     print("cant place conyeor at pos",position,"direct",direction)
@@ -727,3 +836,48 @@ class ShapezEnv(gymnasium.Env):
                     min_distance = distance
                     closet_pos = (hub_x, hub_y)
         return closet_pos
+
+    def process_cut(self, shape):
+        if shape == 11:
+            return 13, 14  # 主出口输出左半圆13， 副出口输出右半圆14
+
+    def _track_path_to_end(self, position):
+        """
+        辅助函数，用于追踪从某个位置传输的资源是否能到达 Hub。
+        只负责判断路径是否到达 Hub，不负责形状检查。
+        如果到了边界，说明无解
+        """
+        current_position = position
+        visited = []
+        while True:
+            next_position = self._get_next_position(current_position, self.machines[current_position].direction)
+            if next_position in visited:
+                return 'none'
+            visited.append(next_position)
+            if next_position == None or self.grid_bld[next_position] == -1:
+                #no more buildings in the next pos
+                return 'none'
+            # print(f"追踪路径，当前位置: {current_position}, 机器: {self.machines[current_position].__class__.__name__}, 方向: {self.machines[current_position].direction}")
+            if next_position in self.machines:
+                current_machine = self.machines[next_position]
+
+                if isinstance(current_machine, Conveyor):
+                    # 继续沿传送带前进
+                    current_position = next_position
+                elif isinstance(current_machine, Hub):
+                    # 成功到达 Hub，返回 True
+                    # print(f"到达 Hub, 位置: {next_position}")
+                    return 'hub'
+                elif isinstance(current_machine, Trash):
+                    # 到达trash
+                    # print(f"到达 Trash, 位置: {next_position}")
+                    return 'trash'
+                else:
+                    # 遇到其他建筑
+                    return 'none'
+            else:
+                # 触碰到边界
+                # print(f"到达边界或中断路径, 位置: {next_position}")
+                return 'none'
+
+                # 预设地图
