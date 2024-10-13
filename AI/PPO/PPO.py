@@ -143,19 +143,19 @@ class MaskedMultiInputPolicy(MultiInputPolicy):
 
 
 
-# resource = np.full((10, 10), 0)
-build = np.full((5, 5), -1)
-# resource[8, 8] = 11
-# build[0,0] = 2100
+resource = np.full((8, 8), 0)
+build = np.full((8, 8), -1)
+resource[7, 7] = 11
+build[0,0] = 2100
 build[4,4] = 2100
 
-resource = np.array([
-    [11, 0, 0, 0, 0],             # (0,0) 位置的资源形状为 11
-    [0, 0, 0, 0, 0],
-    [11, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
-])
+# resource = np.array([
+#     [11, 0, 0, 0, 0],             # (0,0) 位置的资源形状为 11
+#     [0, 0, 0, 0, 0],
+#     [11, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0]
+# ])
 
 def linear_schedule(initial_value):
     def func(progress_remaining):
