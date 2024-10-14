@@ -625,45 +625,6 @@ void PlayScene::draw_overlay(int x, int y)
         default:
             break;
         }
-    case TUNNEL_ENTRY:
-        switch (current_building_direction)
-        {
-        case UP:
-            // qDebug() << tr("try to draw TUNNEL");
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_entry_W);
-            break;
-        case DOWN:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_entry_S);
-            break;
-        case LEFT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_entry_A);
-            break;
-        case RIGHT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_entry_D);
-            break;
-        default:
-            break;
-        }
-        break;
-    case TUNNEL_EXIT:
-        switch (current_building_direction)
-        {
-        case UP:
-            // qDebug() << tr("try to draw TUNNEL");
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_exit_W);
-            break;
-        case DOWN:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_exit_S);
-            break;
-        case LEFT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_exit_A);
-            break;
-        case RIGHT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_exit_D);
-            break;
-        default:
-            break;
-        }
         break;
     case ROTATOR:
         switch (current_building_direction)
@@ -907,7 +868,7 @@ void PlayScene::mousePressEvent(QMouseEvent *e)
     int grid_j = x / (CELLSIZE * scaleFactor);
     int grid_i = y / (CELLSIZE * scaleFactor);
 
-    printf("ex = %d; ey =%d ;x = %d y = %d j = %d , i = %d s= %lf\n", e->pos().x(), e->pos().y(), x, y, grid_j, grid_i, scaleFactor);
+    //printf("ex = %d; ey =%d ;x = %d y = %d j = %d , i = %d s= %lf\n", e->pos().x(), e->pos().y(), x, y, grid_j, grid_i, scaleFactor);
     fflush(stdout);
 
     if (e->button() == Qt::LeftButton)
@@ -1218,7 +1179,7 @@ void PlayScene::HandleSingleBeltPlacement()
     int which_belt = 0;
     int belt_direction = current_building_direction;
 
-    // Determine which belt based on the current building direction
+    // 根据当前建筑方向确定传送带类型
     switch (current_building_direction)
     {
     // 单一方向
@@ -1238,43 +1199,51 @@ void PlayScene::HandleSingleBeltPlacement()
         // 八个新方向组合
     case UP_RIGHT:
         which_belt = BELT_W_D;  // 上-右传送带
+        belt_direction = RIGHT;  // 调整为右的方向
         break;
     case UP_LEFT:
         which_belt = BELT_W_A;  // 上-左传送带
+        belt_direction = LEFT;  // 调整为左的方向
         break;
     case DOWN_RIGHT:
         which_belt = BELT_S_D;  // 下-右传送带
+        belt_direction = RIGHT;  // 调整为右的方向
         break;
     case DOWN_LEFT:
         which_belt = BELT_S_A;  // 下-左传送带
+        belt_direction = LEFT;  // 调整为左的方向
         break;
     case LEFT_UP:
         which_belt = BELT_A_W;  // 左-上传送带
+        belt_direction = UP;  // 调整为上的方向
         break;
     case LEFT_DOWN:
         which_belt = BELT_A_S;  // 左-下传送带
+        belt_direction = DOWN;  // 调整为下的方向
         break;
     case RIGHT_UP:
         which_belt = BELT_D_W;  // 右-上传送带
+        belt_direction = UP;  // 调整为上的方向
         break;
     case RIGHT_DOWN:
         which_belt = BELT_D_S;  // 右-下传送带
+        belt_direction = DOWN;  // 调整为下的方向
         break;
 
     default:
         break;
     }
 
-
-    // Create a new belt and check if it can be placed
+    // 创建新的传送带并检查是否可以放置
     Building *current_building = new Belt(belt_grid_path[0], which_belt, belt_direction);
     if (current_building->CanPlace(belt_grid_path[0], belt_direction, map))
     {
         map.SetBuilding(belt_grid_path[0], current_building, belt_direction, which_belt);
         buildings.push_back(current_building);
-        current_building_direction = UP;
     }
+    current_building_direction = UP;
 }
+
 
 void PlayScene::HandleBeltGridPlacement()
 {
@@ -1314,7 +1283,7 @@ void PlayScene::HandleBeltGridPlacement()
 
         // Create a new belt and check if it can be placed
         Building *current_building = new Belt(belt_grid_path[i], which_belt, belt_direction);
-        qDebug() << "Building pos before SetBuilding: " << current_building->pos.j << "," << current_building->pos.i;
+        //qDebug() << "Building pos before SetBuilding: " << current_building->pos.j << "," << current_building->pos.i;
         if (current_building->CanPlace(belt_grid_path[i], belt_direction, map))
         {
             if (upgrade == BELT)
@@ -1799,22 +1768,22 @@ void PlayScene::initializeView() {
 void PlayScene::outputCurrentShape() {
     switch (current_received_shape) {
     case CYCLE:
-        std::cout << "Current received shape: CYCLE" << std::endl;
+       // std::cout << "Current received shape: CYCLE" << std::endl;
         break;
     case RECT:
-        std::cout << "Current received shape: RECT" << std::endl;
+       // std::cout << "Current received shape: RECT" << std::endl;
         break;
     case LEFT_CYCLE:
-        std::cout << "Current received shape: LEFT CYCLE" << std::endl;
+       // std::cout << "Current received shape: LEFT CYCLE" << std::endl;
         break;
     case RIGHT_CYCLE:
-        std::cout << "Current received shape: RIGHT CYCLE" << std::endl;
+       // std::cout << "Current received shape: RIGHT CYCLE" << std::endl;
         break;
     case NONE:
-        std::cout << "Current received shape: NONE" << std::endl;
+       // std::cout << "Current received shape: NONE" << std::endl;
         break;
     default:
-        std::cout << "Current received shape: UNKNOWN" << std::endl;
+       // std::cout << "Current received shape: UNKNOWN" << std::endl;
         break;
     }
 }
@@ -1865,7 +1834,7 @@ void PlayScene::addTopLeftButton() {
     QPushButton *topLeftButton = new QPushButton(this);
 
     // Set the button's size and position (top left corner)
-    topLeftButton->setGeometry(0, 0, 100, 100);  // Adjust the button's size and position
+    topLeftButton->setGeometry(1030, 730, 100, 100);  // Adjust the button's size and position
 
     // Remove the button's border to make it appear like a plain image area
     topLeftButton->setStyleSheet("QPushButton { border: none; }");

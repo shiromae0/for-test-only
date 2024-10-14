@@ -205,6 +205,6 @@ void Hub::updateReceivedObjectsCount()
     // 输出过去10秒内收到的物体数量
     *received_objects_last_10_second = receivedTimestamps.size();
 
-    qDebug() << "Objects received in the last 10 seconds: " << *(received_objects_last_10_second);
+    //qDebug() << "Objects received in the last 10 seconds: " << *(received_objects_last_10_second);
 }
 
