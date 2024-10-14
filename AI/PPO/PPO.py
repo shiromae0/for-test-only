@@ -27,10 +27,10 @@ class ActionMaskCallback(BaseCallback):
         self.model.policy.set_action_mask(action_mask)
         return True
 class MaskedMultiInputPolicy(MultiInputPolicy):
-    def __init__(self, *args, callback=None, **kwargs):
+    def __init__(self, *args, model=None, **kwargs):
         super(MaskedMultiInputPolicy, self).__init__(*args, **kwargs)
-        self.action_mask = None
-        self.callback = callback  # 将 callback 存储为类的成员
+        self.model = model  # 保存 model
+
 
     def set_action_mask(self, action_mask):
         self.action_mask = action_mask
@@ -68,9 +68,9 @@ class MaskedMultiInputPolicy(MultiInputPolicy):
         :param latent_pi: Latent code for the actor
         :return: Action distribution
         """
+        original_env = self.model.env.envs[0].unwrapped
+        self.action_mask = original_env.get_action_mask()
         mean_actions = self.action_net(latent_pi)
-        if self.callback is not None:
-            self.callback._on_step()
         if isinstance(self.action_dist, DiagGaussianDistribution):
             print("diagGaussian")
             return self.action_dist.proba_distribution(mean_actions, self.log_std)
@@ -152,19 +152,21 @@ act_list = env.action_list
 # model = model.load("ppo_shapez_model")
 
 # 开始训练
-callback = ActionMaskCallback(env)
-model = PPO(MaskedMultiInputPolicy, env, verbose=1, policy_kwargs={'callback': callback})
+
+# model = PPO(MaskedMultiInputPolicy, env=env, verbose=1, policy_kwargs={'model': None})
+model = PPO.load("ppo_shapez_model",env=env)
+# 在创建模型后，将 model 自己设置为策略类中的 model
 model.set_env(env)
-model.learn(total_timesteps=100000, callback=callback)
+model.policy.model = model
+# model.learn(total_timesteps=5000)
 
 # 保存模型
-model.save("ppo_shapez_model")
+# model.save("ppo_shapez_model")
 
 # 测试模型
 
 def get_agent_act_list():
     obs, info = env.reset()
-    callback = ActionMaskCallback(env)
     agent_act = []
     for step in range(30000):
         if step == 0:
