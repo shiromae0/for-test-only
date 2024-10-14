@@ -17,7 +17,7 @@ void ChooseScene::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
     painter.setFont(QFont("楷体", 35, QFont::Bold));
-    painter.drawText(WIDGET_WIDTH / 2 - 530, (WIDGET_HEIGHT - ButtonSize) / 2 - 35, QString("恭喜通关！请选择希望在下一关升级速度的建筑："));
+    painter.drawText(WIDGET_WIDTH / 2 - 530, (WIDGET_HEIGHT - ButtonSize) / 2 - 35, QString("Congratulations! Please choose the building you'd like to upgrade in speed for the next level："));
     choose_miner.move(180 * 1 + ButtonSize * 0, (WIDGET_HEIGHT - ButtonSize) / 2);
     choose_miner.show();
     choose_belt.move(180 * 2 + ButtonSize * 1, (WIDGET_HEIGHT - ButtonSize) / 2);

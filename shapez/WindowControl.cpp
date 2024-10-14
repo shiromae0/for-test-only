@@ -4,6 +4,7 @@
 #include <QPen>
 #include "config.h"
 
+
 WindowControl::WindowControl(QWidget *parent)
 {
     // 每1s检查一下有没有通过某一关
@@ -63,7 +64,6 @@ void WindowControl::CheckPassCertainRound() {
         }
     });
 }
-
 void WindowControl::ChooseUpgradeMiner()
 {
     // 更新miner，belt，cutter速率
@@ -326,6 +326,12 @@ void WindowControl::connections()
             { play->current_building_name = CUTTER; });
     connect(&play->trash_button, &QPushButton::clicked, this, [=]()
             { play->current_building_name = TRASH; });
+    connect(&play->tunnel_entry_button, &QPushButton::clicked, this, [=]()
+            { play->current_building_name = TUNNEL_ENTRY; });
+    connect(&play->tunnel_exit_button, &QPushButton::clicked, this, [=]()
+            { play->current_building_name = TUNNEL_EXIT; });
+    connect(&play->rotator_button, &QPushButton::clicked, this, [=]()
+            { play->current_building_name = ROTATOR; });
     // choose界面选择局部强化miner
     connect(&choose->choose_miner, &QPushButton::clicked, this, [=]()
             {

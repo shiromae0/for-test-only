@@ -46,6 +46,16 @@ cmake_minimum_required(VERSION 3.5)
             HelpScene.h HelpScene.cpp
             TransportRateCalculator.h
             TransportRateCalculator.cpp
+            TunnelEntry.h
+            TunnelEntry.cpp
+            TunnelExit.h
+            TunnelExit.cpp
+            Rotator.h
+            Rotator.cpp
+
+
+
+
 
 
         )

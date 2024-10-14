@@ -13,25 +13,26 @@ void HelpScene::paintEvent(QPaintEvent *e)
 {
     QPainter painter(this);
     painter.setFont(QFont("楷体", 25, QFont::Bold));
-    painter.drawText(WIDGET_WIDTH - 155, WIDGET_HEIGHT - 165, QString("返回游戏"));
+    painter.drawText(WIDGET_WIDTH - 155, WIDGET_HEIGHT - 165, QString("Back"));
 }
 void HelpScene::setTxt()
 {
     QTextEdit *text = new QTextEdit(this);
-    text->setPlainText("                           关于本作   \n"
-                       "这里是shapez的小demo，类似异形工厂的小游戏。是c++高程大作业。\n"
-                       "基本操作:\n"
-                       "使用键盘ＷＡＳＤ控制建筑方向，鼠标右键撤销已放置的建筑。\n"
-                       "共有四种建筑：\n"
-                       "开采器：放置在矿地上后可开采出物品。请注意输出物品的方向。\n"
-                       "传送带：运送物品。请注意运送物品的方向。\n"
-                       "切割机：将物品纵向切开并分别输出。如果只需要其中一半的物品，那么需要使用垃圾桶清除另一半物品，否则切割机会停止工作。\n"
-                       "垃圾桶：可以从所有四个方向上输入物品并永久清除它们。\n"
-                       "获胜条件: 每个关卡需收集一定数量的物品，通过四个关卡即可获胜。\n"
-                       "每个关卡结束后，可以升级开采器、传送带或切割机中的一个建筑。请注意，升级效果仅在当前关卡有效。\n"
-                       "通过消耗金币，可以在商店中全局强化交付中心的大小、开采物所在地块的数量等。\n"
-                       "游戏可自动存档。\n"
-                       "感谢游玩！");
+    text->setPlainText("                           ABOUT THE GAME   \n"
+                       "This is a small demo of Shapez, a game similar to Factorio. It's part of DECO3801 project in UQ.\n"
+                       "The base code is on Github:(https://github.com/jiangqianyu/MyShapez)\n"
+                       "Basic operations:\n"
+                       "Use keyboard(ＷＡＳＤ)to control the direction of building，Click right button to remove it.\n"
+                       "There are five kinds of buildings：\n"
+                       "Miner：After placing it on a mining site, it can extract items. Please notice the direction of the items.\n"
+                       "Belt：Transport items from Miner to Hub. Please. Please notice the direction of the items\n"
+                       "Cutter：It cuts the items to the half. If you only need one half of the item, you'll need to use a trash.\n"
+                       "Trash：It can receive items from all four directions and permanently dispose of them.。\n"
+                       "Victory Condition: In each level, you need to collect a certain number of items. Clear four levels to win。\n"
+                       "After each level, you can upgrade one of the buildings: the miner, belt, or cutter. Please note that the upgrade effects are only valid for the current level.\n"
+                       "By spending coins, you can globally enhance aspects like the size of the delivery center, the number of mining site tiles, and more in the shop.\n"
+                       "The game supports automatic saving.\n"
+                       "Thanks for playing！");
     text->setReadOnly(true);
     text->setFixedSize(WIDGET_WIDTH, WIDGET_HEIGHT - 200);
     text->setStyleSheet("background: transparent; color: black; border-style: outset; font: bold 36px; font-family: 楷体;");

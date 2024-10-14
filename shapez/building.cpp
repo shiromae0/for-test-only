@@ -41,11 +41,11 @@ bool Building::CanPlace(GridVec click, int picdirection, GameMap &gamemap)
     }
     else if (gamemap.GetResource(click) == CYCLE)
     {
-        return true;
+        return false;
     }
     else if (gamemap.GetResource(click) == RECT)
     {
-        return true;
+        return false;
     }
 
     std::vector<GridVec> allpos = BuildingAllPos();

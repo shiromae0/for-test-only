@@ -73,16 +73,17 @@ void Hub::Receive(GridVec source, int directionin, int shapename)
     PlayScene *scene = static_cast<PlayScene*>(this->parent());
     shape_update_timer.restart();
 
-    // 记录接收到物体的时间戳
+    // Record the timestamp of the received object
     QTime currentTime = QTime::currentTime();
     receivedTimestamps.enqueue(currentTime);
 
-    // 清理超过10秒的时间戳
+    // Clean up timestamps older than 10 seconds
     while (!receivedTimestamps.isEmpty() && receivedTimestamps.head().secsTo(currentTime) > 10) {
         receivedTimestamps.dequeue();
     }
     updateReceivedObjectsCount();
-    // 更新当前接收到的形状
+
+    // Update the currently received shape
     if (shapename != last_received_shape) {
         if (scene) {
             scene->current_received_shape = shapename;
@@ -91,12 +92,13 @@ void Hub::Receive(GridVec source, int directionin, int shapename)
         shape_update_timer.restart();
     }
 
-    // 更新需求形状数量
+    // Update the count of needed shapes
     if (shapename == *need_shape_name)
     {
         current_have++;
     }
 
+    // Add money based on the received shape and item value state
     if (!increase_item_value)
     {
         switch (shapename)
@@ -138,6 +140,7 @@ void Hub::Receive(GridVec source, int directionin, int shapename)
         }
     }
 }
+
 
 void Hub::UpdateTickableState(GameMap &gamemap)
 {

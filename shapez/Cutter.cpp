@@ -75,6 +75,10 @@ bool Cutter::CanReceive(GridVec target, int directionin, int shapename)
             {
                 return true;
             }
+            else if (shapename == RECT)
+            {
+                return true;
+            }
         }
     }
     return false;
@@ -117,20 +121,38 @@ void Cutter::UpdateTickableState(GameMap &gamemap)
         {
         case UP:
         case RIGHT:
-            if (this->CanSend(BuildingAllPos()[0], direction, LEFT_CYCLE, gamemap) && this->CanSend(BuildingAllPos()[1], direction, RIGHT_CYCLE, gamemap))
+            if (this->CanSend(BuildingAllPos()[0], direction, LEFT_CYCLE, gamemap) && this->CanSend(BuildingAllPos()[1], direction, RIGHT_CYCLE, gamemap)
+                && this->shape.name == CYCLE)
             {
                 this->Send(BuildingAllPos()[0], direction, LEFT_CYCLE, gamemap);
                 this->Send(BuildingAllPos()[1], direction, RIGHT_CYCLE, gamemap);
+                state = EMPTY;
+                this->shape.name = NONE;
+
+            }
+            else if (this->CanSend(BuildingAllPos()[0], direction, LEFT_RECT, gamemap) && this->CanSend(BuildingAllPos()[1], direction, RIGHT_RECT, gamemap))
+            {
+                this->Send(BuildingAllPos()[0], direction, LEFT_RECT, gamemap);
+                this->Send(BuildingAllPos()[1], direction, RIGHT_RECT, gamemap);
                 state = EMPTY;
                 this->shape.name = NONE;
             }
             break;
         case DOWN:
         case LEFT:
-            if (this->CanSend(BuildingAllPos()[0], direction, RIGHT_CYCLE, gamemap) && this->CanSend(BuildingAllPos()[1], direction, LEFT_CYCLE, gamemap))
+            if (this->CanSend(BuildingAllPos()[0], direction, RIGHT_CYCLE, gamemap) && this->CanSend(BuildingAllPos()[1], direction, LEFT_CYCLE, gamemap)
+                && this->shape.name == CYCLE)
             {
-                this->Send(BuildingAllPos()[0], direction, RIGHT_CYCLE, gamemap);
-                this->Send(BuildingAllPos()[1], direction, LEFT_CYCLE, gamemap);
+                this->Send(BuildingAllPos()[0], direction, LEFT_CYCLE, gamemap);
+                this->Send(BuildingAllPos()[1], direction, RIGHT_CYCLE, gamemap);
+                state = EMPTY;
+                this->shape.name = NONE;
+
+            }
+            else if (this->CanSend(BuildingAllPos()[0], direction, RIGHT_RECT, gamemap) && this->CanSend(BuildingAllPos()[1], direction, LEFT_RECT, gamemap))
+            {
+                this->Send(BuildingAllPos()[0], direction, RIGHT_RECT, gamemap);
+                this->Send(BuildingAllPos()[1], direction, LEFT_RECT, gamemap);
                 state = EMPTY;
                 this->shape.name = NONE;
             }

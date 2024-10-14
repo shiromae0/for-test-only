@@ -57,6 +57,8 @@ public:
      */
     Building *GetBuilding(GridVec pos);
 
+    Building *GetBuilding(int i, int j);
+
     /**
      * \brief 移除某个网格位置的建筑
      * \param pos 位置

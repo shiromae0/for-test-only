@@ -49,8 +49,77 @@ GameMap::GameMap()
 int* GameMap::getResource() {
     return &Resource[0][0];  // 返回 Resource 数组的首地址
 }
+
+
 void GameMap::FirstMap()
 {
+    Resource[1][3] = CYCLE;
+    Resource[1][4] = CYCLE;
+    Resource[1][5] = CYCLE;
+    Resource[1][6] = CYCLE;
+    Resource[2][3] = CYCLE;
+    Resource[3][3] = CYCLE;
+    Resource[3][4] = CYCLE;
+    Resource[3][5] = CYCLE;
+    Resource[3][6] = CYCLE;
+    Resource[4][6] = CYCLE;
+    Resource[5][6] = CYCLE;
+    Resource[5][3] = CYCLE;
+    Resource[5][4] = CYCLE;
+    Resource[5][5] = CYCLE;
+
+    // 设置 RECT 资源
+    Resource[1][25] = RECT;
+    Resource[1][28] = RECT;
+    Resource[2][25] = RECT;
+    Resource[2][28] = RECT;
+    Resource[3][25] = RECT;
+    Resource[3][28] = RECT;
+    Resource[4][25] = RECT;
+    Resource[4][28] = RECT;
+    Resource[5][25] = RECT;
+    Resource[5][28] = RECT;
+    Resource[3][26] = RECT;
+    Resource[3][27] = RECT;
+
+    Resource[14][3] = CYCLE;
+    Resource[14][4] = CYCLE;
+    Resource[14][5] = CYCLE;
+    Resource[14][6] = CYCLE;
+    Resource[15][3] = CYCLE;
+    Resource[15][6] = CYCLE;
+    Resource[16][3] = CYCLE;
+    Resource[16][4] = CYCLE;
+    Resource[16][5] = CYCLE;
+    Resource[16][6] = CYCLE;
+    Resource[17][3] = CYCLE;
+    Resource[17][6] = CYCLE;
+    Resource[17][6] = CYCLE;
+    Resource[18][3] = CYCLE;
+    Resource[18][6] = CYCLE;
+
+    // 设置 RECT 资源
+    Resource[14][25] = RECT;
+    Resource[14][26] = RECT;
+    Resource[14][27] = RECT;
+    Resource[14][28] = RECT;
+    Resource[15][25] = RECT;
+    Resource[15][28] = RECT;
+    Resource[16][25] = RECT;
+    Resource[16][28] = RECT;
+    Resource[17][25] = RECT;
+    //Resource[17][28] = RECT;
+    Resource[16][26] = RECT;
+    Resource[16][27] = RECT;
+    Resource[18][25] = RECT;
+    //Resource[18][28] = RECT;
+
+
+
+
+
+
+    /*
     int centerX = 75;  // 中心行
     int centerY = 120; // 中心列
     // 初始化资源
@@ -218,6 +287,7 @@ void GameMap::FirstMap()
     Resource[centerX - 9][centerY + 9] = RECT;
     Resource[centerX - 10][centerY + 10] = RECT;
 
+
     Resource[1][3] = BARRIER;
     Resource[2][4] = BARRIER;
     Resource[4][2] = BARRIER;
@@ -250,10 +320,14 @@ void GameMap::FirstMap()
     Resource[11][13] = BARRIER;
     Resource[12][14] = BARRIER;
     Resource[14][14] = BARRIER;
+*/
 }
+
+
 
 void GameMap::SecondMap()
 {
+    /*
     // 增加资源
     Resource[9][16] = CYCLE;
     Resource[10][16] = CYCLE;
@@ -272,10 +346,12 @@ void GameMap::SecondMap()
     Resource[5][5] = RECT;
     Resource[6][5] = RECT;
     Resource[6][8] = RECT;
+*/
 }
 
 void GameMap::ClearBarriers()
 {
+    /*
     Resource[1][3] = NONE;
     Resource[2][4] = NONE;
     Resource[4][2] = NONE;
@@ -308,6 +384,7 @@ void GameMap::ClearBarriers()
     Resource[11][13] = NONE;
     Resource[12][14] = NONE;
     Resource[14][14] = NONE;
+*/
 }
 int GameMap::GetResource(GridVec pos)
 {
@@ -325,6 +402,11 @@ void GameMap::SetBuilding(GridVec pos, Building *building, int direction, int na
 Building *GameMap::GetBuilding(GridVec pos)
 {
     return BuildingsMap[pos.i][pos.j];
+}
+
+Building *GameMap::GetBuilding(int i, int j)
+{
+    return BuildingsMap[i][j];
 }
 
 void GameMap::RemoveBuilding(GridVec pos)

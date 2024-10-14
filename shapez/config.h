@@ -10,10 +10,10 @@
 #define LOGO_PATH ":/res/logo.png"  // logo
 #define WIN_PATH ":/res/win.png"    // win图案
 /******************游戏界面背景*******************/
-#define GAME_WIDTH 12000 // 可放置物体区域宽度
-#define GAME_HEIGHT 7500 // 可放置物体区域高度
-#define WIDTH 240        // 可放置物体区域横向网格数
-#define HEIGHT 150       // 可放置物体区域纵向网格数
+#define GAME_WIDTH 1600 // 可放置物体区域宽度
+#define GAME_HEIGHT 1000 // 可放置物体区域高度
+#define WIDTH 32        // 可放置物体区域横向网格数
+#define HEIGHT 20     // 可放置物体区域纵向网格数
 #define CELLSIZE 50     // 每个格子的边长
 #define ITEM_SIZE 30    // 物品大小
 /******************矿地资源*******************/
@@ -25,6 +25,7 @@
 #define MINER_BUTTON_PATH "://res/miner_button.png"   // 采矿机
 #define BELT_BUTTON_PATH "://res/belt_button.png"     // 传送带
 #define CUTTER_BUTTON_PATH "://res/cutter_button.png" // 切割机
+#define ROTATOR_BUTTON_PATH "://res/rotator_button.png" // 旋转器
 #define TRASH_BUTTON_PATH ":/res/trash_button.png"    // 垃圾桶
 /****************不同大小的交付中心******************/
 #define HUB_SMALL_PATH "://res/hub_small.png" // 小交付中心
@@ -52,11 +53,26 @@
 #define CUTTER_D_PATH "://res/cutter_D.png" // 朝右
 #define CUTTER_S_PATH "://res/cutter_S.png" // 朝下
 #define CUTTER_W_PATH "://res/cutter_W.png" // 朝上
+/****************不同方向的旋转器******************/
+#define ROTATOR_A_PATH "://res/rotator1_A.png" // 朝左
+#define ROTATOR_D_PATH "://res/rotator1_D.png" // 朝右
+#define ROTATOR_S_PATH "://res/rotator1_S.png" // 朝下
+#define ROTATOR_W_PATH "://res/rotator1_W.png" // 朝上
 /****************不同方向的垃圾桶******************/
 #define TRASH_A_PATH "://res/trash_A.png" // 朝左
 #define TRASH_D_PATH "://res/trash_D.png" // 朝右
 #define TRASH_S_PATH "://res/trash_S.png" // 朝下
 #define TRASH_W_PATH "://res/trash_W.png" // 朝上
+/****************不同方向的隧道入口******************/
+#define TUNNEL_ENTRY_A_PATH "://res/tunnel_entry_A.png" // 隧道入口朝左
+#define TUNNEL_ENTRY_D_PATH "://res/tunnel_entry_D.png" // 隧道入口朝右
+#define TUNNEL_ENTRY_S_PATH "://res/tunnel_entry_S.png" // 隧道入口朝下
+#define TUNNEL_ENTRY_W_PATH "://res/tunnel_entry_W.png" // 隧道入口朝上
+/****************不同方向的隧道出口******************/
+#define TUNNEL_EXIT_A_PATH "://res/tunnel_exit_A.png" // 隧道出口朝左
+#define TUNNEL_EXIT_D_PATH "://res/tunnel_exit_D.png" // 隧道出口朝右
+#define TUNNEL_EXIT_S_PATH "://res/tunnel_exit_S.png" // 隧道出口朝下
+#define TUNNEL_EXIT_W_PATH "://res/tunnel_exit_W.png" // 隧道出口朝上
 //
 /****************不同方向的采矿机******************/
 #define MINER_BLUE_A_PATH "://res/miner_blue_A.png" // 朝左
@@ -81,6 +97,16 @@
 #define CUTTER_BLUE_D_PATH "://res/cutter_blue_D.png" // 朝右
 #define CUTTER_BLUE_S_PATH "://res/cutter_blue_S.png" // 朝下
 #define CUTTER_BLUE_W_PATH "://res/cutter_blue_W.png" // 朝上
+/****************不同方向的隧道******************/
+#define TUNNEL_BLUE_A_PATH "://res/tunnel_blue_A.png" // 朝左
+#define TUNNEL_BLUE_D_PATH "://res/tunnel_blue_D.png" // 朝右
+#define TUNNEL_BLUE_S_PATH "://res/tunnel_blue_S.png" // 朝下
+#define TUNNEL_BLUE_W_PATH "://res/tunnel_blue_W.png" // 朝上
+/****************不同方向的旋转器******************/
+#define ROTATOR_BLUE_A_PATH "://res/rotator1_blue_A.png" // 朝左
+#define ROTATOR_BLUE_D_PATH "://res/rotator1_blue_D.png" // 朝右
+#define ROTATOR_BLUE_S_PATH "://res/rotator1_blue_S.png" // 朝下
+#define ROTATOR_BLUE_W_PATH "://res/rotator1_blue_W.png" // 朝上
 /****************不同方向的垃圾桶******************/
 #define TRASH_BLUE_A_PATH "://res/trash_blue_A.png" // 朝左
 #define TRASH_BLUE_D_PATH "://res/trash_blue_D.png" // 朝右
@@ -91,6 +117,14 @@
 #define RECT_PATH "://res/rect.png"               // 方形物品
 #define LEFT_CYCLE_PATH "://res/left_cycle.png"   // 左圆形物品
 #define RIGHT_CYCLE_PATH "://res/right_cycle.png" // 右圆形物品
+
+#define LEFT_RECT_PATH "://res/left_rect.png"   // 左圆形物品
+#define RIGHT_RECT_PATH "://res/right_rect.png" // 右圆形物品
+#define UP_RECT_PATH "://res/up_rect.png"   // 左圆形物品
+#define DOWN_RECT_PATH "://res/down_rect.png" // 右圆形物品
+#define UP_CYCLE_PATH "://res/up_cycle.png"   // 左圆形物品
+#define DOWN_CYCLE_PATH "://res/down_cycle.png" // 右圆形物品
+
 #define AIM1_PATH "://res/aim1.png"
 #define AIM2_PATH "://res/aim2.png"
 #define AIM3_PATH "://res/aim3.png"
@@ -102,17 +136,35 @@
 #define DOWN 2
 #define LEFT 3
 #define RIGHT 4
+#define UP_RIGHT  5
+#define UP_LEFT  6
+#define DOWN_RIGHT  7
+#define DOWN_LEFT  8
+#define LEFT_UP  9
+#define LEFT_DOWN  10
+#define RIGHT_UP  11
+#define RIGHT_DOWN  12
+
 // 物品
 #define CYCLE 11
 #define RECT 12
 #define LEFT_CYCLE 13
 #define RIGHT_CYCLE 14
+#define LEFT_RECT 16
+#define RIGHT_RECT 17
+#define UP_RECT 18
+#define DOWN_RECT 19
+#define UP_CYCLE 20
+#define DOWN_CYCLE 60
 #define BARRIER 15
 // 建筑
 #define HUB 21
 #define MINER 22
 #define CUTTER 23
 #define TRASH 24
+#define TUNNEL_ENTRY 25
+#define TUNNEL_EXIT 26
+#define ROTATOR 27
 #define BELT_A 31
 #define BELT_A_S 32
 #define BELT_A_W 33
@@ -156,6 +208,8 @@
 #define BELT_SPEED_2 720
 #define CUTTER_SPEED_1 2700
 #define CUTTER_SPEED_2 1800
+#define ROTATOR_SPEED_1 2700
+#define ROTATOR_SPEED_2 1800
 //  画面更新频率
 #define GAME_HZ 30
 

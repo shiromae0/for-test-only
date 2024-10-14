@@ -4,9 +4,14 @@
 #include "Belt.h"
 #include "Cutter.h"
 #include "Trash.h"
+#include "TunnelEntry.h"
+#include "TunnelExit.h"
+#include "Rotator.h"
 #include "config.h"
 #include <QPainter>
 #include <iostream>
+#include <QSet>
+#include <QList>
 void PlayScene::CreateMapFile(){
     Qpointmapx = new int;
     Qpointmapy = new int;
@@ -105,6 +110,18 @@ PlayScene::PlayScene()
     trash_img_D.load(TRASH_D_PATH);
     trash_img_S.load(TRASH_S_PATH);
     trash_img_W.load(TRASH_W_PATH);
+    tunnel_entry_A.load(TUNNEL_ENTRY_A_PATH); // 隧道入口
+    tunnel_entry_D.load(TUNNEL_ENTRY_D_PATH);
+    tunnel_entry_S.load(TUNNEL_ENTRY_S_PATH);
+    tunnel_entry_W.load(TUNNEL_ENTRY_W_PATH);
+    tunnel_exit_A.load(TUNNEL_EXIT_A_PATH); // 隧道出口
+    tunnel_exit_D.load(TUNNEL_EXIT_D_PATH);
+    tunnel_exit_S.load(TUNNEL_EXIT_S_PATH);
+    tunnel_exit_W.load(TUNNEL_EXIT_W_PATH);
+    rotator_img_A.load(ROTATOR_A_PATH); // 旋转器
+    rotator_img_D.load(ROTATOR_D_PATH);
+    rotator_img_S.load(ROTATOR_S_PATH);
+    rotator_img_W.load(ROTATOR_W_PATH);
     miner_img_blue_W.load(MINER_BLUE_W_PATH); // 采矿机蓝图
     miner_img_blue_A.load(MINER_BLUE_A_PATH);
     miner_img_blue_D.load(MINER_BLUE_D_PATH);
@@ -129,10 +146,22 @@ PlayScene::PlayScene()
     trash_img_blue_D.load(TRASH_BLUE_D_PATH);
     trash_img_blue_S.load(TRASH_BLUE_S_PATH);
     trash_img_blue_W.load(TRASH_BLUE_W_PATH);
+    tunnel_blue_A.load(TUNNEL_BLUE_A_PATH); // 隧道蓝图
+    tunnel_blue_D.load(TUNNEL_BLUE_D_PATH);
+    tunnel_blue_S.load(TUNNEL_BLUE_S_PATH);
+    tunnel_blue_W.load(TUNNEL_BLUE_W_PATH);
+
     cycle_img.load(CYCLE_PATH); // 物品
     rect_img.load(RECT_PATH);
     left_cycle_img.load(LEFT_CYCLE_PATH);
     right_cycle_img.load(RIGHT_CYCLE_PATH);
+    up_cycle_img.load(UP_CYCLE_PATH);
+    down_cycle_img.load(DOWN_CYCLE_PATH);
+
+    left_rect_img.load(LEFT_RECT_PATH);
+    right_rect_img.load(RIGHT_RECT_PATH);
+    up_rect_img.load(UP_RECT_PATH);
+    down_rect_img.load(DOWN_RECT_PATH);
     // 初始化按钮
     shop.setParent(this);
     shop.setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
@@ -149,6 +178,19 @@ PlayScene::PlayScene()
     trash_button.setParent(this);
     trash_button.setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
     trash_button.setStyleSheet("QPushButton{image: url(:/res/trash_button.png)}");
+    //tunnel_entry_button.setParent(this);
+    //tunnel_entry_button.setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
+    //tunnel_entry_button.setStyleSheet("QPushButton{image: url(:/res/tunnel_entry_W.png); }");
+    //tunnel_exit_button.setParent(this);
+    //tunnel_exit_button.setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
+    //tunnel_exit_button.setStyleSheet("QPushButton{image: url(:/res/tunnel_exit_W.png)}");
+    rotator_img_blue_A.load(ROTATOR_BLUE_A_PATH); // 切割机蓝图
+    rotator_img_blue_D.load(ROTATOR_BLUE_D_PATH);
+    rotator_img_blue_S.load(ROTATOR_BLUE_S_PATH);
+    rotator_img_blue_W.load(ROTATOR_BLUE_W_PATH);
+    rotator_button.setParent(this);
+    rotator_button.setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
+    rotator_button.setStyleSheet("QPushButton{image: url(:/res/rotator_button.png)}");
     help_button.setParent(this);
     help_button.setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
     help_button.setStyleSheet("QPushButton{image: url(:/res/help.png)}");
@@ -184,6 +226,10 @@ PlayScene::PlayScene()
     connect(updateTimer, &QTimer::timeout, this, &PlayScene::updateHubStats);  // 每秒调用 updateHubStats
     updateTimer->start(1000);  // 1000 毫秒 == 1 秒
     addTopLeftButton();
+
+    //tunnel_check_timer = new QTimer(this);
+    //tunnel_check_timer->start(100);
+    //connect(tunnel_check_timer, &QTimer::timeout, this, &PlayScene::checkTunnels);
 }
 
 void PlayScene::draw_cells()
@@ -279,9 +325,14 @@ void PlayScene::draw_building()
                     // 缩小后的大小
                     int aim_width = CELLSIZE / 1.5;
                     int aim_height = CELLSIZE / 1.5;
-
+                    if (round < 3 || round == 6) {
+                        painter.drawPixmap(center_x - aim_width / 2, center_y - aim_height / 2, aim_width, aim_height, aim_img);
+                    }
+                    else if (round >= 3 && round <= 5) {
+                        painter.drawPixmap(center_x - aim_width / 2, center_y - aim_height / 2, aim_width / 2, aim_height, aim_img);
+                    }
                     // 居中绘制缩小后的aim_img
-                    painter.drawPixmap(center_x - aim_width / 2, center_y - aim_height / 2, aim_width, aim_height, aim_img);
+
                     update();
                 }
                 else
@@ -292,9 +343,8 @@ void PlayScene::draw_building()
                     // 计算升级后hub的中心点并绘制aim_img
                     int center_x = building->pos.j * CELLSIZE + 2 * CELLSIZE; // 中心点的x坐标
                     int center_y = building->pos.i * CELLSIZE + 2 * CELLSIZE; // 中心点的y坐标
-                    painter.drawPixmap(center_x - CELLSIZE / 2, center_y - CELLSIZE / 2, CELLSIZE, CELLSIZE, aim_img); // 正常大小绘制
-                    update();
-                }
+                    painter.drawPixmap(center_x - CELLSIZE / 2, center_y - CELLSIZE / 2, CELLSIZE, CELLSIZE, aim_img);
+                    }
                 break;
             case TRASH:
                 switch (building->direction)
@@ -389,6 +439,29 @@ void PlayScene::draw_building()
                     break;
                 }
                 break;
+                /*
+
+*/
+            case ROTATOR:
+                switch (building->direction)
+                {
+                case UP:
+                    painter.drawPixmap(building->pos.j * CELLSIZE, building->pos.i * CELLSIZE, CELLSIZE, CELLSIZE, rotator_img_W);
+                    break;
+                case DOWN:
+                    painter.drawPixmap(building->pos.j * CELLSIZE, building->pos.i * CELLSIZE, CELLSIZE, CELLSIZE, rotator_img_S);
+                    break;
+                case LEFT:
+                    painter.drawPixmap(building->pos.j * CELLSIZE, building->pos.i * CELLSIZE, CELLSIZE, CELLSIZE, rotator_img_A);
+                    break;
+                case RIGHT:
+                    painter.drawPixmap(building->pos.j * CELLSIZE, building->pos.i * CELLSIZE, CELLSIZE, CELLSIZE, rotator_img_D);
+                    break;
+                default:
+                    break;
+                }
+                break;
+
             default:
                 break;
             }
@@ -397,18 +470,24 @@ void PlayScene::draw_building()
 }
 void PlayScene::draw_ui()
 {
-    shop.move(BUTTON_SIZE * 1, CELLSIZE * 15);
+    shop.move(0, CELLSIZE * 15);
     shop.show();
-    miner_button.move(BUTTON_SIZE * 4, CELLSIZE * 15);
+    miner_button.move(BUTTON_SIZE * 3, CELLSIZE * 15);
     miner_button.show();
-    belt_button.move(BUTTON_SIZE * 6, CELLSIZE * 15);
+    belt_button.move(BUTTON_SIZE * 5, CELLSIZE * 15);
     belt_button.show();
-    cutter_button.move(BUTTON_SIZE * 8, CELLSIZE * 15);
+    cutter_button.move(BUTTON_SIZE * 7, CELLSIZE * 15);
     cutter_button.show();
-    trash_button.move(BUTTON_SIZE * 10, CELLSIZE * 15);
+    trash_button.move(BUTTON_SIZE * 9, CELLSIZE * 15);
     trash_button.show();
-    help_button.move(BUTTON_SIZE * 2, CELLSIZE * 15);
+    help_button.move(BUTTON_SIZE * 1, CELLSIZE * 15);
     help_button.show();
+    //tunnel_entry_button.move(BUTTON_SIZE * 11, CELLSIZE * 15);
+    //tunnel_entry_button.show();
+    //tunnel_exit_button.move(BUTTON_SIZE * 12, CELLSIZE * 15);
+    //tunnel_exit_button.show();
+    rotator_button.move(BUTTON_SIZE * 11, CELLSIZE * 15);
+    rotator_button.show();
 }
 void PlayScene::draw_hub_text()
 {
@@ -455,6 +534,24 @@ void PlayScene::draw_item()
                         break;
                     case RIGHT_CYCLE:
                         itemPainter.drawPixmap(building->shape.x0, building->shape.y0 - ITEM_SIZE / 2, ITEM_SIZE / 2, ITEM_SIZE, right_cycle_img);
+                        break;
+                    case UP_CYCLE:
+                        itemPainter.drawPixmap(building->shape.x0 - ITEM_SIZE / 2, building->shape.y0 - ITEM_SIZE / 2, ITEM_SIZE, ITEM_SIZE / 2, up_cycle_img);
+                        break;
+                    case DOWN_CYCLE:
+                        itemPainter.drawPixmap(building->shape.x0 - ITEM_SIZE / 2, building->shape.y0 - ITEM_SIZE / 2, ITEM_SIZE, ITEM_SIZE / 2, down_cycle_img);
+                        break;
+                    case LEFT_RECT:
+                        itemPainter.drawPixmap(building->shape.x0 - ITEM_SIZE / 2, building->shape.y0 - ITEM_SIZE / 2, ITEM_SIZE / 2, ITEM_SIZE, left_rect_img);
+                        break;
+                    case RIGHT_RECT:
+                        itemPainter.drawPixmap(building->shape.x0, building->shape.y0 - ITEM_SIZE / 2, ITEM_SIZE / 2, ITEM_SIZE, right_rect_img);
+                        break;
+                    case UP_RECT:
+                        itemPainter.drawPixmap(building->shape.x0 - ITEM_SIZE / 2, building->shape.y0 - ITEM_SIZE / 2, ITEM_SIZE, ITEM_SIZE / 2, up_rect_img);
+                        break;
+                    case DOWN_RECT:
+                        itemPainter.drawPixmap(building->shape.x0 - ITEM_SIZE / 2, building->shape.y0 - ITEM_SIZE / 2, ITEM_SIZE, ITEM_SIZE / 2, down_rect_img);
                         break;
                     default:
                         break;
@@ -528,24 +625,110 @@ void PlayScene::draw_overlay(int x, int y)
         default:
             break;
         }
-    case BELT:
+    case TUNNEL_ENTRY:
         switch (current_building_direction)
         {
         case UP:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W);
+            // qDebug() << tr("try to draw TUNNEL");
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_entry_W);
             break;
         case DOWN:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_entry_S);
             break;
         case LEFT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_entry_A);
             break;
         case RIGHT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D);
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_entry_D);
             break;
         default:
             break;
         }
+        break;
+    case TUNNEL_EXIT:
+        switch (current_building_direction)
+        {
+        case UP:
+            // qDebug() << tr("try to draw TUNNEL");
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_exit_W);
+            break;
+        case DOWN:
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_exit_S);
+            break;
+        case LEFT:
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_exit_A);
+            break;
+        case RIGHT:
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, tunnel_exit_D);
+            break;
+        default:
+            break;
+        }
+        break;
+    case ROTATOR:
+        switch (current_building_direction)
+        {
+        case UP:
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_W);
+            break;
+        case DOWN:
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_S);
+            break;
+        case LEFT:
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_A);
+            break;
+        case RIGHT:
+            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_D);
+            break;
+        default:
+            break;
+        }
+        break;
+    case BELT:
+        switch (current_building_direction)
+        {
+        // 单个方向
+        case UP:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W);
+            break;
+        case DOWN:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S);
+            break;
+        case LEFT:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A);
+            break;
+        case RIGHT:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D);
+            break;
+        case UP_RIGHT:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W_D);  // 上-右
+            break;
+        case UP_LEFT:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W_A);  // 上-左
+            break;
+        case DOWN_RIGHT:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S_D);  // 下-右
+            break;
+        case DOWN_LEFT:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S_A);  // 下-左
+            break;
+        case LEFT_UP:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A_W);  // 左-上
+            break;
+        case LEFT_DOWN:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A_S);  // 左-下
+            break;
+        case RIGHT_UP:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D_W);  // 右-上
+            break;
+        case RIGHT_DOWN:
+            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D_S);  // 右-下
+            break;
+
+        default:
+            break;
+        }
+
 
     default:
         break;
@@ -645,6 +828,16 @@ void PlayScene::HandleLeftButtonPress(QMouseEvent *e, int grid_i, int grid_j)
         case TRASH:
             current_building = new Trash(cur, current_building_name, current_building_direction);
             break;
+        case TUNNEL_ENTRY:
+            current_building = new TunnelEntry(cur, current_building_name, current_building_direction);
+            printf("tunnelentry:\n", current_building->name);
+            break;
+        case TUNNEL_EXIT:
+            current_building = new TunnelExit(cur, current_building_name, current_building_direction);
+            break;
+        case ROTATOR:
+            current_building = new Rotator(cur, current_building_name, current_building_direction);
+            break;
         default:
             return;
         }
@@ -656,6 +849,9 @@ void PlayScene::HandleLeftButtonPress(QMouseEvent *e, int grid_i, int grid_j)
             break;
         case CUTTER:
             current_building->FirstRequire_ms = CUTTER_SPEED_2;
+            break;
+        case ROTATOR:
+            current_building->FirstRequire_ms = ROTATOR_SPEED_2;
             break;
         default:
             break;
@@ -687,6 +883,8 @@ void PlayScene::HandleLeftButtonPress(QMouseEvent *e, int grid_i, int grid_j)
         start_pos = e->pos();
     }
 }
+
+
 
 void PlayScene::HandleRightButtonPress(int grid_i, int grid_j)
 {
@@ -744,26 +942,71 @@ void PlayScene::RemoveBuilding(GridVec pos)
         map.RemoveBuilding(pos);
     }
 }
+
+
 void PlayScene::keyPressEvent(QKeyEvent *e)
 {
-    switch (e->key())
-    {
-    case Qt::Key_A:
+    // 如果按键已经按下，不重复记录
+    if (!pressedKeys.contains(e->key())) {
+        pressedKeys.insert(e->key());
+        keySequence.append(e->key());  // 记录按键的按下顺序
+    }
+
+    // 1. 检测上 -> 右转弯（先按 W 后按 D）
+    if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_W && keySequence[1] == Qt::Key_D) {
+        current_building_direction = UP_RIGHT;
+    }
+    // 2. 检测右 -> 上（先按 D 后按 W）
+    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_D && keySequence[1] == Qt::Key_W) {
+        current_building_direction = RIGHT_UP;
+    }
+    // 3. 检测上 -> 左转弯（先按 W 后按 A）
+    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_W && keySequence[1] == Qt::Key_A) {
+        current_building_direction = UP_LEFT;
+    }
+    // 4. 检测左 -> 上（先按 A 后按 W）
+    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_A && keySequence[1] == Qt::Key_W) {
+        current_building_direction = LEFT_UP;
+    }
+    // 5. 检测下 -> 右转弯（先按 S 后按 D）
+    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_S && keySequence[1] == Qt::Key_D) {
+        current_building_direction = DOWN_RIGHT;
+    }
+    // 6. 检测右 -> 下（先按 D 后按 S）
+    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_D && keySequence[1] == Qt::Key_S) {
+        current_building_direction = RIGHT_DOWN;
+    }
+    // 7. 检测下 -> 左转弯（先按 S 后按 A）
+    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_S && keySequence[1] == Qt::Key_A) {
+        current_building_direction = DOWN_LEFT;
+    }
+    // 8. 检测左 -> 下（先按 A 后按 S）
+    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_A && keySequence[1] == Qt::Key_S) {
+        current_building_direction = LEFT_DOWN;
+    }
+
+    // 单一按键的检测
+    else if (pressedKeys.contains(Qt::Key_A)) {
         current_building_direction = LEFT;
-        break;
-    case Qt::Key_D:
+    }
+    else if (pressedKeys.contains(Qt::Key_D)) {
         current_building_direction = RIGHT;
-        break;
-    case Qt::Key_W:
+    }
+    else if (pressedKeys.contains(Qt::Key_W)) {
         current_building_direction = UP;
-        break;
-    case Qt::Key_S:
+    }
+    else if (pressedKeys.contains(Qt::Key_S)) {
         current_building_direction = DOWN;
-        break;
-    default:
-        break;
     }
 }
+void PlayScene::keyReleaseEvent(QKeyEvent *e)
+{
+    // 移除按键
+    pressedKeys.remove(e->key());
+    keySequence.removeOne(e->key());  // 从按键顺序中删除该按键
+}
+
+
 void PlayScene::PushBackNewBeltGridPoint(int grid_j, int grid_i)
 {
     // 把鼠标拖动放置传送带时经过的新网格点压入qlist
@@ -797,6 +1040,8 @@ void PlayScene::HandleBuildingPlacement(QMouseEvent *e, int grid_i, int grid_j)
 
 void PlayScene::HandleDragging(QMouseEvent *e)
 {
+    if (scaleFactor > 0.8) {
+
     QPoint delta = e->pos() - start_pos;
     scroll_offset += delta;
 
@@ -821,6 +1066,7 @@ void PlayScene::HandleDragging(QMouseEvent *e)
     *Qpointmapx = scroll_offset.x();
     *Qpointmapy = scroll_offset.y();
     update();  // Refresh the display
+    }
 }
 
 void PlayScene::HandleRightButtonDrag(int grid_i, int grid_j)
@@ -975,21 +1221,50 @@ void PlayScene::HandleSingleBeltPlacement()
     // Determine which belt based on the current building direction
     switch (current_building_direction)
     {
+    // 单一方向
     case UP:
-        which_belt = BELT_W;
+        which_belt = BELT_W;  // 上方向传送带
         break;
     case DOWN:
-        which_belt = BELT_S;
+        which_belt = BELT_S;  // 下方向传送带
         break;
     case LEFT:
-        which_belt = BELT_A;
+        which_belt = BELT_A;  // 左方向传送带
         break;
     case RIGHT:
-        which_belt = BELT_D;
+        which_belt = BELT_D;  // 右方向传送带
         break;
+
+        // 八个新方向组合
+    case UP_RIGHT:
+        which_belt = BELT_W_D;  // 上-右传送带
+        break;
+    case UP_LEFT:
+        which_belt = BELT_W_A;  // 上-左传送带
+        break;
+    case DOWN_RIGHT:
+        which_belt = BELT_S_D;  // 下-右传送带
+        break;
+    case DOWN_LEFT:
+        which_belt = BELT_S_A;  // 下-左传送带
+        break;
+    case LEFT_UP:
+        which_belt = BELT_A_W;  // 左-上传送带
+        break;
+    case LEFT_DOWN:
+        which_belt = BELT_A_S;  // 左-下传送带
+        break;
+    case RIGHT_UP:
+        which_belt = BELT_D_W;  // 右-上传送带
+        break;
+    case RIGHT_DOWN:
+        which_belt = BELT_D_S;  // 右-下传送带
+        break;
+
     default:
         break;
     }
+
 
     // Create a new belt and check if it can be placed
     Building *current_building = new Belt(belt_grid_path[0], which_belt, belt_direction);
@@ -997,6 +1272,7 @@ void PlayScene::HandleSingleBeltPlacement()
     {
         map.SetBuilding(belt_grid_path[0], current_building, belt_direction, which_belt);
         buildings.push_back(current_building);
+        current_building_direction = UP;
     }
 }
 
@@ -1034,7 +1310,7 @@ void PlayScene::HandleBeltGridPlacement()
             break;
         }
 
-        qDebug() << "belt_grid_path[" << i << "]: " << belt_grid_path[i].j << "," << belt_grid_path[i].i;
+        //qDebug() << "belt_grid_path[" << i << "]: " << belt_grid_path[i].j << "," << belt_grid_path[i].i;
 
         // Create a new belt and check if it can be placed
         Building *current_building = new Belt(belt_grid_path[i], which_belt, belt_direction);
@@ -1105,7 +1381,7 @@ void PlayScene::FactoryRunning()
                 {
                     for(auto &building : buildings)
                     {
-                        if(building->name != HUB && building->name != TRASH)
+                        if(building->name != HUB && building->name != TRASH && building->name != TUNNEL_ENTRY && building->name != TUNNEL_EXIT)
                         {
                             building->UpdateTickableState(map);
                         }
@@ -1115,7 +1391,7 @@ void PlayScene::FactoryRunning()
 void PlayScene::updateHubStats()
 {
     // 更新物体接收统计
-    qDebug() << "Hub received objects in the last second: " << *(hub->received_objects_last_10_second);
+    //qDebug() << "Hub received objects in the last second: " << hub->received_objects_last_second;
 
     // 更新收到的物体数量
     hub->updateReceivedObjectsCount();
@@ -1218,6 +1494,15 @@ void PlayScene::LoadSave()
             case TRASH:
                 cur_building = new Trash(cur, name, direction);
                 break;
+            case TUNNEL_ENTRY:
+                cur_building = new TunnelEntry(cur, name, direction);
+                break;
+            case TUNNEL_EXIT:
+                cur_building = new TunnelExit(cur, name, direction);
+                break;
+            case ROTATOR:
+                cur_building = new Rotator(cur, name, direction);
+                break;
             case BELT_A:
             case BELT_A_S:
             case BELT_A_W:
@@ -1241,10 +1526,10 @@ void PlayScene::LoadSave()
     {
         hub = new Hub(this);
         hub->name = HUB;
-        hub->pos.i = 75;
-        hub->pos.j = 120;
+        hub->pos.i = 10;
+        hub->pos.j = 15;
         hub->direction = UP;
-        GridVec hubvec(75, 120);
+        GridVec hubvec(10, 15);
         Building *smallhub = hub;
         map.SetBuilding(hubvec, smallhub, hub->direction, hub->name);
         buildings.push_back(smallhub);
@@ -1270,6 +1555,9 @@ void PlayScene::LoadSave()
                 buildings[i]->FirstRequire_ms = 1800;
                 break;
             case CUTTER:
+                buildings[i]->FirstRequire_ms = 2700;
+                break;
+            case ROTATOR:
                 buildings[i]->FirstRequire_ms = 2700;
                 break;
             case BELT_A:
@@ -1302,6 +1590,9 @@ void PlayScene::LoadSave()
             case CUTTER:
                 buildings[i]->FirstRequire_ms = 2700;
                 break;
+            case ROTATOR:
+                buildings[i]->FirstRequire_ms = 2700;
+                break;
             case BELT_A:
             case BELT_A_S:
             case BELT_A_W:
@@ -1332,6 +1623,42 @@ void PlayScene::LoadSave()
             case CUTTER:
                 buildings[i]->FirstRequire_ms = 1800;
                 break;
+            case ROTATOR:
+                buildings[i]->FirstRequire_ms = 2700;
+                break;
+            case BELT_A:
+            case BELT_A_S:
+            case BELT_A_W:
+            case BELT_D:
+            case BELT_D_S:
+            case BELT_D_W:
+            case BELT_S:
+            case BELT_S_A:
+            case BELT_S_D:
+            case BELT_W:
+            case BELT_W_A:
+            case BELT_W_D:
+                buildings[i]->FirstRequire_ms = 1500;
+                break;
+            default:
+                break;
+            }
+        }
+        break;
+    case ROTATOR:
+        for (int i = 0; i < buildings.size(); i++)
+        {
+            switch (buildings[i]->name)
+            {
+            case MINER:
+                buildings[i]->FirstRequire_ms = 2700;
+                break;
+            case CUTTER:
+                buildings[i]->FirstRequire_ms = 1800;
+                break;
+            case ROTATOR:
+                buildings[i]->FirstRequire_ms = 2700;
+                break;
             case BELT_A:
             case BELT_A_S:
             case BELT_A_W:
@@ -1359,27 +1686,26 @@ void PlayScene::LoadSave()
     case 1:
         *hub->need_shape_name = CYCLE;
         hub->need = NEED_CYCLE;
+        aim_img.load(AIM1_PATH);
         break;
     case 2:
         *hub->need_shape_name = RECT;
         hub->need = NEED_RECT;
+        aim_img.load(AIM2_PATH);
         break;
     case 3:
         *hub->need_shape_name = LEFT_CYCLE;
         hub->need = NEED_LEFT_CYCLE;
+        aim_img.load(AIM3_PATH);
         break;
     case 4:
         *hub->need_shape_name = RIGHT_CYCLE;
         hub->need = NEED_RIGHT_CYCLE;
-        break;
-    case 5:
-        *hub->need_shape_name = CYCLE;
-        hub->need = NEED_RIGHT_CYCLE;
+        aim_img.load(AIM4_PATH);
         break;
     default:
         break;
     }
-    update();
 }
 void PlayScene::closeEvent(QCloseEvent *)
 {
@@ -1413,57 +1739,63 @@ void PlayScene::setScaleFactor(double fac){
     update();
 }
 void PlayScene::wheelEvent(QWheelEvent *event) {
-    // 获取当前滚轮的滚动值
+    // Get the current scroll value from the mouse wheel
     int delta = event->angleDelta().y();
     double scaleFactorStep = 0.1;
 
-    // 获取当前视口的中心位置
+    // Get the current center position of the viewport
     int viewCenterX = (WIDGET_WIDTH / 2) / scaleFactor - scroll_offset.x();
     int viewCenterY = (WIDGET_HEIGHT / 2) / scaleFactor - scroll_offset.y();
 
-    // 根据滚轮方向增加或减少缩放因子
+    // Increase or decrease the scale factor based on the scroll direction
     if (delta > 0) {
         setScaleFactor(scaleFactor + scaleFactorStep);
     } else {
         setScaleFactor(scaleFactor - scaleFactorStep);
     }
 
-    // 限制缩放范围
-    if (scaleFactor < 0.4) {
-        setScaleFactor(0.4);
+    // Restrict the scale factor to a reasonable range
+    if (scaleFactor < 0.6) {
+        setScaleFactor(0.6);
     } else if (scaleFactor > 2.0) {
         setScaleFactor(2.0);
     }
     *scaleFcator_map = scaleFactor;
 
-    // 重新调整偏移量，确保视口的中心点不变
+    // Adjust the scroll offset to ensure the center of the viewport stays the same
     scroll_offset.setX((WIDGET_WIDTH / 2) / scaleFactor - viewCenterX);
     scroll_offset.setY((WIDGET_HEIGHT / 2) / scaleFactor - viewCenterY);
 
-    // 刷新视图
+    // Refresh the view
     update();
 }
-void PlayScene::initializeView() {
-    setScaleFactor(1.0);
-    // 计算地图的宽度和高度（格子数 * 单个格子的大小）
-    int mapWidth = 240 * 50;  // 地图的总宽度
-    int mapHeight = 150 * 50; // 地图的总高度
 
-    // 计算地图中心点（地图的中点）
+void PlayScene::initializeView() {
+
+
+    setScaleFactor(1.0);
+    // Calculate the width and height of the map (number of tiles * size of each tile)
+    int mapWidth = 32 * 50;  // Total map width
+    int mapHeight = 20 * 50; // Total map height
+
+    // Calculate the center of the map (midpoint of the map)
     int mapCenterX = mapWidth / 2;
     int mapCenterY = mapHeight / 2;
 
-    // 计算窗口的中心位置
+    // Calculate the center of the window
     int windowCenterX = WIDGET_WIDTH / 2;
     int windowCenterY = WIDGET_HEIGHT / 2;
 
-    // 设置 scroll_offset，使得窗口中心对齐到地图中心
+    // Set scroll_offset to align the window center with the map center
     scroll_offset.setX(windowCenterX - (mapCenterX / scaleFactor));
     scroll_offset.setY(windowCenterY - (mapCenterY / scaleFactor));
 
-    // 刷新视图
+    // Refresh the view
     update();
+
+
 }
+
 void PlayScene::outputCurrentShape() {
     switch (current_received_shape) {
     case CYCLE:
@@ -1489,16 +1821,16 @@ void PlayScene::outputCurrentShape() {
 void PlayScene::draw_current_shape() {
     QPainter shapePainter(this);
 
-    // 固定在窗口右上角，设定绘制位置 (右上角的偏移)
-    int x = this->width() - 250;  // 距离窗口右边缘 200 像素
+    // Fixed position in the top-right corner, set the drawing position (offset from the top-right)
+    int x = this->width() - 250;  // 200 pixels from the right edge of the window
     int y = 50;
 
-    // 绘制接收到的物体数量
-    shapePainter.setFont(QFont("Arial", 20));  // 设置字体大小
+    // Draw the number of objects received in the last 10 seconds
+    shapePainter.setFont(QFont("Arial", 20));  // Set font size
     shapePainter.drawText(x, y, "Objects in 10s: " + QString::number(*(hub->received_objects_last_10_second)));
 
-    // 在同一位置下方显示 current_received_shape
-    y += 30;  // 调整y坐标，防止文字重叠
+    // Display the current received shape below the previous text
+    y += 30;  // Adjust y-coordinate to prevent text overlap
     switch (current_received_shape) {
     case CYCLE:
         shapePainter.drawText(x, y, "CYCLE");
@@ -1519,31 +1851,35 @@ void PlayScene::draw_current_shape() {
 }
 
 void PlayScene::checkResetReceivedShape() {
-    // 如果已经超过 10 秒没有接收到物体
+    // If more than 10 seconds have passed without receiving any objects
     if (hub && hub->shape_update_timer.elapsed() >= 10000) {
         if (current_received_shape != NONE) {
             current_received_shape = NONE;
-            hub->resetReceiveCounter();  // 重置接收计数器
+            hub->resetReceiveCounter();  // Reset the receive counter
         }
     }
 }
+
 void PlayScene::addTopLeftButton() {
-    // 创建一个按钮并设置其父窗口为 PlayScene
+    // Create a button and set its parent window to PlayScene
     QPushButton *topLeftButton = new QPushButton(this);
 
-    // 设置按钮的大小和位置（左上角）
-    topLeftButton->setGeometry(0, 0, 100, 100);  // 调整按钮大小和位置
+    // Set the button's size and position (top left corner)
+    topLeftButton->setGeometry(0, 0, 100, 100);  // Adjust the button's size and position
 
-    // 去掉按钮的边框，这样看起来像是一个纯图片的区域
+    // Remove the button's border to make it appear like a plain image area
     topLeftButton->setStyleSheet("QPushButton { border: none; }");
 
-    // 设置按钮的图片 (请替换为你的图片路径)
-    QPixmap pixmap("://res/locate.png");  // 图片路径
+    // Set the button's icon (replace with your image path)
+    QPixmap pixmap("://res/locate.png");  // Image path
     QIcon ButtonIcon(pixmap);
     topLeftButton->setIcon(ButtonIcon);
-    topLeftButton->setIconSize(pixmap.rect().size());  // 设置图片大小为按钮的图标大小
+    topLeftButton->setIconSize(pixmap.rect().size());  // Set the icon size to match the button
 
-    // 连接按钮的点击信号到 PlayScene 的 initializeView 方法
+    // Connect the button's click signal to the initializeView method of PlayScene
     connect(topLeftButton, &QPushButton::clicked, this, &PlayScene::initializeView);
 }
+
+
+
 

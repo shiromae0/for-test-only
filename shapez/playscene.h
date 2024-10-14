@@ -11,6 +11,7 @@
 #include "GameMap.h"
 #include "Hub.h"
 #include <QTime>
+#include "RoundScene.h"
 #include <QMovie>
 #include <QLabel>
 #include <QList>
@@ -117,7 +118,12 @@ public:
     QPushButton belt_button;
     QPushButton cutter_button;
     QPushButton trash_button;
+    QPushButton tunnel_entry_button;
+    QPushButton tunnel_exit_button;
     QPushButton help_button;
+    QPushButton rotator_button;
+    QSet<int> pressedKeys;
+    QList<int> keySequence;
     /**************像素画***************/
     // 背景
     QPixmap hub_small_img;        // 小交付中心
@@ -150,6 +156,19 @@ public:
     QPixmap trash_img_D;
     QPixmap trash_img_S;
     QPixmap trash_img_W;
+    QPixmap tunnel_entry_A; // 隧道
+    QPixmap tunnel_entry_D;
+    QPixmap tunnel_entry_S;
+    QPixmap tunnel_entry_W;
+    QPixmap tunnel_exit_A;
+    QPixmap tunnel_exit_D;
+    QPixmap tunnel_exit_S;
+    QPixmap tunnel_exit_W;
+    QPixmap rotator_img_A; // 旋转器
+    QPixmap rotator_img_D;
+    QPixmap rotator_img_S;
+    QPixmap rotator_img_W;
+
     // 不同方向的建筑蓝图
     QPixmap miner_img_blue_A; // 采矿机
     QPixmap miner_img_blue_D;
@@ -175,20 +194,35 @@ public:
     QPixmap trash_img_blue_D;
     QPixmap trash_img_blue_S;
     QPixmap trash_img_blue_W;
+
+    QPixmap tunnel_blue_A; // 隧道
+    QPixmap tunnel_blue_D;
+    QPixmap tunnel_blue_S;
+    QPixmap tunnel_blue_W;
+
+    QPixmap rotator_img_blue_A; // 旋转器
+    QPixmap rotator_img_blue_D;
+    QPixmap rotator_img_blue_S;
+    QPixmap rotator_img_blue_W;
     // 物品
     QPixmap cycle_img;
     QPixmap rect_img;
     QPixmap left_cycle_img;
     QPixmap right_cycle_img;
+    QPixmap up_cycle_img;
+    QPixmap down_cycle_img;
+
+    QPixmap left_rect_img;
+    QPixmap right_rect_img;
+    QPixmap up_rect_img;
+    QPixmap down_rect_img;
+
     QPixmap aim_img;
 
     int last_mouse_x;
     int last_mouse_y;
     QTime last_mouse_move_time;
 
-    QPoint reserved_start_pos;
-    QPoint mouseReleasePosition = QPoint(0,0);
-    int mapcell [24][16];
 
     /**
      * \brief 画出所有网格
@@ -313,13 +347,16 @@ public:
     QElapsedTimer elapsedTimer;  // 新增一个计时器
     void updateHubStats();  // 新增一个函数，用于更新Hub接收物体的统计
     QTimer *shape_output_timer;
+    QTimer *tunnel_check_timer;
     void outputCurrentShape();
     void draw_current_shape();
     void checkResetReceivedShape();
+    void checkTunnels();
     int total_objects_last_ten_seconds;  // 记录过去十秒内收到的物体总数
     QVector<int> objects_per_second;     // 记录每秒收到的物体数量
     QTimer *ten_second_timer;
     void addTopLeftButton();
+    void keyReleaseEvent(QKeyEvent *e);
 };
 
 #endif // PLAYSCENE_H

@@ -130,6 +130,8 @@ public:
      * \brief 更新建筑的状态
      */
     virtual void UpdateTickableState(GameMap &gamemap) = 0;
+
+    bool HasTunnelExit(GridVec pos, GameMap &gamemap);
 };
 
 #endif // BUILDING_H
