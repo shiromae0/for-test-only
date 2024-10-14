@@ -1,3 +1,4 @@
+import numpy as np
 from stable_baselines3 import PPO
 from stable_baselines3.ppo import MultiInputPolicy
 
@@ -125,8 +126,8 @@ resource = getmap.load_shared_arrays()[0]
 build = getmap.load_shared_arrays()[1]
 target_shape = getmap.load_needed_shape()
 print(resource)
-print(build)
-build[build != -1] *= 100
+print(np.array2string(build, max_line_width=200))
+build[(build != -1) & (build//100 != 31)] *= 100
 
 # resource = np.array([
 #     [11, 0, 0, 0, 0],             # (0,0) 位置的资源形状为 11
@@ -158,7 +159,7 @@ model = PPO(MaskedMultiInputPolicy, env=env, verbose=1, policy_kwargs={'model': 
 # 在创建模型后，将 model 自己设置为策略类中的 model
 model.set_env(env)
 model.policy.model = model
-model.learn(total_timesteps=5000)
+model.learn(total_timesteps=30000)
 
 # 保存模型
 model.save("ppo_shapez_model")
@@ -168,7 +169,7 @@ model.save("ppo_shapez_model")
 def get_agent_act_list():
     obs, info = env.reset()
     agent_act = []
-    for step in range(30000):
+    for step in range(10000):
         if step == 0:
             print("start")
         action, _states = model.predict(obs)

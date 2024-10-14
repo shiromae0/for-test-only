@@ -18,7 +18,7 @@ def distance(point1, point2):
 class ShapezEnv(gymnasium.Env):
     def __init__(self, build, res, target_shape):
         self.success_times = 0
-        self.max_step = 1200
+        self.max_step = 800
         self.steps = 0
         self.original_bld = np.array(build)
         self.path = []
@@ -57,10 +57,8 @@ class ShapezEnv(gymnasium.Env):
             np.random.seed(seed)
         if options is not None:
             pass
-        self.act_mask = None
         # reset the env
         self.last_action_index = -1
-        self.act_list.clear()
         self.total_reward = 0
         self.reward_grid = np.full(self.grid_bld.shape, -1)
         self.steps = 0
@@ -70,15 +68,46 @@ class ShapezEnv(gymnasium.Env):
         self.total_useful_resource = 0
         # 清空 machines 字典
         self.machines.clear()
-        self.path_num = 0
-        self.path.clear()
         # 找到所有 Hub（值为 21 的位置）
-        hub_positions = np.argwhere(self.grid_bld // 100 == 21)
-        # 将这些位置的 Hub 添加到 machines 字典中
-        for pos in hub_positions:
-            position = tuple(pos)  # 将数组转换为 tuple 类型的坐标
-            hub = Hub(position=position, direction=0)  # 假设 direction 默认为 0
-            self.machines[position] = hub  # 添加 Hub 对象到 machines 字典
+        for index, value in np.ndenumerate(self.grid_bld):
+            machine_type = value // 100
+            position = tuple(index)
+            direction = value % 100
+
+            if machine_type == 23:  # Cutter
+                if position in self.machines:
+                    # print(f"警告：位置 {position} 已经被占用，跳过主出口初始化")
+                    continue
+
+                cutter = Cutter(position, direction)
+                self.machines[position] = cutter
+                # print(f"Cutter 主出口初始化成功，位置: {position}, 方向: {direction}")
+                # 初始化 Cutter 的副出口
+                sub_pos = cutter.sub_pos
+                # 检查副出口是否已经被占用
+                if sub_pos in self.machines:
+                    print(f"警告：副出口位置 {sub_pos} 已经被占用，跳过此位置")
+                else:
+                    self.machines[sub_pos] = cutter  # 将副出口也加入到 self.machines
+                    # print(f"Cutter 副出口初始化成功，位置: {sub_pos}, 方向: {direction}")
+
+
+            elif machine_type == 22:  # Miner 矿机
+                self.machines[position] = Miner(position, direction)
+                # print(f"矿机初始化成功，位置: {position}, 方向: {direction}")
+
+            elif machine_type == 31:  # Conveyor 传送带
+                self.machines[position] = Conveyor(position, direction)
+                # print(f"传送带初始化成功，位置: {position}, 方向: {direction}")
+
+            elif machine_type == 21:  # Hub
+                self.machines[position] = Hub(position, direction)
+                # print(f"Hub 初始化成功，位置: {position}, 方向: {direction}")
+
+            elif machine_type == 24:  # Trash
+                self.machines[position] = Trash(position)
+                # print(f"垃圾桶初始化成功，位置: {position}")
+            # 根据需要添加其他机器类型
         # 返回环境的初始观察值（obs）和一个空字典
         obs = self._get_obs()
         return obs, {}
@@ -158,7 +187,6 @@ class ShapezEnv(gymnasium.Env):
                 current_shape = self.grid_rsc[position]  # 获取资源的初始形状
                 # print(f"起点是矿机，位置: {current_position}, 初始形状: {current_shape}")
                 positions = []
-
                 while True:
                     if current_position in positions:
                         # print(f"发现循环路径，位置: {current_position}")
@@ -364,7 +392,8 @@ class ShapezEnv(gymnasium.Env):
         cur_pos = position
         cur_direct = direction
         while True:
-            visited.append(cur_pos)
+            if cur_pos in self.machines:
+                visited.append(cur_pos)
             if cur_pos == None:
                 break
             if (self.grid_bld[cur_pos] // 100 != 31 and self.grid_bld[cur_pos] // 100 != 23) or self.grid_bld[cur_pos] // 100 == 24 or self.grid_bld[cur_pos] // 100 == 22 :
@@ -511,10 +540,14 @@ class ShapezEnv(gymnasium.Env):
                             current_shape = shapes[0]
                         else:
                             current_shape = shapes[1]
-                # print("cur_shape =",current_shape)
-            if self.check_valid_shape(current_shape):
+
+            if self.check_valid_shape(current_shape) or current_shape is None:
+                # print("cur_shape =", current_shape)
+                # print("delete the invalid shape")
                 reward -= 50
             else:
+                # print("cur_shape =", current_shape)
+                # print("delete the valid shape")
                 reward += 50
             # print(reward)
             # print()
@@ -855,14 +888,15 @@ class ShapezEnv(gymnasium.Env):
             # can not be out of boundary and the pre_pos machine must be a correct conveyor
             return False
         start_pos = self.get_start_pos(position, direction)
-        # print(start_pos)
         if start_pos == position:  # not connected to other machines
             return False
             # handle nxt_pos situation
         nxt_pos = self._get_next_position(position, direction)
         if nxt_pos == None:  # next position out of bound
             return False
-        path = self.retrieve_path(position,direction)
+        path = self.retrieve_path(pre_pos,direction)
+        # print(position,direction)
+        # print(np.array2string(self.grid_bld, max_line_width=200))
         target_shape = self.grid_rsc[path[-1]]
         if target_shape == self.target_shape:
             return False

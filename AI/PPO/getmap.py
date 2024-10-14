@@ -9,11 +9,29 @@ def load_shared_arrays():
 
         HEIGHT = 20
         WIDTH = 32
-        acutal_size = len(existing_shm.buf)
-        print(acutal_size)
         resource_array = np.ndarray((HEIGHT, WIDTH), dtype=int, buffer=existing_shm.buf).copy()
         buildingsmap_array = np.ndarray((HEIGHT, WIDTH), dtype=int, buffer=build_shm.buf).copy()
-
+        belt_mapping = {
+            31: 3103,
+            32: 3111,
+            33: 3109,
+            34: 3104,
+            35: 3112,
+            36: 3110,
+            37: 3102,
+            38: 3107,
+            39: 3108,
+            40: 3101,
+            41: 3105,
+            42: 3106,
+        }
+        # 遍历 buildingsmap_array 并修改 item
+        # 遍历 buildingsmap_array 并修改每个值
+        for i in range(buildingsmap_array.shape[0]):  # 遍历每一行
+            for j in range(buildingsmap_array.shape[1]):  # 遍历每一列
+                item = buildingsmap_array[i, j]  # 获取元素
+                if item in belt_mapping:
+                    buildingsmap_array[i, j] = belt_mapping[item]  # 使用映射值替换
 
         return resource_array, buildingsmap_array
 
@@ -47,6 +65,6 @@ def load_scaleFactor():
         if existing_shm is not None:
             existing_shm.close()
 
-# print(load_shared_arrays()[1])
+print(load_shared_arrays()[1])
 # print(load_scroll_offset())
 #   print(load_scaleFactor())
