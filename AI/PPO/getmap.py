@@ -7,9 +7,10 @@ def load_shared_arrays():
         existing_shm = shared_memory.SharedMemory(name='SharedResource')
         build_shm = shared_memory.SharedMemory(name='SharedBuild')
 
-        HEIGHT = 15
-        WIDTH = 24
-
+        HEIGHT = 20
+        WIDTH = 32
+        acutal_size = len(existing_shm.buf)
+        print(acutal_size)
         resource_array = np.ndarray((HEIGHT, WIDTH), dtype=int, buffer=existing_shm.buf).copy()
         buildingsmap_array = np.ndarray((HEIGHT, WIDTH), dtype=int, buffer=build_shm.buf).copy()
 
@@ -46,6 +47,6 @@ def load_scaleFactor():
         if existing_shm is not None:
             existing_shm.close()
 
-#print(load_shared_arrays()[1])
-print(load_scroll_offset())
+# print(load_shared_arrays()[1])
+# print(load_scroll_offset())
 #   print(load_scaleFactor())

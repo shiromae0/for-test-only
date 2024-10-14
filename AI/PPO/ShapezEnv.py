@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 from typing import Optional, Tuple
 
 import gymnasium
@@ -126,8 +127,14 @@ class ShapezEnv(gymnasium.Env):
         if self.act_mask[action] != 0:
             reward = self.handle_place(machine_type, position, direction)
         # print(np.array2string(self.grid_bld, max_line_width=200))
-        # print(action_type, position,reward)
+        # print(action_type, position,reward,self.total_reward)
+        # for idx,value in enumerate(self.act_mask):
+        #     if value == 1:
+        #         act = self.action_list[idx]
+        #         machine_type, direction = act[0]
+        #         print("valid act = ",act)
         # print()
+        # time.sleep(1)
         # for machine in self.machines.items():
         #     print(machine[0],machine[1].shape,machine[1].num)
         self.total_reward += reward
@@ -376,15 +383,20 @@ class ShapezEnv(gymnasium.Env):
                 #有环
                 break
         return visited
-    def check_shape_reward(self,shape):
+    def check_valid_shape(self,shape):
         #check if the shape is target shape or possible target shape
         if shape == self.target_shape:
-            return 10
-        else:
-            if self.target_shape == 13 and shape == 11:
-                return 5
+            return True
+        if self.target_shape == 13 or self.target_shape == 14 or self.target_shape == 60 or self.target_shape == 20:
+            if shape == 11:
+                return True
             else:
-                return -5
+                return False
+        if 16 <= self.target_shape <= 19:
+            if shape == 12:
+                return True
+            else:
+                return False
     def calculate_miner_reward(self,position,direction):
         hub_positions = np.argwhere(self.grid_bld == 2100)
         if hub_positions.size > 0:
@@ -431,7 +443,6 @@ class ShapezEnv(gymnasium.Env):
                 direction_reward = 10
             else:
                 direction_reward = -10
-
         return distance_reward + direction_reward
     def calculate_conveyor_reward(self,position,direction):
         reward = 0
@@ -461,28 +472,28 @@ class ShapezEnv(gymnasium.Env):
         if hub_pos == None or next_pos == None:
             #no valid closet hub meaningless to continue placing belt
             return -5
-        min_dis = distance(start, hub_pos)
-        distance_reward = max(self.reward_grid.shape[0],self.reward_grid.shape[1]) - distance(position, hub_pos)
-
-        # 定义 reward 的最小和最大值
-        reward_min = 0
-        reward_max = max(self.reward_grid.shape[0],self.reward_grid.shape[1])
-
-        log_reward = np.log(distance_reward - reward_min + 1)  # 加 1 避免 log(0)
-        scaled_reward = (log_reward - np.log(1)) / (np.log(reward_max - reward_min + 1) - np.log(1)) * 15
-
-        distance_reward = max(0, min(15, scaled_reward))  # 限制在 [0, 20] 范围
-
+        # min_dis = distance(start, hub_pos)
+        # distance_reward = max(self.reward_grid.shape[0],self.reward_grid.shape[1]) - distance(position, hub_pos)
+        #
+        # # 定义 reward 的最小和最大值
+        # reward_min = 0
+        # reward_max = max(self.reward_grid.shape[0],self.reward_grid.shape[1])
+        #
+        # log_reward = np.log(distance_reward - reward_min + 1)  # 加 1 避免 log(0)
+        # scaled_reward = (log_reward - np.log(1)) / (np.log(reward_max - reward_min + 1) - np.log(1)) * 15
+        #
+        # distance_reward = max(0, min(15, scaled_reward))  # 限制在 [0, 20] 范围
+        # reward = self.grid_bld.shape[0]-distance(hub_pos,position)
         if distance(hub_pos,position) < distance(hub_pos,next_pos):
-            reward = distance_reward - 2
+            reward = -5
         else:
             # closer to the hub
-            reward = distance_reward + 2
-        if self.check_shape_reward(current_shape) > 0:
+            reward = 5
+        if self.check_valid_shape(current_shape):
             #conveying the correct shape
-            return reward + self.check_shape_reward(current_shape) / 2
+            return reward
         else:
-            return -len(path)
+            return -20
     def calculate_trash_reward(self,position):
         start = self._get_pre_position(position,0)
         reward = 0
@@ -508,7 +519,10 @@ class ShapezEnv(gymnasium.Env):
                         else:
                             current_shape = shapes[1]
                 # print("cur_shape =",current_shape)
-            reward -= self.check_shape_reward(current_shape) * 5
+            if self.check_valid_shape(current_shape):
+                reward -= 50
+            else:
+                reward += 50
             # print(reward)
             # print()
         # sys.exit()
@@ -535,10 +549,10 @@ class ShapezEnv(gymnasium.Env):
                 else:
                     #sub exit:
                     current_shape = self.process_cut(current_shape)[1]
-        if self.check_shape_reward(current_shape):
+        if self.check_valid_shape(current_shape):
             return 100
         else:
-            return -40
+            return -100
 
     def get_cutter_pos(self,position,direction):
         main_pos = None
@@ -580,15 +594,18 @@ class ShapezEnv(gymnasium.Env):
         if machine_type == 0:  # action is remove
             machine_type,direction = self.extract_buildings(position)
             if machine_type == 23:
+                #cutter
                 main_pos,sub_pos = self.get_cutter_pos(position,direction)
                 self.grid_bld[main_pos] = -1
                 self.grid_bld[sub_pos] = -1
             else:
                 self.grid_bld[position] = -1
-            reward = -(self.reward_grid)[position]
-            self.reward_grid[position] = -1
-            return reward - 3
+                reward = -(self.reward_grid)[position] if (self.reward_grid)[position] > 0 else -(self.reward_grid)[
+                                                                                                    position] / 2
+                self.reward_grid[position] = -1
+            return reward
         elif machine_type == 22: #placing miner
+            count_22 = np.sum(self.grid_bld//100 == 22)
             reward = self.calculate_miner_reward(position,direction)
             self.reward_grid[position] = reward
             self.grid_bld[position] = 22 * 100 + direction
@@ -602,12 +619,14 @@ class ShapezEnv(gymnasium.Env):
             self.reward_grid[position] = reward
             reward = self.calculate_conveyor_reward(position, direction)
         elif machine_type == 24:
+            #place trash
             new_machine = Trash(position,direction)
             self.machines[position] = new_machine
             self.reward_grid[position] = reward
             self.grid_bld[position] = 24 * 100
             reward = self.calculate_trash_reward(position)
         elif machine_type == 23:
+            #place cutter
             new_machine = Cutter(position,direction)
             self.grid_bld[position] = 23 * 100 + direction
             sub_pos = new_machine.sub_pos
@@ -615,6 +634,8 @@ class ShapezEnv(gymnasium.Env):
             self.machines[position] = new_machine
             self.machines[sub_pos] = new_machine
             reward = self.calculate_cutter_reward(position, direction)
+            self.reward_grid[position] = reward
+            self.reward_grid[sub_pos] = reward
         reward -= 1
         self.reward_grid[position] = reward
         return reward
@@ -643,7 +664,7 @@ class ShapezEnv(gymnasium.Env):
             return (x, y - 1)
         return None
 
-    def handle_direction(self,position,direction):
+    def handle_pre_direction(self,position,direction):
         #
         x, y = position
         if (direction == 1 or direction == 5 or direction == 6) and x + 1 < self.grid_rsc.shape[0]:  # 向上
@@ -661,7 +682,7 @@ class ShapezEnv(gymnasium.Env):
         # print(direction)
         if direction == 0:
             for direct in range(4):
-                pre_pos = self.handle_direction(position,direct+1)
+                pre_pos = self.handle_pre_direction(position,direct+1)
                 if pre_pos is None:
                     continue
                 else:
@@ -689,7 +710,7 @@ class ShapezEnv(gymnasium.Env):
                         else:
                             return None
 
-            return self.handle_direction(position,direction)
+            return self.handle_pre_direction(position,direction)
 
     def start_retrieve(self, start_position, start_direction):
         """
@@ -739,6 +760,7 @@ class ShapezEnv(gymnasium.Env):
         else:
             machine_type,direction = self.extract_buildings(position)
             if machine_type == 24:
+                #reached the trash
                 return True
             nxt_pos = self._get_next_position(position, direction)
             nxt_direct = self.grid_bld[nxt_pos] % 100
@@ -805,7 +827,10 @@ class ShapezEnv(gymnasium.Env):
     def can_remove(self,position):
         #check if the remove action is valid in position
         #param:position, represents the target delete position
+        if self.grid_bld[position]//100 == 24:
+            return True
         if self.grid_bld[position] == -1 or self.grid_bld[position]//100 == 21: # no building can't remove or the building is destination
+            print("pos", position, "no building")
             return False
         #otherwise, there is a buidling except destination
         machine_type,direction = self.extract_buildings(position)
@@ -814,8 +839,11 @@ class ShapezEnv(gymnasium.Env):
         if nxt_pos is not None:
             if self.grid_bld[nxt_pos]//100 == 21:
                 return True
+            else:
+                return self._is_first_building(position,direction)
         else:
-            return self._is_first_building(position,direction)
+            #out of bound
+            return False
     def CanPlaceCutter(self,position,direction):
         x,y = position
         direction_map = {
@@ -841,6 +869,12 @@ class ShapezEnv(gymnasium.Env):
         nxt_pos = self._get_next_position(position, direction)
         if nxt_pos == None:  # next position out of bound
             return False
+        path = self.retrieve_path(position,direction)
+        target_shape = self.grid_rsc[path[-1]]
+        if target_shape == self.target_shape:
+            return False
+        if self.target_shape not in self.process_cut(target_shape):
+            return False
         if self.grid_bld[nxt_pos] == -1 or self.grid_bld[nxt_pos] // 100 == 21:
             return True
         else:
@@ -848,8 +882,8 @@ class ShapezEnv(gymnasium.Env):
     def check_action_valid(self, machine_type, position, direction):
         if machine_type == 0:
             # print(machine_type,position,direction)
-            if position == (4,4) and self.can_remove(position) == True:
-                print("can remove hub,",self.grid_bld)
+            # if position == (4,4) and self.can_remove(position) == True:
+            #     print("can remove hub,",self.grid_bld)
             return self.can_remove(position)
         elif machine_type == 31:
             if self.CanPlaceConveyor(position, direction):
@@ -864,6 +898,11 @@ class ShapezEnv(gymnasium.Env):
             else:
                 # print("cant place cutter in pos",position,direction)
                 return False
+        elif machine_type == 22:
+            #miner
+            if np.sum(self.grid_bld // 100 == 22) == 1:
+                return False
+            return self.check_valid_shape(self.grid_rsc[position])
         else:
             #handle other machines
             if self.grid_bld[position] == -1:
@@ -876,6 +915,9 @@ class ShapezEnv(gymnasium.Env):
         all_machine_pos = np.argwhere((self.grid_bld != -1) & (self.grid_bld // 100 != 21))
         for pos in all_machine_pos:
             idx = self.act_dict[(0, -1), (pos[0], pos[1])]
+            if idx in index:
+                print("duplicated!!!!")
+                sys.exit()
             index.append(idx)
             # if not (pos[0], pos[1]) in self.machines:
             #     print(self.grid_bld)
@@ -919,8 +961,9 @@ class ShapezEnv(gymnasium.Env):
             if self.check_action_valid(machine_type, position, direction) == True:
                 mask[idx] = 1
                 # print("valid act = ",action,position)
-                # flag = False
+                flag = False
             else:
+                # print("invalid act = ",action,position)
                 mask[idx] = 0
         # print()
         return mask

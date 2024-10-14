@@ -1,23 +1,11 @@
 from stable_baselines3 import PPO
 from stable_baselines3.ppo import MultiInputPolicy
 
-from shapezenv import ShapezEnv
+from ShapezEnv import ShapezEnv
 import torch
 from stable_baselines3.common.callbacks import BaseCallback
-from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
-
-import numpy as np
+import getmap
 import torch as th
-
-from stable_baselines3.common.type_aliases import PyTorchObs
-import collections
-import copy
-import warnings
-from abc import ABC, abstractmethod
-from functools import partial
-from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
-from gymnasium import spaces
-from torch import nn
 
 from stable_baselines3.common.distributions import (
     BernoulliDistribution,
@@ -28,17 +16,7 @@ from stable_baselines3.common.distributions import (
     StateDependentNoiseDistribution,
     make_proba_distribution,
 )
-from stable_baselines3.common.preprocessing import get_action_dim, is_image_space, maybe_transpose, preprocess_obs
-from stable_baselines3.common.torch_layers import (
-    BaseFeaturesExtractor,
-    CombinedExtractor,
-    FlattenExtractor,
-    MlpExtractor,
-    NatureCNN,
-    create_mlp,
-)
-from stable_baselines3.common.type_aliases import PyTorchObs, Schedule
-from stable_baselines3.common.utils import get_device, is_vectorized_observation, obs_as_tensor
+
 class ActionMaskCallback(BaseCallback):
     def __init__(self, env, verbose=0):
         super(ActionMaskCallback, self).__init__(verbose)
@@ -143,13 +121,12 @@ class MaskedMultiInputPolicy(MultiInputPolicy):
 
 
 
-resource = np.full((30, 20), 0)
-build = np.full((30, 20), -1)
-# resource[25, 10] = 11
-resource[25,19] = 11
-resource[10,18] = 11
-build[0,0] = 2100
-build[4,4] = 2100
+resource = getmap.load_shared_arrays()[0]
+build = getmap.load_shared_arrays()[1]
+target_shape = getmap.load_needed_shape()
+print(resource)
+print(build)
+build[build != -1] *= 100
 
 # resource = np.array([
 #     [11, 0, 0, 0, 0],             # (0,0) 位置的资源形状为 11
