@@ -105,7 +105,7 @@ class ShapezEnv(gymnasium.Env):
                 # print(f"Hub 初始化成功，位置: {position}, 方向: {direction}")
 
             elif machine_type == 24:  # Trash
-                self.machines[position] = Trash(position)
+                self.machines[position] = Trash(position,0)
                 # print(f"垃圾桶初始化成功，位置: {position}")
             # 根据需要添加其他机器类型
         # 返回环境的初始观察值（obs）和一个空字典
@@ -513,7 +513,7 @@ class ShapezEnv(gymnasium.Env):
             reward = 5
         if self.check_valid_shape(current_shape):
             #conveying the correct shape
-            return reward
+            return reward + self.grid_bld.shape[0] - distance(hub_pos,position)
         else:
             return -20
     def calculate_trash_reward(self,position):
