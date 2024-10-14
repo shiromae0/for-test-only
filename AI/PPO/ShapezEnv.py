@@ -54,6 +54,8 @@ class ShapezEnv(gymnasium.Env):
 
     def reset(self, *, seed: Optional[int] = None, options: Optional[dict] = None) -> Tuple[np.ndarray, dict]:
         if seed is not None:
+            print("not none")
+            sys.exit()
             np.random.seed(seed)
         if options is not None:
             pass
