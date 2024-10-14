@@ -143,9 +143,11 @@ class MaskedMultiInputPolicy(MultiInputPolicy):
 
 
 
-resource = np.full((8, 8), 0)
-build = np.full((8, 8), -1)
-resource[7, 7] = 11
+resource = np.full((30, 20), 0)
+build = np.full((30, 20), -1)
+# resource[25, 10] = 11
+resource[25,19] = 11
+resource[10,18] = 11
 build[0,0] = 2100
 build[4,4] = 2100
 
@@ -176,7 +178,7 @@ act_list = env.action_list
 callback = ActionMaskCallback(env)
 model = PPO(MaskedMultiInputPolicy, env, verbose=1, policy_kwargs={'callback': callback})
 model.set_env(env)
-model.learn(total_timesteps=5000, callback=callback)
+model.learn(total_timesteps=100000, callback=callback)
 
 # 保存模型
 model.save("ppo_shapez_model")
@@ -187,11 +189,11 @@ def get_agent_act_list():
     obs, info = env.reset()
     callback = ActionMaskCallback(env)
     agent_act = []
-    for step in range(10000):
+    for step in range(30000):
         if step == 0:
             print("start")
         action, _states = model.predict(obs)
-        print("action =",act_list[action])
+        # print("action =",act_list[action])
         result = env.step(action)
         obs, reward, done, truncated, info = env.step(action)
         agent_act.append(act_list[action])
