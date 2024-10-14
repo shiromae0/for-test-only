@@ -43,24 +43,12 @@ class ShapezEnv(gymnasium.Env):
                 high=np.max([np.max(self.grid_rsc), np.max(self.grid_bld)]),
                 shape=(grid_shape[0], grid_shape[1]),
                 dtype=np.int32
-            ),
-            'last_action': spaces.Box(
-                low=np.array([0, 0, 0, 0]),  # 动作空间的最小值（机器型号、方向、坐标）
-                high=np.array([31, 12, grid_shape[0]-1, grid_shape[1]-1]),  # 最大值
-                shape=(4,),  # 机器型号、机器方向、横坐标、纵坐标
-                dtype=np.int32
             )
         })
 
     def _get_obs(self):
-        self.last_action = self.action_list[self.last_action_index]
-
-        act_type = self.last_action[0][0]
-        direct = self.last_action[0][1]
-        pos = self.last_action[1]
         observation = {
             'grid': self.grid_bld,  # 当前网格数据
-            'last_action':np.array([act_type,direct,pos[0],pos[1]])   # 上一个动作的位置索引
         }
         return observation
 
@@ -301,6 +289,12 @@ class ShapezEnv(gymnasium.Env):
         for index in np.ndindex(self.grid_bld.shape):
             if self.grid_bld[index] //100 != 21:
                 all_pos.append(index)
+        action_spaces[(0, -1)] = []
+        action_spaces[(0, -1)].extend(all_pos)
+        all_pos.clear()
+        for index in np.ndindex(self.grid_bld.shape):
+            if self.grid_bld[index] //100 != 21 and self.grid_rsc[index] == 0:
+                all_pos.append(index)
         for direction in range(12):
             valid_action = (31, direction + 1)
             action_spaces[valid_action] = []
@@ -308,8 +302,7 @@ class ShapezEnv(gymnasium.Env):
 
 
         # handle the remove action spaces
-        action_spaces[(0, -1)] = []
-        action_spaces[(0, -1)].extend(all_pos)
+
         #handle the Trash action spapces
         action_spaces[(24, 0)] = []
         action_spaces[(24, 0)].extend(all_pos)
@@ -925,7 +918,7 @@ class ShapezEnv(gymnasium.Env):
             direct = self.machines[(pos[0], pos[1])].direction
             if self._is_first_building((pos[0],pos[1]),direct) == True:
                 next_pos = self._get_next_position((pos[0],pos[1]),direct)
-                if next_pos == None:
+                if next_pos == None or self.grid_rsc[next_pos] != 0:
                     continue
                 # print("find first build,", pos,next_pos,direct)
                 for direction in range(12):

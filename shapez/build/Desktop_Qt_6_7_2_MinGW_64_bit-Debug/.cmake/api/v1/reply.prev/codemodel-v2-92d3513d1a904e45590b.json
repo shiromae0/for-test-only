@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-870350325da52b0f76a5.json",
+					"jsonFile" : "directory-.-Debug-5f991e082f795cc00a05.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -44,7 +44,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "MyShapez::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-MyShapez-Debug-056bbd73114f4f57f6cd.json",
+					"jsonFile" : "target-MyShapez-Debug-e83a6d26d8f6c50b9f13.json",
 					"name" : "MyShapez",
 					"projectIndex" : 0
 				},
