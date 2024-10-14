@@ -150,12 +150,14 @@
 #define RECT 12
 #define LEFT_CYCLE 13
 #define RIGHT_CYCLE 14
+#define UP_CYCLE 20
+#define DOWN_CYCLE 60
+
 #define LEFT_RECT 16
 #define RIGHT_RECT 17
 #define UP_RECT 18
 #define DOWN_RECT 19
-#define UP_CYCLE 20
-#define DOWN_CYCLE 60
+
 #define BARRIER 15
 // 建筑
 #define HUB 21

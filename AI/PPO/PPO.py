@@ -4,20 +4,8 @@ from stable_baselines3.ppo import MultiInputPolicy
 from ShapezEnv import ShapezEnv
 import torch
 from stable_baselines3.common.callbacks import BaseCallback
-from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
 import getmap
-import numpy as np
 import torch as th
-
-from stable_baselines3.common.type_aliases import PyTorchObs
-import collections
-import copy
-import warnings
-from abc import ABC, abstractmethod
-from functools import partial
-from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
-from gymnasium import spaces
-from torch import nn
 
 from stable_baselines3.common.distributions import (
     BernoulliDistribution,
@@ -28,17 +16,7 @@ from stable_baselines3.common.distributions import (
     StateDependentNoiseDistribution,
     make_proba_distribution,
 )
-from stable_baselines3.common.preprocessing import get_action_dim, is_image_space, maybe_transpose, preprocess_obs
-from stable_baselines3.common.torch_layers import (
-    BaseFeaturesExtractor,
-    CombinedExtractor,
-    FlattenExtractor,
-    MlpExtractor,
-    NatureCNN,
-    create_mlp,
-)
-from stable_baselines3.common.type_aliases import PyTorchObs, Schedule
-from stable_baselines3.common.utils import get_device, is_vectorized_observation, obs_as_tensor
+
 class ActionMaskCallback(BaseCallback):
     def __init__(self, env, verbose=0):
         super(ActionMaskCallback, self).__init__(verbose)
@@ -167,7 +145,7 @@ def linear_schedule(initial_value):
 
 
 # 创建自定义环境
-env = ShapezEnv(build, resource, target_shape=target_shape)
+env = ShapezEnv(build, resource, target_shape=13)
 env.reset()
 act_list = env.action_list
 # 创建PPO模型，使用多层感知机策略

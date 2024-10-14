@@ -128,8 +128,13 @@ class ShapezEnv(gymnasium.Env):
             reward = self.handle_place(machine_type, position, direction)
         # print(np.array2string(self.grid_bld, max_line_width=200))
         # print(action_type, position,reward,self.total_reward)
+        # for idx,value in enumerate(self.act_mask):
+        #     if value == 1:
+        #         act = self.action_list[idx]
+        #         machine_type, direction = act[0]
+        #         print("valid act = ",act)
         # print()
-        # time.sleep(0.3)
+        # time.sleep(1)
         # for machine in self.machines.items():
         #     print(machine[0],machine[1].shape,machine[1].num)
         self.total_reward += reward
@@ -544,7 +549,7 @@ class ShapezEnv(gymnasium.Env):
                 else:
                     #sub exit:
                     current_shape = self.process_cut(current_shape)[1]
-        if self.check_shape_reward(current_shape):
+        if self.check_valid_shape(current_shape):
             return 100
         else:
             return -100
@@ -589,14 +594,16 @@ class ShapezEnv(gymnasium.Env):
         if machine_type == 0:  # action is remove
             machine_type,direction = self.extract_buildings(position)
             if machine_type == 23:
+                #cutter
                 main_pos,sub_pos = self.get_cutter_pos(position,direction)
                 self.grid_bld[main_pos] = -1
                 self.grid_bld[sub_pos] = -1
             else:
                 self.grid_bld[position] = -1
-            reward = -(self.reward_grid)[position]
-            self.reward_grid[position] = -1
-            return self.reward_grid[position]
+                reward = -(self.reward_grid)[position] if (self.reward_grid)[position] > 0 else -(self.reward_grid)[
+                                                                                                    position] / 2
+                self.reward_grid[position] = -1
+            return reward
         elif machine_type == 22: #placing miner
             count_22 = np.sum(self.grid_bld//100 == 22)
             reward = self.calculate_miner_reward(position,direction)
@@ -612,12 +619,14 @@ class ShapezEnv(gymnasium.Env):
             self.reward_grid[position] = reward
             reward = self.calculate_conveyor_reward(position, direction)
         elif machine_type == 24:
+            #place trash
             new_machine = Trash(position,direction)
             self.machines[position] = new_machine
             self.reward_grid[position] = reward
             self.grid_bld[position] = 24 * 100
             reward = self.calculate_trash_reward(position)
         elif machine_type == 23:
+            #place cutter
             new_machine = Cutter(position,direction)
             self.grid_bld[position] = 23 * 100 + direction
             sub_pos = new_machine.sub_pos
@@ -625,6 +634,8 @@ class ShapezEnv(gymnasium.Env):
             self.machines[position] = new_machine
             self.machines[sub_pos] = new_machine
             reward = self.calculate_cutter_reward(position, direction)
+            self.reward_grid[position] = reward
+            self.reward_grid[sub_pos] = reward
         reward -= 1
         self.reward_grid[position] = reward
         return reward
@@ -653,7 +664,7 @@ class ShapezEnv(gymnasium.Env):
             return (x, y - 1)
         return None
 
-    def handle_direction(self,position,direction):
+    def handle_pre_direction(self,position,direction):
         #
         x, y = position
         if (direction == 1 or direction == 5 or direction == 6) and x + 1 < self.grid_rsc.shape[0]:  # 向上
@@ -671,7 +682,7 @@ class ShapezEnv(gymnasium.Env):
         # print(direction)
         if direction == 0:
             for direct in range(4):
-                pre_pos = self.handle_direction(position,direct+1)
+                pre_pos = self.handle_pre_direction(position,direct+1)
                 if pre_pos is None:
                     continue
                 else:
@@ -699,7 +710,7 @@ class ShapezEnv(gymnasium.Env):
                         else:
                             return None
 
-            return self.handle_direction(position,direction)
+            return self.handle_pre_direction(position,direction)
 
     def start_retrieve(self, start_position, start_direction):
         """
@@ -831,11 +842,8 @@ class ShapezEnv(gymnasium.Env):
             else:
                 return self._is_first_building(position,direction)
         else:
-            # if self._is_first_building(position,direction) == False:
-            #     print("pos",position,"not first building")
-            #     return False
+            #out of bound
             return False
-        print(nxt_pos)
     def CanPlaceCutter(self,position,direction):
         x,y = position
         direction_map = {
@@ -907,6 +915,9 @@ class ShapezEnv(gymnasium.Env):
         all_machine_pos = np.argwhere((self.grid_bld != -1) & (self.grid_bld // 100 != 21))
         for pos in all_machine_pos:
             idx = self.act_dict[(0, -1), (pos[0], pos[1])]
+            if idx in index:
+                print("duplicated!!!!")
+                sys.exit()
             index.append(idx)
             # if not (pos[0], pos[1]) in self.machines:
             #     print(self.grid_bld)
