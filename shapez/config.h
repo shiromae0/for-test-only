@@ -178,6 +178,17 @@
 #define BELT_W_A 41
 #define BELT_W_D 42
 #define BELT 43
+
+#define MINER_A 70
+#define MINER_D 71
+#define MINER_S 72
+#define MINER_W 73
+
+#define CUTTER_A 74
+#define CUTTER_D 75
+#define CUTTER_S 76
+#define CUTTER_W 77
+
 // Tickable工作状态
 #define EMPTY 51
 #define RUNNING 52

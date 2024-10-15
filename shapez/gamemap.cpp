@@ -6,6 +6,7 @@
 
 int (*GameMap::Resource)[WIDTH] = nullptr;
 int (*GameMap::Buildingsmap)[WIDTH] = nullptr;
+// int (*GameMap::build)[WIDTH] = nullptr;
 void GameMap::CreateMapFile(){
     HANDLE hMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,
@@ -29,7 +30,37 @@ void GameMap::CreateMapFile(){
         sizeof(int)*HEIGHT*WIDTH,
         L"SharedBuild"
         );
-    Buildingsmap = (int(*)[WIDTH]) MapViewOfFile(buildmapfile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int) * HEIGHT*WIDTH);
+    // build = (int(*)[WIDTH]) MapViewOfFile(buildmapfile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int) * HEIGHT * WIDTH);
+    // for (int i =0;i<HEIGHT;i++){
+
+
+    // }
+    Buildingsmap = new int[HEIGHT][WIDTH];
+    HANDLE hFileMapping = CreateFileMapping(
+        INVALID_HANDLE_VALUE,   // 不使用实际文件
+        NULL,                   // 默认安全属性
+        PAGE_READWRITE,         // 读写权限
+        0,                      // 高位文件大小
+        HEIGHT * WIDTH * sizeof(int), // 映射的大小（3x3 的 int 数组）
+        L"SharedBuild"             // 无需指定对象名称（匿名）
+        );
+    LPVOID lpBase = MapViewOfFile(
+        hFileMapping,           // 文件映射对象句柄
+        FILE_MAP_ALL_ACCESS,    // 读写权限
+        0,                      // 高位偏移量
+        0,                      // 低位偏移量
+        HEIGHT * WIDTH * sizeof(int) // 映射的字节数
+        );
+
+    // if (lpBase == NULL) {
+    //     std::cerr << "Could not map view of file. Error: " << GetLastError() << std::endl;
+    //     CloseHandle(hFileMapping);
+    //     return 1;
+    // }
+
+    // 3. 将映射区域作为二维数组来访问
+    build = static_cast<int*>(lpBase); // 将映射的内存区域转为 int 指针
+
 }
 GameMap::GameMap()
 {
@@ -44,6 +75,8 @@ GameMap::GameMap()
         {
             BuildingsMap[i][j] = nullptr;
             Buildingsmap[i][j] = -1;
+            build[i * WIDTH + j] = -1;
+
         }
 }
 int* GameMap::getResource() {
@@ -396,6 +429,7 @@ void GameMap::SetBuilding(GridVec pos, Building *building, int direction, int na
     {
         BuildingsMap[pos.i][pos.j] = building;
         Buildingsmap[pos.i][pos.j] = building->name;
+        build[pos.i*WIDTH+pos.j] = (31 <= name && name <= 42)?name:name * 100 + direction;
     }
 }
 
@@ -417,6 +451,7 @@ void GameMap::RemoveBuilding(GridVec pos)
         {
             BuildingsMap[pos.i][pos.j] = nullptr;
             Buildingsmap[pos.i][pos.j] = -1;
+            build[pos.i * WIDTH + pos.j] = -1;
         }
     }
 }

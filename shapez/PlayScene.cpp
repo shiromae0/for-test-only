@@ -38,10 +38,11 @@ void PlayScene::CreateMapFile(){
         CloseHandle(hMapFile);
         return;
     }
-
     // 将 x 和 y 的指针指向共享内存
     Qpointmapx = &pMappedMemory[0];
     Qpointmapy = &pMappedMemory[1];
+    *Qpointmapx =  200;
+    *Qpointmapy = 85;
     //CloseHandle(hMapFile);
     scaleFcator_map = new double;
 
@@ -907,59 +908,49 @@ void PlayScene::RemoveBuilding(GridVec pos)
 
 void PlayScene::keyPressEvent(QKeyEvent *e)
 {
-    // 如果按键已经按下，不重复记录
-    if (!pressedKeys.contains(e->key())) {
-        pressedKeys.insert(e->key());
-        keySequence.append(e->key());  // 记录按键的按下顺序
-    }
-
-    // 1. 检测上 -> 右转弯（先按 W 后按 D）
-    if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_W && keySequence[1] == Qt::Key_D) {
+    switch (e->key()) {
+    case Qt::Key_1:
         current_building_direction = UP_RIGHT;
-    }
-    // 2. 检测右 -> 上（先按 D 后按 W）
-    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_D && keySequence[1] == Qt::Key_W) {
+        break;
+    case Qt::Key_2:
         current_building_direction = RIGHT_UP;
-    }
-    // 3. 检测上 -> 左转弯（先按 W 后按 A）
-    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_W && keySequence[1] == Qt::Key_A) {
+        break;
+    case Qt::Key_3:
         current_building_direction = UP_LEFT;
-    }
-    // 4. 检测左 -> 上（先按 A 后按 W）
-    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_A && keySequence[1] == Qt::Key_W) {
+        break;
+    case Qt::Key_4:
         current_building_direction = LEFT_UP;
-    }
-    // 5. 检测下 -> 右转弯（先按 S 后按 D）
-    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_S && keySequence[1] == Qt::Key_D) {
+        break;
+    case Qt::Key_5:
         current_building_direction = DOWN_RIGHT;
-    }
-    // 6. 检测右 -> 下（先按 D 后按 S）
-    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_D && keySequence[1] == Qt::Key_S) {
+        break;
+    case Qt::Key_6:
         current_building_direction = RIGHT_DOWN;
-    }
-    // 7. 检测下 -> 左转弯（先按 S 后按 A）
-    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_S && keySequence[1] == Qt::Key_A) {
+        break;
+    case Qt::Key_7:
         current_building_direction = DOWN_LEFT;
-    }
-    // 8. 检测左 -> 下（先按 A 后按 S）
-    else if (keySequence.size() >= 2 && keySequence[0] == Qt::Key_A && keySequence[1] == Qt::Key_S) {
+        break;
+    case Qt::Key_8:
         current_building_direction = LEFT_DOWN;
-    }
-
-    // 单一按键的检测
-    else if (pressedKeys.contains(Qt::Key_A)) {
+        break;
+    case Qt::Key_A:
         current_building_direction = LEFT;
-    }
-    else if (pressedKeys.contains(Qt::Key_D)) {
+        break;
+    case Qt::Key_D:
         current_building_direction = RIGHT;
-    }
-    else if (pressedKeys.contains(Qt::Key_W)) {
+        break;
+    case Qt::Key_W:
         current_building_direction = UP;
-    }
-    else if (pressedKeys.contains(Qt::Key_S)) {
+        break;
+    case Qt::Key_S:
         current_building_direction = DOWN;
+        break;
+    default:
+        // 如果按下了其他未定义的按键，可以选择忽略或处理
+        break;
     }
 }
+
 void PlayScene::keyReleaseEvent(QKeyEvent *e)
 {
     // 移除按键
@@ -1001,7 +992,6 @@ void PlayScene::HandleBuildingPlacement(QMouseEvent *e, int grid_i, int grid_j)
 
 void PlayScene::HandleDragging(QMouseEvent *e)
 {
-    if (scaleFactor > 0.8) {
 
     QPoint delta = e->pos() - start_pos;
     scroll_offset += delta;
@@ -1027,7 +1017,6 @@ void PlayScene::HandleDragging(QMouseEvent *e)
     *Qpointmapx = scroll_offset.x();
     *Qpointmapy = scroll_offset.y();
     update();  // Refresh the display
-    }
 }
 
 void PlayScene::HandleRightButtonDrag(int grid_i, int grid_j)

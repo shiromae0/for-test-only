@@ -106,7 +106,7 @@ public:
     double *scaleFcator_map;
     bool dragging = false;
     QPoint start_pos;
-    QPoint scroll_offset = QPoint(0,0);
+    QPoint scroll_offset = QPoint(200,85);
     int *Qpointmapx;
     int *Qpointmapy;
     /**************音乐***************/

@@ -29,6 +29,7 @@ public:
      */
     static int (*Resource)[WIDTH];
     static int (*Buildingsmap)[WIDTH];
+    int (*build);
     /**
      * \brief 地图每个单元的建筑
      */
