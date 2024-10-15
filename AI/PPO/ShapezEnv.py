@@ -18,7 +18,7 @@ def distance(point1, point2):
 class ShapezEnv(gymnasium.Env):
     def __init__(self, build, res, target_shape):
         self.success_times = 0
-        self.max_step = 800
+        self.max_step = 1200
         self.steps = 0
         self.original_bld = np.array(build)
         self.path = []
@@ -54,9 +54,7 @@ class ShapezEnv(gymnasium.Env):
 
     def reset(self, *, seed: Optional[int] = None, options: Optional[dict] = None) -> Tuple[np.ndarray, dict]:
         if seed is not None:
-            print("not none")
-            sys.exit()
-            np.random.seed(seed)
+           pass
         if options is not None:
             pass
         # reset the env
@@ -112,10 +110,19 @@ class ShapezEnv(gymnasium.Env):
             # 根据需要添加其他机器类型
         # 返回环境的初始观察值（obs）和一个空字典
         obs = self._get_obs()
+        for pos,machine in self.machines.items():
+            direct = machine.direction
+            if isinstance(machine,Conveyor):
+                self.reward_grid[pos] = self.calculate_conveyor_reward(pos,direct)
+            elif isinstance(machine,Miner):
+                self.reward_grid[pos] = self.calculate_miner_reward(pos,direct)
+            elif isinstance(machine, Trash):
+                self.reward_grid[pos] = self.calculate_trash_reward(pos)
         return obs, {}
 
     def step(self, action):
         # print(self.steps)
+        reward = 0
         if self.steps == 0:
             self.steps += 1
             return self._get_obs(), 0, False, False, {}
@@ -126,34 +133,30 @@ class ShapezEnv(gymnasium.Env):
         machine_type = action_type[0]
         direction = action_type[1]
         reward = 0
-        done = False
-        truncated = False  # 添加 truncated 标记
-        info = {}
-        # if action_type[1] == 11 and position[1] == self.grid_bld.shape[1]:
-        #     print("current_act = ", action_type)
-        #     print(self.grid_bld)
-        #     return 1
-        # 如果达到最大步数，标记为 truncated
-        if self.steps >= self.max_step:
-            # print(self.total_reward)
-            print("Trun")
-            print(np.array2string(self.grid_bld, max_line_width=200))
-            print(self.total_reward)
-            truncated = True
-            done = False  # 或者也可以直接标记为 done
-            return self._get_obs(), reward, done, truncated, info
         self.act_mask = self.get_action_mask()
-        if self.act_mask[action] != 0:
-            reward = self.handle_place(machine_type, position, direction)
+        # if self.act_mask[action] != 0:
+        #     reward = self.handle_place(machine_type, position, direction)
         # print(np.array2string(self.grid_bld, max_line_width=200))
-        # print(action_type, position,reward,self.total_reward)
         # for idx,value in enumerate(self.act_mask):
         #     if value == 1:
         #         act = self.action_list[idx]
         #         machine_type, direction = act[0]
         #         print("valid act = ",act)
+        # print("chosed act",action_type, position, reward,self.total_reward)
         # print()
         # time.sleep(1)
+        done = False
+        truncated = False  # 添加 truncated 标记
+        info = {}
+        # 如果达到最大步数，标记为 truncated
+        if self.steps >= self.max_step:
+            # print(self.total_reward)
+            print("Trun")
+            # print(np.array2string(self.grid_bld, max_line_width=200))
+            # print(self.total_reward)
+            truncated = True
+            done = False  # 或者也可以直接标记为 done
+            return self._get_obs(), reward, done, truncated, info
         # for machine in self.machines.items():
         #     print(machine[0],machine[1].shape,machine[1].num)
         self.total_reward += reward
@@ -173,7 +176,7 @@ class ShapezEnv(gymnasium.Env):
         #         print("valid_act = ",self.action_list[num])
         # print()
         self.last_action_index = action
-        reward -= self.steps
+        # reward -= self.steps
         # print()
         return self._get_obs(), reward, done, truncated, info
 
@@ -473,7 +476,9 @@ class ShapezEnv(gymnasium.Env):
         path = self.retrieve_path(position,direction)
         start = path[-1]
         current_shape = None
-
+        if self.grid_bld[start] // 100 != 22:
+            #not connected to the start
+            return -5
         # print(np.array2string(self.grid_bld, max_line_width=200))
         # print(path)
 
@@ -508,16 +513,18 @@ class ShapezEnv(gymnasium.Env):
         #
         # distance_reward = max(0, min(15, scaled_reward))  # 限制在 [0, 20] 范围
         # reward = self.grid_bld.shape[0]-distance(hub_pos,position)
+        if self.check_valid_shape(current_shape):
+            # conveying the correct shape
+            reward += (self.grid_bld.shape[0] - distance(hub_pos, position))/2
+        else:
+            return -20
         if distance(hub_pos,position) < distance(hub_pos,next_pos):
             reward = -5
         else:
             # closer to the hub
-            reward = 5
-        if self.check_valid_shape(current_shape):
-            #conveying the correct shape
-            return reward + self.grid_bld.shape[0] - distance(hub_pos,position)
-        else:
-            return -20
+            reward += 5
+        return reward
+
     def calculate_trash_reward(self,position):
         start = self._get_pre_position(position,0)
         reward = 0
@@ -830,7 +837,13 @@ class ShapezEnv(gymnasium.Env):
         if self.grid_bld[nxt_pos] == -1 or self.grid_bld[nxt_pos] // 100 == 21:
             return True
         else:
-            return False
+            #next postion has buildings
+            nxt_direct = self.grid_bld[nxt_pos] % 100
+            if self._get_pre_position(nxt_pos,nxt_direct) == position:
+                #can connected
+                return True
+            else:
+                return False
         # if nxt_direct <= 4 and nxt_direct == direction:
         #     return True
         # if direction == 1 or direction == 9 or direction == 10: #going up

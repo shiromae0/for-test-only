@@ -146,7 +146,7 @@ def linear_schedule(initial_value):
 
 
 # 创建自定义环境
-env = ShapezEnv(build, resource, target_shape=13)
+env = ShapezEnv(build, resource, target_shape=target_shape)
 env.reset()
 act_list = env.action_list
 # 创建PPO模型，使用多层感知机策略
@@ -159,7 +159,7 @@ model = PPO(MaskedMultiInputPolicy, env=env, verbose=1, policy_kwargs={'model': 
 # 在创建模型后，将 model 自己设置为策略类中的 model
 model.set_env(env)
 model.policy.model = model
-model.learn(total_timesteps=50000)
+model.learn(total_timesteps=100000)
 
 # 保存模型
 model.save("ppo_shapez_model")
