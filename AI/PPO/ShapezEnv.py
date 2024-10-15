@@ -876,7 +876,7 @@ class ShapezEnv(gymnasium.Env):
     def CanPlaceMiner(self):
         correct_miner_num = 0
         for pos, machine in self.machines.items():
-            if isinstance(machine, Miner) and self.grid_rsc[machine.position] == self.target_shape:
+            if isinstance(machine, Miner) and self.check_valid_shape(self.grid_rsc[machine.position]) is True:
                 correct_miner_num += 1
         if correct_miner_num < self.required_routes:
             return True
