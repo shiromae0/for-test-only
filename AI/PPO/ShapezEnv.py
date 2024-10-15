@@ -40,7 +40,7 @@ class ShapezEnv(gymnasium.Env):
         self.observation_space = spaces.Dict({
             'grid': spaces.Box(
                 low=0,
-                high=np.max([np.max(self.grid_rsc), np.max(self.grid_bld)]),
+                high=np.max(5000),
                 shape=(grid_shape[0], grid_shape[1]),
                 dtype=np.int32
             )
@@ -134,8 +134,8 @@ class ShapezEnv(gymnasium.Env):
         direction = action_type[1]
         reward = 0
         self.act_mask = self.get_action_mask()
-        # if self.act_mask[action] != 0:
-        #     reward = self.handle_place(machine_type, position, direction)
+        if self.act_mask[action] != 0:
+            reward = self.handle_place(machine_type, position, direction)
         # print(np.array2string(self.grid_bld, max_line_width=200))
         # for idx,value in enumerate(self.act_mask):
         #     if value == 1:
@@ -144,7 +144,7 @@ class ShapezEnv(gymnasium.Env):
         #         print("valid act = ",act)
         # print("chosed act",action_type, position, reward,self.total_reward)
         # print()
-        # time.sleep(1)
+        # time.sleep(0.5)
         done = False
         truncated = False  # 添加 truncated 标记
         info = {}
@@ -152,14 +152,14 @@ class ShapezEnv(gymnasium.Env):
         if self.steps >= self.max_step:
             # print(self.total_reward)
             print("Trun")
-            # print(np.array2string(self.grid_bld, max_line_width=200))
-            # print(self.total_reward)
+            print(np.array2string(self.grid_bld, max_line_width=200))
+            print(self.total_reward)
             truncated = True
             done = False  # 或者也可以直接标记为 done
             return self._get_obs(), reward, done, truncated, info
         # for machine in self.machines.items():
         #     print(machine[0],machine[1].shape,machine[1].num)
-        self.total_reward += reward
+
         if self.check_goal() == True:
             done = True  # 如果达到目标状态，标记为完成
             reward += self.max_step * 10
@@ -176,7 +176,10 @@ class ShapezEnv(gymnasium.Env):
         #         print("valid_act = ",self.action_list[num])
         # print()
         self.last_action_index = action
-        # reward -= self.steps
+        step_penalty = 0.01 * np.exp(0.01 * self.steps)
+        # print("s_p= ",step_penalty)
+        reward -= step_penalty
+        self.total_reward += reward
         # print()
         return self._get_obs(), reward, done, truncated, info
 
@@ -777,14 +780,14 @@ class ShapezEnv(gymnasium.Env):
         possible_actions = []
         for r in range(rows):
             for c in range(cols):
-                if c + 1 < cols and self.grid_bld[r, c] == -1 and self.grid_bld[r, c + 1] == -1:
+                if c + 1 < cols and self.grid_bld[r, c] //100 != 21 and self.grid_bld[r, c + 1]//100 != 21:
                     # 水平放置，direction为 1 或者 2,
                     possible_actions.append(((23,1),(r, c)))
-                if c - 1 >= 0 and self.grid_bld[r, c] == -1 and self.grid_bld[r, c - 1] == -1:
+                if c - 1 >= 0 and self.grid_bld[r, c] //100 != 21 and self.grid_bld[r, c - 1]//100 != 21:
                     possible_actions.append(((23,2), (r, c)))
-                if r - 1 >= 0 and self.grid_bld[r, c] == -1 and self.grid_bld[r - 1, c] == -1:
+                if r - 1 >= 0 and self.grid_bld[r, c] //100 != 21 and self.grid_bld[r - 1, c] //100 != 21:
                     possible_actions.append(((23,3),(r, c)))
-                if r + 1 < rows and self.grid_bld[r, c] == -1 and self.grid_bld[r + 1, c] == -1:
+                if r + 1 < rows and self.grid_bld[r, c] //100 != 21 and self.grid_bld[r + 1, c] //100 != 21:
                     possible_actions.append(((23,4), (r, c)))
         return possible_actions
 
@@ -826,9 +829,16 @@ class ShapezEnv(gymnasium.Env):
         if pre_pos == None or self.grid_bld[pre_pos] // 100 == 21 or self.grid_bld[pre_pos] == -1:
             # out of boundary or pre_pos is hub or pre_pos is not a building
             return False
-        start_pos = self.get_start_pos(position, direction)
-        # print(start_pos)
-        if start_pos == position:  # not connected to other machines
+        # start_pos = self.get_start_pos(position, direction)
+        # if self.grid_bld[start_pos] // 100 != 21:
+        #     print(start_pos)
+        #     return False
+        # # print(start_pos)
+        # if start_pos == position:  # not connected to other machines
+        #     return False
+        pre_direct = self.machines[pre_pos].direction
+        start_pos = self.retrieve_path(pre_pos,pre_direct)[-1]
+        if self.grid_rsc[start_pos] == 0 or self._get_next_position(pre_pos,pre_direct) != position:
             return False
         # handle nxt_pos situation
         nxt_pos = self._get_next_position(position, direction)

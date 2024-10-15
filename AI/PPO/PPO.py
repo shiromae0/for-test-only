@@ -150,16 +150,16 @@ env = ShapezEnv(build, resource, target_shape=target_shape)
 env.reset()
 act_list = env.action_list
 # 创建PPO模型，使用多层感知机策略
-# model = model.load("ppo_shapez_model")
+# model = PPO.load("ppo_shapez_model")
 
 # 开始训练
 
-model = PPO(MaskedMultiInputPolicy, env=env, verbose=1, policy_kwargs={'model': None})
-# model = PPO.load("ppo_shapez_model",env=env)
+# model = PPO(MaskedMultiInputPolicy, env=env, verbose=1, policy_kwargs={'model': None})
+model = PPO.load("ppo_shapez_model",env=env)
 # 在创建模型后，将 model 自己设置为策略类中的 model
 model.set_env(env)
 model.policy.model = model
-model.learn(total_timesteps=100000)
+model.learn(total_timesteps=10000)
 
 # 保存模型
 model.save("ppo_shapez_model")

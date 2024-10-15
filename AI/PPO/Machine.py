@@ -27,6 +27,8 @@ class Cutter(Machine):
         if self.direction in direction_map:
             dx, dy = direction_map[self.direction]
             self.sub_pos = (x + dx, y + dy)
+        else:
+            print("error,direction = ",direction)
 
 
 class Trash(Machine):
