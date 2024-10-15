@@ -48,7 +48,7 @@ bool Rotator::CanReceive(GridVec target, int directionin, int shapename)
     {
         if (directionin == direction)
         {
-            if (shapename == LEFT_CYCLE or shapename == LEFT_RECT or shapename == RIGHT_CYCLE or shapename == RIGHT_RECT or shapename == UP_RECT or shapename == DOWN_RECT or shapename == UP_CYCLE or shapename == DOWN_CYCLE)
+            if (shapename == CYCLE or RECT or LEFT_CYCLE or shapename == LEFT_RECT or shapename == RIGHT_CYCLE or shapename == RIGHT_RECT or shapename == UP_RECT or shapename == DOWN_RECT or shapename == UP_CYCLE or shapename == DOWN_CYCLE)
             {
                 return true;
             }
@@ -90,7 +90,43 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
         }
         break;
     case BLOCK:
-        if (this->shape.name == LEFT_RECT) {
+        if (this->shape.name == CYCLE) {
+            // 当前形状是右矩形
+            switch (direction)
+            {
+            case UP:
+            case RIGHT:
+            case DOWN:
+            case LEFT:
+        if (this->CanSend(BuildingAllPos()[0], direction, CYCLE, gamemap) )
+            {
+                this->Send(BuildingAllPos()[0], direction, CYCLE, gamemap);
+                state = EMPTY;
+                this->shape.name = NONE;
+            }
+                break;
+            default:
+                break;
+            }
+        } else if (this->shape.name == RECT) {
+            // 当前形状是右矩形
+            switch (direction)
+            {
+            case UP:
+            case RIGHT:
+            case DOWN:
+            case LEFT:
+                if (this->CanSend(BuildingAllPos()[0], direction, RECT, gamemap) )
+                {
+                    this->Send(BuildingAllPos()[0], direction, RECT, gamemap);
+                    state = EMPTY;
+                    this->shape.name = NONE;
+                }
+                break;
+            default:
+                break;
+            }
+        } else if (this->shape.name == LEFT_RECT) {
             // 当前形状是左矩形
             switch (direction)
             {
