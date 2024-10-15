@@ -64,8 +64,13 @@ def load_scaleFactor():
     finally:
         if existing_shm is not None:
             existing_shm.close()
-print(np.array2string(load_shared_arrays()[0], max_line_width=200))
-print(np.array2string(load_shared_arrays()[1], max_line_width=200))
-print(load_shared_arrays()[1])
+for line in load_shared_arrays()[0]:
+    print("[",end="")
+    for item in line:
+        print(item,end=",")
+    print("]")
+# print(np.array2string(load_shared_arrays()[0], max_line_width=200))
+# print(np.array2string(load_shared_arrays()[1], max_line_width=200))
+# print(load_shared_arrays()[1])
 # print(load_scroll_offset())
 #   print(load_scaleFactor())

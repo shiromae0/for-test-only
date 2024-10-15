@@ -17,6 +17,7 @@ def distance(point1, point2):
 
 class ShapezEnv(gymnasium.Env):
     def __init__(self, build, res, target_shape):
+        self.required_routes = 1
         self.success_times = 0
         self.max_step = 1200
         self.steps = 0
@@ -636,10 +637,13 @@ class ShapezEnv(gymnasium.Env):
                 main_pos,sub_pos = self.get_cutter_pos(position,direction)
                 self.grid_bld[main_pos] = -1
                 self.grid_bld[sub_pos] = -1
+                del self.machines[main_pos]
+                del self.machines[sub_pos]
             else:
                 self.grid_bld[position] = -1
                 reward = -(self.reward_grid)[position] if (self.reward_grid)[position] > 0 else -(self.reward_grid)[
                                                                                                     position] / 2
+                del self.machines[position]
                 self.reward_grid[position] = -1
             return reward
         elif machine_type == 22: #placing miner
@@ -869,32 +873,37 @@ class ShapezEnv(gymnasium.Env):
         #     if nxt_direct != 10 and nxt_direct != 12:
         #         return False
 
-    def CanPlaceMiner(self, position):
-        if self.grid_rsc[position] == 0:
-            return False
-        else:
+    def CanPlaceMiner(self):
+        correct_miner_num = 0
+        for pos, machine in self.machines.items():
+            if isinstance(machine, Miner) and self.grid_rsc[machine.position] == self.target_shape:
+                correct_miner_num += 1
+        if correct_miner_num < self.required_routes:
             return True
+        else:
+            return False
+
 
     def can_remove(self,position):
-        #check if the remove action is valid in position
-        #param:position, represents the target delete position
-        if self.grid_bld[position]//100 == 24:
-            return True
-        if self.grid_bld[position] == -1 or self.grid_bld[position]//100 == 21: # no building can't remove or the building is destination
-            print("pos", position, "no building")
-            return False
-        #otherwise, there is a buidling except destination
-        machine_type,direction = self.extract_buildings(position)
-        # print(f"machine = {machine_type},direction = {direction},isfirst = {self._is_first_building(position,direction)}")
-        nxt_pos = self._get_next_position(position,direction)
-        if nxt_pos is not None:
-            if self.grid_bld[nxt_pos]//100 == 21:
+            #check if the remove action is valid in position
+            #param:position, represents the target delete position
+            if self.grid_bld[position]//100 == 24:
                 return True
+            if self.grid_bld[position] == -1 or self.grid_bld[position]//100 == 21: # no building can't remove or the building is destination
+                print("pos", position, "no building")
+                return False
+            #otherwise, there is a buidling except destination
+            machine_type,direction = self.extract_buildings(position)
+            # print(f"machine = {machine_type},direction = {direction},isfirst = {self._is_first_building(position,direction)}")
+            nxt_pos = self._get_next_position(position,direction)
+            if nxt_pos is not None:
+                if self.grid_bld[nxt_pos]//100 == 21:
+                    return True
+                else:
+                    return self._is_first_building(position,direction)
             else:
-                return self._is_first_building(position,direction)
-        else:
-            #out of bound
-            return False
+                #out of bound
+                return False
     def CanPlaceCutter(self,position,direction):
         x,y = position
         direction_map = {
@@ -952,8 +961,6 @@ class ShapezEnv(gymnasium.Env):
                 return False
         elif machine_type == 22:
             #miner
-            if np.sum(self.grid_bld // 100 == 22) == 1:
-                return False
             return self.check_valid_shape(self.grid_rsc[position])
         else:
             #handle other machines
@@ -964,6 +971,16 @@ class ShapezEnv(gymnasium.Env):
 
     def get_possible_action_idx(self):
         index = []
+        index.clear()
+        if self.CanPlaceMiner() is True:
+            res_pos = np.argwhere(self.grid_rsc != 0)
+            # handle the miner action spaces
+            for direction in range(4):
+                for pos in res_pos:
+                    idx = self.act_dict[(22, direction + 1),(pos[0],pos[1])]
+                    index.append(idx)
+
+
         all_machine_pos = np.argwhere((self.grid_bld != -1) & (self.grid_bld // 100 != 21))
         for pos in all_machine_pos:
             idx = self.act_dict[(0, -1), (pos[0], pos[1])]
@@ -991,12 +1008,6 @@ class ShapezEnv(gymnasium.Env):
                     index.append(idx)
                 #place possible trasher
                 idx = self.act_dict[(24, 0), next_pos]
-                index.append(idx)
-        res_pos = np.argwhere(self.grid_rsc != 0)
-        for pos in res_pos:
-            for direction in range(4):
-                #place miner nearby
-                idx = self.act_dict[(22, direction + 1), (pos[0],pos[1])]
                 index.append(idx)
         return index
 
