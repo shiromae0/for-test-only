@@ -30,6 +30,7 @@ void WindowControl::CreateMapFile(){
     *minspeed = 1500;
 
 }
+
 WindowControl::WindowControl(QWidget *parent)
 {
     // 每1s检查一下有没有通过某一关
