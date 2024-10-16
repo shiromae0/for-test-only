@@ -25,7 +25,7 @@ public:
      * \brief  删除PlayScene、RoundScene、ChooseScene、ShopScene实例
      */
     ~WindowControl();
-
+    void CreateMapFile();
     // 界面
     StartScene *start;
     PlayScene *play;
@@ -34,7 +34,10 @@ public:
     ShopScene *shop;
     WinScene *win;
     HelpScene *help;
-
+    int *minspeed;
+    bool miner_updated = false;
+    bool belt_updated = false;
+    bool cutter_updated = false;
     /**
      * \brief  每1s检查一下有没有通过某一关
      */
@@ -59,6 +62,7 @@ public:
      * \brief  局部优化cutter
      */
     void ChooseUpgradeCutter();
+    void CheckAllUpdated();
 };
 extern WindowControl w;
 

@@ -326,10 +326,10 @@ void PlayScene::draw_building()
                     // 缩小后的大小
                     int aim_width = CELLSIZE / 1.5;
                     int aim_height = CELLSIZE / 1.5;
-                    if (round < 3 || round == 6) {
+                    if (round < 3 || round == 5) {
                         painter.drawPixmap(center_x - aim_width / 2, center_y - aim_height / 2, aim_width, aim_height, aim_img);
                     }
-                    else if (round >= 3 && round <= 5) {
+                    else if (round >= 3 && round <= 4) {
                         painter.drawPixmap(center_x - aim_width / 2, center_y - aim_height / 2, aim_width / 2, aim_height, aim_img);
                     }
                     // 居中绘制缩小后的aim_img

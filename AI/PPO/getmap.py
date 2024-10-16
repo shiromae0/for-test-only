@@ -28,6 +28,14 @@ def load_needed_shape():
 
     finally:
         existing_shm.close()
+def load_min_speed():
+    # try:
+    existing_shm = shared_memory.SharedMemory(name='minnspeed')
+    shape = np.ndarray((1,), dtype=int, buffer=existing_shm.buf)[0]
+    return shape
+
+    # finally:
+    #     existing_shm.close()
 def load_scroll_offset():
     try:
         existing_shm = shared_memory.SharedMemory(name='scrolloffset')
@@ -47,6 +55,7 @@ def load_scaleFactor():
         if existing_shm is not None:
             existing_shm.close()
 
+print(load_min_speed())
 # print(load_shared_arrays()[1])
 # print(load_scroll_offset())
 #   print(load_scaleFactor())

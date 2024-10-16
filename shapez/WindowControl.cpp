@@ -1,13 +1,39 @@
+#include<windows.h>
 #include "WindowControl.h"
 #include <QIcon>
 #include <QPainter>
 #include <QPen>
 #include "config.h"
+#include "iostream"
 
+void WindowControl::CreateMapFile(){
 
+    minspeed = new int;
+
+    HANDLE hMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,
+        NULL,                    // 默认安全属性
+        PAGE_READWRITE,          // 读/写权限
+        0,                       // 文件的高32位大小
+        sizeof(int),             // 文件的低32位大小（int 的大小）
+        L"minnspeed"         // 使用宽字符字符串作为共享内存名称
+        );
+    LPVOID lpBase = MapViewOfFile(
+        hMapFile,           // 文件映射对象句柄
+        FILE_MAP_ALL_ACCESS,    // 读写权限
+        0,                      // 高位偏移量
+        0,                      // 低位偏移量
+        sizeof(int) // 映射的字节数
+        );
+
+    minspeed = static_cast<int*>(lpBase); // 将映射的内存区域转为 int 指针
+    *minspeed = 1500;
+
+}
 WindowControl::WindowControl(QWidget *parent)
 {
     // 每1s检查一下有没有通过某一关
+    CreateMapFile();
     timer.setInterval(10);
     start = new StartScene;
     play = new PlayScene;
@@ -21,6 +47,7 @@ WindowControl::WindowControl(QWidget *parent)
     play->music();
     // 设置界面间的联系
     connections();
+
 }
 WindowControl::~WindowControl()
 {
@@ -29,6 +56,16 @@ WindowControl::~WindowControl()
     delete choose;
     delete shop;
 }
+
+void WindowControl::CheckAllUpdated() {
+    if (miner_updated == true && belt_updated == true && cutter_updated == true){
+        *minspeed = 720;
+    }
+    else{
+        *minspeed = 1500;
+    }
+}
+
 void WindowControl::CheckPassCertainRound() {
     timer.start();
     connect(&timer, &QTimer::timeout, this, [=]() {
@@ -75,23 +112,6 @@ void WindowControl::ChooseUpgradeMiner()
         case MINER:
             play->buildings[i]->FirstRequire_ms = MINER_SPEED_2;
             break;
-        case CUTTER:
-            play->buildings[i]->FirstRequire_ms = CUTTER_SPEED_1;
-            break;
-        case BELT_A:
-        case BELT_A_S:
-        case BELT_A_W:
-        case BELT_D:
-        case BELT_D_S:
-        case BELT_D_W:
-        case BELT_S:
-        case BELT_S_A:
-        case BELT_S_D:
-        case BELT_W:
-        case BELT_W_A:
-        case BELT_W_D:
-            play->buildings[i]->FirstRequire_ms = BELT_SPEED_1;
-            break;
         default:
             break;
         }
@@ -105,12 +125,6 @@ void WindowControl::ChooseUpgradeBelt()
     {
         switch (play->buildings[i]->name)
         {
-        case MINER:
-            play->buildings[i]->FirstRequire_ms = MINER_SPEED_1;
-            break;
-        case CUTTER:
-            play->buildings[i]->FirstRequire_ms = CUTTER_SPEED_1;
-            break;
         case BELT_A:
         case BELT_A_S:
         case BELT_A_W:
@@ -138,25 +152,8 @@ void WindowControl::ChooseUpgradeCutter()
     {
         switch (play->buildings[i]->name)
         {
-        case MINER:
-            play->buildings[i]->FirstRequire_ms = MINER_SPEED_1;
-            break;
         case CUTTER:
             play->buildings[i]->FirstRequire_ms = CUTTER_SPEED_2;
-            break;
-        case BELT_A:
-        case BELT_A_S:
-        case BELT_A_W:
-        case BELT_D:
-        case BELT_D_S:
-        case BELT_D_W:
-        case BELT_S:
-        case BELT_S_A:
-        case BELT_S_D:
-        case BELT_W:
-        case BELT_W_A:
-        case BELT_W_D:
-            play->buildings[i]->FirstRequire_ms = BELT_SPEED_1;
             break;
         default:
             break;
@@ -337,19 +334,28 @@ void WindowControl::connections()
             {
         choose->close();
         round->show();
-        ChooseUpgradeMiner(); });
+        ChooseUpgradeMiner();
+        miner_updated = true;
+        CheckAllUpdated();
+    });
     // choose界面选择局部强化belt
     connect(&choose->choose_belt, &QPushButton::clicked, this, [=]()
             {
         choose->close();
         round->show();
-        ChooseUpgradeBelt(); });
+        ChooseUpgradeBelt();
+        belt_updated = true;
+        CheckAllUpdated();
+    });
     // choose界面选择局部强化cutter
     connect(&choose->choose_cutter, &QPushButton::clicked, this, [=]()
             {
         choose->close();
         round->show();
-        ChooseUpgradeCutter(); });
+        ChooseUpgradeCutter();
+        cutter_updated = true;
+        CheckAllUpdated();
+    });
 }
 
 
