@@ -102,6 +102,12 @@ class ShapezEnv(gymnasium.Env):
                 high=np.max(5000),
                 shape=(grid_shape[0], grid_shape[1]),
                 dtype=np.int32
+            ),
+            'target_shape': spaces.Box(
+                low=0,
+                high=60,
+                shape=(1,),
+                dtype=np.int32
             )
         })
 
@@ -111,6 +117,7 @@ class ShapezEnv(gymnasium.Env):
         """
         observation = {
             'grid': self.grid_bld,
+            'target_shape': np.array([self.target_shape], dtype=np.int32)
         }
         return observation
 
@@ -213,7 +220,7 @@ class ShapezEnv(gymnasium.Env):
         if self.steps >= self.max_step:
             # reached the max step and haven't finish the game,return Truncated
             print("Trun")
-            # print(np.array2string(self.grid_bld, max_line_width=200))
+            print(np.array2string(self.grid_bld, max_line_width=200))
             print(self.total_reward)
             truncated = True
             done = False
@@ -228,8 +235,6 @@ class ShapezEnv(gymnasium.Env):
             print(self.success_times)
             print("len =", len(self.machines))
 
-        step_penalty = 0.01 * np.exp(0.01 * self.steps)
-        reward -= step_penalty
         self.total_reward += reward
 
         return self._get_obs(), reward, done, truncated, info
@@ -529,7 +534,7 @@ class ShapezEnv(gymnasium.Env):
             if self.check_valid_shape(current_shape) or current_shape is None:
                 reward -= 50
             else:
-                reward += 50
+                reward += 10
         return reward
 
     def calculate_cutter_reward(self, position, direction):
@@ -853,6 +858,8 @@ class ShapezEnv(gymnasium.Env):
         if self.grid_bld[main_pos] != -1 or self.grid_bld[sub_pos] != -1 or self.grid_bld[sub_pos] // 100 == 21 or \
                 self.grid_bld[main_pos] // 100 == 21:
             return False
+        if self.grid_rsc[main_pos] != 0 or self.grid_rsc[sub_pos] != 0:
+            return False
         pre_pos = self._get_pre_position(position, direction)
         if pre_pos == None or self.grid_bld[pre_pos] // 100 != 31:
             # can not be out of boundary and the pre_pos machine must be a correct conveyor
@@ -995,28 +1002,37 @@ class ShapezEnv(gymnasium.Env):
     def _track_path_with_rotator(self, position, shape):
 
         cur_pos = position
-        rotation_count = 0  # 初始化旋转次数
+        rotation_count = 0
         while True:
             nxt_pos = self._get_next_position(cur_pos, self.machines[cur_pos].direction)
             if nxt_pos is None or self.grid_bld[nxt_pos] == -1:
                 return 'none'
+            # if nxt_pos in self.machines:
+            #     pre_pos = self._get_pre_position(nxt_pos,self.grid_bld[nxt_pos]%100)
+            #     if pre_pos != cur_pos:
+            #         return 'none'
             if nxt_pos in self.machines:
                 current_machine = self.machines[nxt_pos]
                 if isinstance(current_machine, Conveyor):
-                    # nxt_direct = self.grid_bld[nxt_pos]%100
-                    # if self._get_pre_position(nxt_pos,nxt_direct) != cur_pos:
-                    #     print("false")
-                    #     return 'none'
+                    nxt_direct = self.grid_bld[nxt_pos] % 100
+                    if self._get_pre_position(nxt_pos, nxt_direct) != cur_pos:
+                        return 'none'
                     cur_pos = nxt_pos
                 elif isinstance(current_machine, Rotator):
                     rotation_count += 1
                     cur_pos = nxt_pos
                 elif isinstance(current_machine, Cutter):
+                    nxt_direct = self.grid_bld[nxt_pos] % 100
+                    if self._get_pre_position(nxt_pos, nxt_direct) != cur_pos:
+                        return 'none'
                     cur_pos = nxt_pos
                     main_exit_pos, side_exit_pos = self.get_cutter_pos(cur_pos, current_machine.direction)
                     main_exit_shape, side_exit_shape = process_cut(shape)
 
                     if main_exit_pos in self.machines:
+                        nxt_direct = self.grid_bld[nxt_pos] % 100
+                        if self._get_pre_position(nxt_pos, nxt_direct) != cur_pos:
+                            return 'none'
                         direction = self.machines[main_exit_pos].direction
                         nxt_pos = self._get_next_position(main_exit_pos, direction)
                         machine_type, direction = self.extract_buildings(nxt_pos)
@@ -1027,6 +1043,9 @@ class ShapezEnv(gymnasium.Env):
                     else:
                         main_exit_result = 'none'
                     if side_exit_pos in self.machines:
+                        nxt_direct = self.grid_bld[nxt_pos] % 100
+                        if self._get_pre_position(nxt_pos, nxt_direct) != cur_pos:
+                            return 'none'
                         direction = self.machines[side_exit_pos].direction
                         nxt_pos = self._get_next_position(side_exit_pos, direction)
                         machine_type, direction = self.extract_buildings(nxt_pos)
