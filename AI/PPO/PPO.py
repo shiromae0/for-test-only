@@ -130,13 +130,17 @@ print(np.array2string(build, max_line_width=200))
 build[(build != -1) & (build//100 != 31)] *= 100
 
 # resource = np.array([
-#     [11, 0, 0, 0, 0],             # (0,0) 位置的资源形状为 11
-#     [0, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0],             # (0,0) 位置的资源形状为 11
 #     [11, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0],
 #     [0, 0, 0, 0, 0],
 #     [0, 0, 0, 0, 0]
 # ])
-
+# build = np.full((5,5),-1)
+#
+# build [3,3] = 2100
+# build [1,0] = 2204
+# build [1,1] = 3104
 def linear_schedule(initial_value):
     def func(progress_remaining):
         # progress_remaining 从 1 到 0，1 表示训练开始，0 表示训练结束
@@ -146,7 +150,7 @@ def linear_schedule(initial_value):
 
 
 # 创建自定义环境
-env = ShapezEnv(build, resource, target_shape=target_shape)
+env = ShapezEnv(build, resource, target_shape=13)
 env.reset()
 act_list = env.action_list
 # 创建PPO模型，使用多层感知机策略
@@ -154,15 +158,15 @@ act_list = env.action_list
 
 # 开始训练
 
-# model = PPO(MaskedMultiInputPolicy, env=env, verbose=1, policy_kwargs={'model': None})
-model = PPO.load("ppo_shapez_model",env=env)
+model = PPO(MaskedMultiInputPolicy, env=env, verbose=1, policy_kwargs={'model': None})
+# model = PPO.load("ppo_shapez_model",env=env)
 # 在创建模型后，将 model 自己设置为策略类中的 model
 model.set_env(env)
 model.policy.model = model
-model.learn(total_timesteps=30000)
+model.learn(total_timesteps=80000)
 
 # 保存模型
-model.save("ppo_shapez_model")
+# model.save("ppo_shapez_model")
 
 # 测试模型
 

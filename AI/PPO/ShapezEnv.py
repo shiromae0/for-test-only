@@ -21,9 +21,9 @@ def distance(point1, point2):
 
 class ShapezEnv(gymnasium.Env):
     def __init__(self, build, res, target_shape):
-        self.required_routes = 2
+        self.required_routes = 1
         self.success_times = 0
-        self.max_step = 1200
+        self.max_step = 1200 * self.required_routes
         self.steps = 0
         self.original_bld = np.array(build)
         self.path = []
@@ -168,15 +168,17 @@ class ShapezEnv(gymnasium.Env):
             print(self.total_reward)
             print(self.success_times)
             print("len =",len(self.machines))
-        elif self.check_goal() == 1:
+            sys.exit()
+        # elif self.check_goal() == 1:
+        #     print("1")
             # 返回观察值、奖励、是否结束、是否被截断和信息
-            mask = self.get_action_mask()
-            print(np.array2string(self.grid_bld, max_line_width=200))
-            for num,i in enumerate(mask):
-                if i == 1:
-                    print("valid_act = ",self.action_list[num])
-            print()
-            time.sleep(1)
+            # mask = self.get_action_mask()
+            # print(np.array2string(self.grid_bld, max_line_width=200))
+            # for num,i in enumerate(mask):
+            #     if i == 1:
+            #         print("valid_act = ",self.action_list[num])
+            # print()
+            # time.sleep(1)
         self.last_action_index = action
         step_penalty = 0.01 * np.exp(0.01 * self.steps)
         # print("s_p= ",step_penalty)
@@ -405,18 +407,6 @@ class ShapezEnv(gymnasium.Env):
         if hub_pos == None or next_pos == None:
             #no valid closet hub meaningless to continue placing belt
             return -5
-        # min_dis = distance(start, hub_pos)
-        # distance_reward = max(self.reward_grid.shape[0],self.reward_grid.shape[1]) - distance(position, hub_pos)
-        #
-        # # 定义 reward 的最小和最大值
-        # reward_min = 0
-        # reward_max = max(self.reward_grid.shape[0],self.reward_grid.shape[1])
-        #
-        # log_reward = np.log(distance_reward - reward_min + 1)  # 加 1 避免 log(0)
-        # scaled_reward = (log_reward - np.log(1)) / (np.log(reward_max - reward_min + 1) - np.log(1)) * 15
-        #
-        # distance_reward = max(0, min(15, scaled_reward))  # 限制在 [0, 20] 范围
-        # reward = self.grid_bld.shape[0]-distance(hub_pos,position)
         if self.check_valid_shape(current_shape):
             # conveying the correct shape
             reward += (self.grid_bld.shape[0] - distance(hub_pos, position))/2
@@ -562,8 +552,16 @@ class ShapezEnv(gymnasium.Env):
             self.machines[position] = new_machine
             self.machines[sub_pos] = new_machine
             reward = self.calculate_cutter_reward(position, direction)
-            self.reward_grid[position] = reward
-            self.reward_grid[sub_pos] = reward
+            if reward > 0:
+                self.reward_grid[position] = reward
+                self.reward_grid[sub_pos] = reward
+            else:
+                main_pos = position
+                del self.machines[main_pos]
+                del self.machines[sub_pos]
+                self.grid_bld[position] = -1
+                self.grid_bld[sub_pos] = -1
+                return -20
         reward -= 1
         self.reward_grid[position] = reward
         return reward
@@ -974,6 +972,9 @@ class ShapezEnv(gymnasium.Env):
         return main_pos,sub_pos
 
     def _track_path_with_rotator(self, position, shape):
+        # print(position)
+        # print(np.array2string(self.grid_bld, max_line_width=200))
+        # print()
         """
         通用路径追踪函数，处理路径中可能遇到的传送带、旋转器、Cutter和Hub。
         """
@@ -984,10 +985,8 @@ class ShapezEnv(gymnasium.Env):
             if nxt_pos is None or self.grid_bld[nxt_pos] == -1:
                 # print(f"路径中断或无效位置: {nxt_pos}")
                 return 'none'
-
             if nxt_pos in self.machines:
                 current_machine = self.machines[nxt_pos]
-
                 if isinstance(current_machine, Conveyor):
 
                     # 继续沿传送带前进
@@ -1010,16 +1009,31 @@ class ShapezEnv(gymnasium.Env):
                     # 获取主、副出口
                     main_exit_pos, side_exit_pos = self.get_cutter_pos(cur_pos, current_machine.direction)
                     main_exit_shape, side_exit_shape = self.process_cut(shape)
-
                     # 分别追踪主出口和副出口
                     if main_exit_pos in self.machines:
-                        main_exit_result = self._track_path_with_rotator(main_exit_pos, main_exit_shape)
+                        direction = self.machines[main_exit_pos].direction
+                        nxt_pos = self._get_next_position(main_exit_pos,direction)
+                        machine_type,direction = self.extract_buildings(nxt_pos)
+                        if machine_type == 31 and self._get_pre_position(nxt_pos,direction) == main_exit_pos:
+                            #connected
+                            main_exit_result = self._track_path_with_rotator(main_exit_pos, main_exit_shape)
+                        else:
+                            main_exit_result = 'none'
                     else:
+                        print("main none")
                         main_exit_result = 'none'
 
                     if side_exit_pos in self.machines:
-                        side_exit_result = self._track_path_with_rotator(side_exit_pos, side_exit_shape)
+                        direction = self.machines[side_exit_pos].direction
+                        nxt_pos = self._get_next_position(side_exit_pos, direction)
+                        machine_type, direction = self.extract_buildings(nxt_pos)
+                        if machine_type == 31 and self._get_pre_position(nxt_pos, direction) == side_exit_pos:
+                            # connected
+                            side_exit_result = self._track_path_with_rotator(side_exit_pos, side_exit_shape)
+                        else:
+                            side_exit_result = 'none'
                     else:
+                        print("side none")
                         side_exit_result = 'none'
 
                     if main_exit_result == 'hub' or side_exit_result == 'hub':
