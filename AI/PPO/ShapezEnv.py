@@ -20,8 +20,8 @@ def distance(point1, point2):
 
 
 class ShapezEnv(gymnasium.Env):
-    def __init__(self, build, res, target_shape):
-        self.required_routes = 2
+    def __init__(self, build, res, target_shape,required_routes = 1):
+        self.required_routes = required_routes
         self.success_times = 0
         self.max_step = 1200 * self.required_routes
         self.steps = 0
