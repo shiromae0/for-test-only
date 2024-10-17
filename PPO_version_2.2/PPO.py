@@ -89,17 +89,16 @@ def get_agent_act_list():
     target_shape = getmap.load_needed_shape()
     # print(resource)
     # print(np.array2string(build, max_line_width=200))
-    env =ShapezEnv(build, resource, target_shape=13)
+    env =ShapezEnv(build, resource, target_shape=target_shape)
     env.reset()
     act_list = env.action_list
-    # model = PPO(MaskedMultiInputPolicy, env=env, verbose=1, policy_kwargs={'model': None})
-    model = PPO.load("ppo_shapez_model_2",env=env)
+    # model = PPO(MaskedMultiInputPolicy, env=env, verbose=1, policy_kwargs={'model': None},gamma=0.98)
+    model = PPO.load("ppo_model.zip",env=env,gamma=0.98)
 
     model.set_env(env)
     model.policy.model = model
-    # for i in range(8):
-    #     model.learn(total_timesteps=30000)
-    #     model.save("ppo_shapez_model_2")
+    # model.learn(total_timesteps=10000)
+    model.save("ppo_model.zip")
 
     obs, info = env.reset()
     agent_act = []
