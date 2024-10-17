@@ -27,7 +27,7 @@ void WindowControl::CreateMapFile(){
         );
 
     minspeed = static_cast<int*>(lpBase); // 将映射的内存区域转为 int 指针
-    *minspeed = 1500;
+    *minspeed = 1;
 
 }
 
@@ -57,22 +57,23 @@ WindowControl::~WindowControl()
     delete choose;
     delete shop;
 }
-
+/*
 void WindowControl::CheckAllUpdated() {
     if (miner_updated == true && belt_updated == true && cutter_updated == true){
-        *minspeed = 720;
+        *minspeed = 2;
     }
     else{
-        *minspeed = 1500;
+        *minspeed = 1;
     }
 }
-
+*/
 void WindowControl::CheckPassCertainRound() {
     timer.start();
     connect(&timer, &QTimer::timeout, this, [=]() {
         if (play->round == 5) {
+                *minspeed = 2;
             // 使用新条件: 10秒内收到4个cycle
-            if (*(play->hub->received_objects_last_10_second) >= 4 && play->current_received_shape == CYCLE) {
+            if (*(play->hub->received_objects_last_10_second) >= 6 && play->current_received_shape == CYCLE) {
                 round->level++;
                 play->round++;
                 play->close();
@@ -337,7 +338,7 @@ void WindowControl::connections()
         round->show();
         ChooseUpgradeMiner();
         miner_updated = true;
-        CheckAllUpdated();
+        //CheckAllUpdated();
     });
     // choose界面选择局部强化belt
     connect(&choose->choose_belt, &QPushButton::clicked, this, [=]()
@@ -346,7 +347,7 @@ void WindowControl::connections()
         round->show();
         ChooseUpgradeBelt();
         belt_updated = true;
-        CheckAllUpdated();
+        //CheckAllUpdated();
     });
     // choose界面选择局部强化cutter
     connect(&choose->choose_cutter, &QPushButton::clicked, this, [=]()
@@ -355,7 +356,7 @@ void WindowControl::connections()
         round->show();
         ChooseUpgradeCutter();
         cutter_updated = true;
-        CheckAllUpdated();
+        //CheckAllUpdated();
     });
 }
 
