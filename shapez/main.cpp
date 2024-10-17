@@ -1,4 +1,4 @@
-// main.cpp是入口文件
+// main.cpp is the entry file
 #include "WindowControl.h"
 #include "RoundScene.h"
 #include "PlayScene.h"
@@ -8,13 +8,13 @@
 #include "config.h"
 int main(int argc, char *argv[])
 {
-    // QApplication是qt框架提供的应用程序类
-    // 负责事件的处理，比如鼠标单击、键盘输入
+    // QApplication is a class provided by the Qt framework
+    // It handles events like mouse clicks and keyboard input
     QApplication a(argc, argv);
-    // 注册外部资源文件
+    // Register external resource files
     QResource::registerResource(GAME_RES_PATH);
     WindowControl w;
-    // 创建窗口，并显示
-    // 进入事件的循环处理，直到退出应用程序
+    // Create a window and display it
+    // Enter the event loop until the application exits
     return a.exec();
 }

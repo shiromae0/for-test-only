@@ -3,11 +3,11 @@
 Scene::Scene(QWidget *parent)
     : QWidget{parent}
 {
-    // 设置窗口尺寸
+    // set window size
     this->setFixedSize(WIDGET_WIDTH, WIDGET_HEIGHT);
-    // 设置窗口图标
+    // set window icon
     this->setWindowIcon(QIcon(GAME_ICON));
-    // 设置窗口名字
+    // set window name
     this->setWindowTitle(GAME_TITLE);
     //
     setMouseTracking(true);

@@ -8,7 +8,7 @@ void Timer::UpdateRuningTime(time_t max_require_ms)
     }
     previous_ms = current_ms;
     current_ms = GetTime();
-    // 更新时间间隔
+    // update intervals
     delta_ms = (current_ms - previous_ms);
     running_ms += delta_ms;
 }

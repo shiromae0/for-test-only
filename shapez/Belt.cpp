@@ -261,7 +261,8 @@ void Belt::UpdateTickableState(GameMap &gamemap)
         }
         if (running_ms >= FirstRequire_ms)
         {
-            // 运输到传送带末尾了，准备传递给下一个建筑
+            // Reached the end of the conveyor belt, ready to transfer to the next building
+
             state = BLOCK;
             running_ms = 0;
         }

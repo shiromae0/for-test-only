@@ -4,7 +4,7 @@
 StartScene::StartScene()
 {
     logo.load(LOGO_PATH);
-    // 初始化按钮
+    // initialize buttons
     new_game.setParent(this);
     new_game.setFixedSize(250, 150);
     new_game.setStyleSheet("QPushButton{image: url(:/res/new_game.png)}");

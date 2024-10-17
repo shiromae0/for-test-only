@@ -21,17 +21,17 @@ bool Rotator::CanPlace(GridVec click, int picdirection, GameMap &gamemap)
 {
     for (auto pos : BuildingAllPos())
     {
-        // 如果超出地图范围，返回false
+        // If outside map，return false
         if (pos.i < 0 || pos.i >= HEIGHT || pos.j < 0 || pos.j >= WIDTH)
         {
             return false;
         }
-        // 如果在矿地上，或有障碍物，返回false
+        // If on mine，or there's obstacle，return false
         if (gamemap.GetResource(pos) != NONE)
         {
             return false;
         }
-        // 如果点击的是hub，返回false
+        // If click hub，return false
         if (gamemap.GetBuilding(pos) != nullptr)
         {
             if (gamemap.GetBuilding(pos)->name == HUB || gamemap.GetBuilding(pos)->name == ROTATOR || gamemap.GetBuilding(pos)->name == TRASH)
@@ -80,7 +80,7 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
     case RUNNING:
         if (running_ms >= FirstRequire_ms)
         {
-            // Rotator好了，准备运输
+            // The rotator is ready, prepare for transportation
             state = BLOCK;
             running_ms = 0;
         }
@@ -91,32 +91,32 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
         break;
     case BLOCK:
         if (this->shape.name == CYCLE) {
-            // 当前形状是右矩形
+            // The current shape is a right rectangle
             switch (direction)
             {
             case UP:
             case RIGHT:
             case DOWN:
             case LEFT:
-        if (this->CanSend(BuildingAllPos()[0], direction, CYCLE, gamemap) )
-            {
-                this->Send(BuildingAllPos()[0], direction, CYCLE, gamemap);
-                state = EMPTY;
-                this->shape.name = NONE;
-            }
+                if (this->CanSend(BuildingAllPos()[0], direction, CYCLE, gamemap))
+                {
+                    this->Send(BuildingAllPos()[0], direction, CYCLE, gamemap);
+                    state = EMPTY;
+                    this->shape.name = NONE;
+                }
                 break;
             default:
                 break;
             }
         } else if (this->shape.name == RECT) {
-            // 当前形状是右矩形
+            // The current shape is a right rectangle
             switch (direction)
             {
             case UP:
             case RIGHT:
             case DOWN:
             case LEFT:
-                if (this->CanSend(BuildingAllPos()[0], direction, RECT, gamemap) )
+                if (this->CanSend(BuildingAllPos()[0], direction, RECT, gamemap))
                 {
                     this->Send(BuildingAllPos()[0], direction, RECT, gamemap);
                     state = EMPTY;
@@ -127,7 +127,7 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
                 break;
             }
         } else if (this->shape.name == LEFT_RECT) {
-            // 当前形状是左矩形
+            // The current shape is a left rectangle
             switch (direction)
             {
             case UP:
@@ -145,14 +145,14 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
                 break;
             }
         } else if (this->shape.name == RIGHT_RECT) {
-            // 当前形状是右矩形
+            // The current shape is a right rectangle
             switch (direction)
             {
             case UP:
             case RIGHT:
             case DOWN:
             case LEFT:
-                if (this->CanSend(BuildingAllPos()[0], direction, RIGHT_RECT, gamemap) )
+                if (this->CanSend(BuildingAllPos()[0], direction, RIGHT_RECT, gamemap))
                 {
                     this->Send(BuildingAllPos()[0], direction, DOWN_RECT, gamemap);
                     state = EMPTY;
@@ -163,14 +163,14 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
                 break;
             }
         } else if (this->shape.name == UP_RECT) {
-            // 当前形状是上矩形
+            // The current shape is an upper rectangle
             switch (direction)
             {
             case UP:
             case RIGHT:
             case DOWN:
             case LEFT:
-                if (this->CanSend(BuildingAllPos()[0], direction, UP_RECT, gamemap) )
+                if (this->CanSend(BuildingAllPos()[0], direction, UP_RECT, gamemap))
                 {
                     this->Send(BuildingAllPos()[0], direction, RIGHT_RECT, gamemap);
                     state = EMPTY;
@@ -181,14 +181,14 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
                 break;
             }
         } else if (this->shape.name == DOWN_RECT) {
-            // 当前形状是下矩形
+            // The current shape is a lower rectangle
             switch (direction)
             {
             case UP:
             case RIGHT:
             case DOWN:
             case LEFT:
-                if (this->CanSend(BuildingAllPos()[0], direction, DOWN_RECT, gamemap) )
+                if (this->CanSend(BuildingAllPos()[0], direction, DOWN_RECT, gamemap))
                 {
                     this->Send(BuildingAllPos()[0], direction, LEFT_RECT, gamemap);
                     state = EMPTY;
@@ -199,7 +199,7 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
                 break;
             }
         } else if (this->shape.name == LEFT_CYCLE) {
-            // 当前形状是左园形
+            // The current shape is a left circle
             switch (direction)
             {
             case UP:
@@ -217,14 +217,14 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
                 break;
             }
         } else if (this->shape.name == RIGHT_CYCLE) {
-            // 当前形状是右园形
+            // The current shape is a right circle
             switch (direction)
             {
             case UP:
             case RIGHT:
             case DOWN:
             case LEFT:
-                if (this->CanSend(BuildingAllPos()[0], direction, RIGHT_CYCLE, gamemap) )
+                if (this->CanSend(BuildingAllPos()[0], direction, RIGHT_CYCLE, gamemap))
                 {
                     this->Send(BuildingAllPos()[0], direction, DOWN_CYCLE, gamemap);
                     state = EMPTY;
@@ -235,14 +235,14 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
                 break;
             }
         } else if (this->shape.name == UP_CYCLE) {
-            // 当前形状是上园形
+            // The current shape is an upper circle
             switch (direction)
             {
             case UP:
             case RIGHT:
             case DOWN:
             case LEFT:
-                if (this->CanSend(BuildingAllPos()[0], direction, UP_CYCLE, gamemap) )
+                if (this->CanSend(BuildingAllPos()[0], direction, UP_CYCLE, gamemap))
                 {
                     this->Send(BuildingAllPos()[0], direction, RIGHT_CYCLE, gamemap);
                     state = EMPTY;
@@ -253,14 +253,14 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
                 break;
             }
         } else if (this->shape.name == DOWN_CYCLE) {
-            // 当前形状是下园形
+            // The current shape is a lower circle
             switch (direction)
             {
             case UP:
             case RIGHT:
             case DOWN:
             case LEFT:
-                if (this->CanSend(BuildingAllPos()[0], direction, DOWN_CYCLE, gamemap) )
+                if (this->CanSend(BuildingAllPos()[0], direction, DOWN_CYCLE, gamemap))
                 {
                     this->Send(BuildingAllPos()[0], direction, LEFT_CYCLE, gamemap);
                     state = EMPTY;
@@ -271,7 +271,6 @@ void Rotator::UpdateTickableState(GameMap &gamemap)
                 break;
             }
         }
-        break;
         break;
     default:
         break;

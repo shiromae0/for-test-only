@@ -107,7 +107,7 @@ void Cutter::UpdateTickableState(GameMap &gamemap)
     case RUNNING:
         if (running_ms >= FirstRequire_ms)
         {
-            // cutter好了，准备运输
+            // cutter is ready, start to transport
             state = BLOCK;
             running_ms = 0;
         }

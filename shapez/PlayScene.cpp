@@ -12,16 +12,16 @@
 #include <iostream>
 #include <QSet>
 #include <QList>
-void PlayScene::CreateMapFile(){
+void PlayScene::CreateMapFile() {
     Qpointmapx = new int;
     Qpointmapy = new int;
     HANDLE hMapFile = CreateFileMapping(
-        INVALID_HANDLE_VALUE,   // 创建匿名文件映射
-        NULL,                   // 默认安全属性
-        PAGE_READWRITE,         // 读写权限
-        0,                      // 高位大小
-        sizeof(int) * 2,        // 两个 int 的大小（x 和 y）
-        L"scrolloffset"   // 共享内存名称
+        INVALID_HANDLE_VALUE,   // Create an anonymous file mapping
+        NULL,                   // Default security attributes
+        PAGE_READWRITE,         // Read-write permission
+        0,                      // High-order file size
+        sizeof(int) * 2,        // Size for two ints (x and y)
+        L"scrolloffset"         // Shared memory name
         );
 
     if (hMapFile == NULL) {
@@ -32,27 +32,27 @@ void PlayScene::CreateMapFile(){
         FILE_MAP_ALL_ACCESS,
         0,
         0,
-        sizeof(int) * 2  // 两个 int 大小的空间
+        sizeof(int) * 2  // Space for two ints
         );
     if (pMappedMemory == NULL) {
         CloseHandle(hMapFile);
         return;
     }
-    // 将 x 和 y 的指针指向共享内存
+    // Point the x and y pointers to the shared memory
     Qpointmapx = &pMappedMemory[0];
     Qpointmapy = &pMappedMemory[1];
-    *Qpointmapx =  200;
+    *Qpointmapx = 200;
     *Qpointmapy = 85;
     //CloseHandle(hMapFile);
     scaleFcator_map = new double;
 
     HANDLE ScaleMapFile = CreateFileMapping(
-        INVALID_HANDLE_VALUE,   // 创建匿名文件映射
-        NULL,                   // 默认安全属性
-        PAGE_READWRITE,         // 读写权限
-        0,                      // 高位大小
-        sizeof(double),         // 一个 double 的大小
-        L"scaleFactor"          // 共享内存名称
+        INVALID_HANDLE_VALUE,   // Create an anonymous file mapping
+        NULL,                   // Default security attributes
+        PAGE_READWRITE,         // Read-write permission
+        0,                      // High-order file size
+        sizeof(double),         // Size for one double
+        L"scaleFactor"          // Shared memory name
         );
 
     if (ScaleMapFile == NULL) {
@@ -64,34 +64,31 @@ void PlayScene::CreateMapFile(){
         FILE_MAP_ALL_ACCESS,
         0,
         0,
-        sizeof(double)          // double 大小的空间
+        sizeof(double)          // Space for one double
         );
 
     if (sMappedMemory == NULL) {
-        CloseHandle(ScaleMapFile);  // 使用 ScaleMapFile 而不是 hMapFile
+        CloseHandle(ScaleMapFile);  // Use ScaleMapFile instead of hMapFile
         return;
     }
 
-    scaleFcator_map = sMappedMemory;  // 不需要取地址
-
+    scaleFcator_map = sMappedMemory;  // No need to take the address
 }
 
-PlayScene::PlayScene()
-
-{
+PlayScene::PlayScene() {
     CreateMapFile();
-    // 初始化像素画
+    // Initialize pixel images
     *scaleFcator_map = 1.0;
-    hub_small_img.load(HUB_SMALL_PATH); // 交付中心
+    hub_small_img.load(HUB_SMALL_PATH); // Delivery center
     hub_big_img.load(HUB_BIG_PATH);
-    cycle_mine_field_img.load(CYCLE_MINE_PATH); // 矿地
+    cycle_mine_field_img.load(CYCLE_MINE_PATH); // Mining field
     rect_mine_field_img.load(RECT_MINE_PATH);
-    barrier_img.load(BARRIER_PATH); // 障碍物
-    miner_img_W.load(MINER_W_PATH); // 采矿机
+    barrier_img.load(BARRIER_PATH); // Barrier
+    miner_img_W.load(MINER_W_PATH); // Miner
     miner_img_A.load(MINER_A_PATH);
     miner_img_D.load(MINER_D_PATH);
     miner_img_S.load(MINER_S_PATH);
-    belt_img_A.load(BELT_A_PATH); // 传送带
+    belt_img_A.load(BELT_A_PATH); // Conveyor belt
     belt_img_A_S.load(BELT_A_S_PATH);
     belt_img_A_W.load(BELT_A_W_PATH);
     belt_img_D.load(BELT_D_PATH);
@@ -103,31 +100,31 @@ PlayScene::PlayScene()
     belt_img_W.load(BELT_W_PATH);
     belt_img_W_A.load(BELT_W_A_PATH);
     belt_img_W_D.load(BELT_W_D_PATH);
-    cutter_img_A.load(CUTTER_A_PATH); // 切割机
+    cutter_img_A.load(CUTTER_A_PATH); // Cutter
     cutter_img_D.load(CUTTER_D_PATH);
     cutter_img_S.load(CUTTER_S_PATH);
     cutter_img_W.load(CUTTER_W_PATH);
-    trash_img_A.load(TRASH_A_PATH); // 垃圾桶
+    trash_img_A.load(TRASH_A_PATH); // Trash bin
     trash_img_D.load(TRASH_D_PATH);
     trash_img_S.load(TRASH_S_PATH);
     trash_img_W.load(TRASH_W_PATH);
-    tunnel_entry_A.load(TUNNEL_ENTRY_A_PATH); // 隧道入口
+    tunnel_entry_A.load(TUNNEL_ENTRY_A_PATH); // Tunnel entry
     tunnel_entry_D.load(TUNNEL_ENTRY_D_PATH);
     tunnel_entry_S.load(TUNNEL_ENTRY_S_PATH);
     tunnel_entry_W.load(TUNNEL_ENTRY_W_PATH);
-    tunnel_exit_A.load(TUNNEL_EXIT_A_PATH); // 隧道出口
+    tunnel_exit_A.load(TUNNEL_EXIT_A_PATH); // Tunnel exit
     tunnel_exit_D.load(TUNNEL_EXIT_D_PATH);
     tunnel_exit_S.load(TUNNEL_EXIT_S_PATH);
     tunnel_exit_W.load(TUNNEL_EXIT_W_PATH);
-    rotator_img_A.load(ROTATOR_A_PATH); // 旋转器
+    rotator_img_A.load(ROTATOR_A_PATH); // Rotator
     rotator_img_D.load(ROTATOR_D_PATH);
     rotator_img_S.load(ROTATOR_S_PATH);
     rotator_img_W.load(ROTATOR_W_PATH);
-    miner_img_blue_W.load(MINER_BLUE_W_PATH); // 采矿机蓝图
+    miner_img_blue_W.load(MINER_BLUE_W_PATH); // Miner blueprint
     miner_img_blue_A.load(MINER_BLUE_A_PATH);
     miner_img_blue_D.load(MINER_BLUE_D_PATH);
     miner_img_blue_S.load(MINER_BLUE_S_PATH);
-    belt_img_blue_A.load(BELT_BLUE_A_PATH); // 传送带蓝图
+    belt_img_blue_A.load(BELT_BLUE_A_PATH); // Conveyor belt blueprint
     belt_img_blue_A_S.load(BELT_BLUE_A_S_PATH);
     belt_img_blue_A_W.load(BELT_BLUE_A_W_PATH);
     belt_img_blue_D.load(BELT_BLUE_D_PATH);
@@ -139,20 +136,20 @@ PlayScene::PlayScene()
     belt_img_blue_W.load(BELT_BLUE_W_PATH);
     belt_img_blue_W_A.load(BELT_BLUE_W_A_PATH);
     belt_img_blue_W_D.load(BELT_BLUE_W_D_PATH);
-    cutter_img_blue_A.load(CUTTER_BLUE_A_PATH); // 切割机蓝图
+    cutter_img_blue_A.load(CUTTER_BLUE_A_PATH); // Cutter blueprint
     cutter_img_blue_D.load(CUTTER_BLUE_D_PATH);
     cutter_img_blue_S.load(CUTTER_BLUE_S_PATH);
     cutter_img_blue_W.load(CUTTER_BLUE_W_PATH);
-    trash_img_blue_A.load(TRASH_BLUE_A_PATH); // 垃圾桶蓝图
+    trash_img_blue_A.load(TRASH_BLUE_A_PATH); // Trash bin blueprint
     trash_img_blue_D.load(TRASH_BLUE_D_PATH);
     trash_img_blue_S.load(TRASH_BLUE_S_PATH);
     trash_img_blue_W.load(TRASH_BLUE_W_PATH);
-    tunnel_blue_A.load(TUNNEL_BLUE_A_PATH); // 隧道蓝图
+    tunnel_blue_A.load(TUNNEL_BLUE_A_PATH); // Tunnel blueprint
     tunnel_blue_D.load(TUNNEL_BLUE_D_PATH);
     tunnel_blue_S.load(TUNNEL_BLUE_S_PATH);
     tunnel_blue_W.load(TUNNEL_BLUE_W_PATH);
 
-    cycle_img.load(CYCLE_PATH); // 物品
+    cycle_img.load(CYCLE_PATH); // Items
     rect_img.load(RECT_PATH);
     left_cycle_img.load(LEFT_CYCLE_PATH);
     right_cycle_img.load(RIGHT_CYCLE_PATH);
@@ -163,7 +160,7 @@ PlayScene::PlayScene()
     right_rect_img.load(RIGHT_RECT_PATH);
     up_rect_img.load(UP_RECT_PATH);
     down_rect_img.load(DOWN_RECT_PATH);
-    // 初始化按钮
+    // Initialize buttons
     shop.setParent(this);
     shop.setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
     shop.setStyleSheet("QPushButton{image: url(:/res/shop.png)}");
@@ -185,7 +182,7 @@ PlayScene::PlayScene()
     //tunnel_exit_button.setParent(this);
     //tunnel_exit_button.setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
     //tunnel_exit_button.setStyleSheet("QPushButton{image: url(:/res/tunnel_exit_W.png)}");
-    rotator_img_blue_A.load(ROTATOR_BLUE_A_PATH); // 切割机蓝图
+    rotator_img_blue_A.load(ROTATOR_BLUE_A_PATH); // Rotator blueprint
     rotator_img_blue_D.load(ROTATOR_BLUE_D_PATH);
     rotator_img_blue_S.load(ROTATOR_BLUE_S_PATH);
     rotator_img_blue_W.load(ROTATOR_BLUE_W_PATH);
@@ -195,37 +192,37 @@ PlayScene::PlayScene()
     help_button.setParent(this);
     help_button.setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
     help_button.setStyleSheet("QPushButton{image: url(:/res/help.png)}");
-    // 未增加矿地的地图
+    // Map without mining fields added
     map.FirstMap();
-    // 当前未放置任何建筑
+    // No building is placed at the moment
     is_placing_belt = false;
     ready_to_place_belt = false;
     current_building_name = NONE;
     current_building_direction = UP;
-    // 未局部升级建筑
+    // No partial upgrades to buildings
     upgrade = NONE;
-    // 关卡
+    // Game level
     round = 1;
-    // 计时器，工厂运转
+    // Timer for factory operation
     timer.setInterval(GAME_HZ);
     this->FactoryRunning();
-    // 实时捕获鼠标位置
+    // Capture mouse position in real-time
     setMouseTracking(true);
     cur_x = 0;
     cur_y = 0;
-    //右键拖动删除
+    // Right-click drag to delete
     right_button_pressed = false;
     QTimer::singleShot(0, this, &PlayScene::initializeView);
-    elapsedTimer.start();  // 启动计时器
+    elapsedTimer.start();  // Start timer
     current_received_shape = NONE;
     shape_output_timer = new QTimer(this);
     connect(shape_output_timer, &QTimer::timeout, this, &PlayScene::outputCurrentShape);
-    shape_output_timer->start(1000);  // 每秒触发一次
+    shape_output_timer->start(1000);  // Trigger every second
     connect(shape_output_timer, &QTimer::timeout, this, &PlayScene::checkResetReceivedShape);
     hub = new Hub(this);
     QTimer* updateTimer = new QTimer(this);
-    connect(updateTimer, &QTimer::timeout, this, &PlayScene::updateHubStats);  // 每秒调用 updateHubStats
-    updateTimer->start(1000);  // 1000 毫秒 == 1 秒
+    connect(updateTimer, &QTimer::timeout, this, &PlayScene::updateHubStats);  // Call updateHubStats every second
+    updateTimer->start(1000);  // 1000 milliseconds == 1 second
     addTopLeftButton();
 
     //tunnel_check_timer = new QTimer(this);
@@ -235,26 +232,26 @@ PlayScene::PlayScene()
 
 void PlayScene::draw_cells()
 {
-    // 绘制背景淡灰色网格
-    QPen pen;                            // 笔
-    pen.setColor(QColor(220, 220, 220)); // 淡灰色
-    QPainter gridPainter(this);          // 画家
-    gridPainter.setPen(pen);             // 画家拿笔
+    // Draw the background light gray grid
+    QPen pen;                            // Pen
+    pen.setColor(QColor(220, 220, 220)); // Light gray color
+    QPainter gridPainter(this);          // Painter
+    gridPainter.setPen(pen);             // Painter holds the pen
     gridPainter.scale(scaleFactor, scaleFactor);
     gridPainter.translate(scroll_offset);
-    for (int y = 0; y <= HEIGHT*CELLSIZE; y += CELLSIZE)
+    for (int y = 0; y <= HEIGHT * CELLSIZE; y += CELLSIZE)
     {
-        gridPainter.drawLine(0, y, WIDTH*CELLSIZE, y);
+        gridPainter.drawLine(0, y, WIDTH * CELLSIZE, y);
     }
-    for (int x = 0; x <= WIDTH*CELLSIZE; x += CELLSIZE)
+    for (int x = 0; x <= WIDTH * CELLSIZE; x += CELLSIZE)
     {
-        gridPainter.drawLine(x, 0, x, HEIGHT*CELLSIZE);
+        gridPainter.drawLine(x, 0, x, HEIGHT * CELLSIZE);
     }
 }
 
 void PlayScene::draw_map_resources()
 {
-    // 绘制矿地
+    // Draw the mining fields
     QPainter mineFieldPainter(this);
     mineFieldPainter.scale(scaleFactor, scaleFactor);
     mineFieldPainter.translate(scroll_offset);
@@ -316,14 +313,14 @@ void PlayScene::draw_building()
                 }
                 if (!hub->upgradehub)
                 {
-                    // 未升级的hub
+                    // Unupgraded hub
                     painter.drawPixmap(building->pos.j * CELLSIZE, building->pos.i * CELLSIZE, CELLSIZE * 2, CELLSIZE * 2, hub_small_img);
 
-                    // 计算未升级hub的中心点并绘制缩小后的aim_img
-                    int center_x = building->pos.j * CELLSIZE + CELLSIZE; // 中心点的x坐标
-                    int center_y = building->pos.i * CELLSIZE + CELLSIZE; // 中心点的y坐标
+                    // Calculate the center point of the unupgraded hub and draw the scaled-down aim_img
+                    int center_x = building->pos.j * CELLSIZE + CELLSIZE; // x-coordinate of the center point
+                    int center_y = building->pos.i * CELLSIZE + CELLSIZE; // y-coordinate of the center point
 
-                    // 缩小后的大小
+                    // Scaled-down size
                     int aim_width = CELLSIZE / 1.5;
                     int aim_height = CELLSIZE / 1.5;
                     if (round < 3 || round == 5) {
@@ -332,20 +329,20 @@ void PlayScene::draw_building()
                     else if (round >= 3 && round <= 4) {
                         painter.drawPixmap(center_x - aim_width / 2, center_y - aim_height / 2, aim_width / 2, aim_height, aim_img);
                     }
-                    // 居中绘制缩小后的aim_img
+                    // Center the scaled-down aim_img
 
                     update();
                 }
                 else
                 {
-                    // 升级后的hub
+                    // Upgraded hub
                     painter.drawPixmap(building->pos.j * CELLSIZE, building->pos.i * CELLSIZE, CELLSIZE * 4, CELLSIZE * 4, hub_big_img);
 
-                    // 计算升级后hub的中心点并绘制aim_img
-                    int center_x = building->pos.j * CELLSIZE + 2 * CELLSIZE; // 中心点的x坐标
-                    int center_y = building->pos.i * CELLSIZE + 2 * CELLSIZE; // 中心点的y坐标
+                    // Calculate the center point of the upgraded hub and draw aim_img
+                    int center_x = building->pos.j * CELLSIZE + 2 * CELLSIZE; // x-coordinate of the center point
+                    int center_y = building->pos.i * CELLSIZE + 2 * CELLSIZE; // y-coordinate of the center point
                     painter.drawPixmap(center_x - CELLSIZE / 2, center_y - CELLSIZE / 2, CELLSIZE, CELLSIZE, aim_img);
-                    }
+                }
                 break;
             case TRASH:
                 switch (building->direction)
@@ -440,9 +437,6 @@ void PlayScene::draw_building()
                     break;
                 }
                 break;
-                /*
-
-*/
             case ROTATOR:
                 switch (building->direction)
                 {
@@ -469,6 +463,9 @@ void PlayScene::draw_building()
         }
     }
 }
+
+
+
 void PlayScene::draw_ui()
 {
     shop.move(0, CELLSIZE * 15);
@@ -490,25 +487,26 @@ void PlayScene::draw_ui()
     rotator_button.move(BUTTON_SIZE * 11, CELLSIZE * 15);
     rotator_button.show();
 }
+
 void PlayScene::draw_hub_text()
 {
     QPainter hubPainter(this);
-    // 绘制hub文字
+    // Draw hub text
     hubPainter.scale(scaleFactor, scaleFactor);
     hubPainter.translate(scroll_offset);
     if (!hub->upgradehub)
     {
-        // 未升级的hub
+        // Unupgraded hub
         hubPainter.drawText(hub->pos.j * CELLSIZE + 35, hub->pos.i * CELLSIZE + 32, QString::number(hub->current_have) + QString("/") + QString::number(hub->need));
     }
     else
     {
-        // 升级后的hub
-        hubPainter.setFont(QFont("楷体", 35, QFont::Bold));
+        // Upgraded hub
+        hubPainter.setFont(QFont("KaiTi", 35, QFont::Bold));
         hubPainter.drawText(hub->pos.j * CELLSIZE + 40, hub->pos.i * CELLSIZE + 45, QString::number(hub->current_have) + QString("/") + QString::number(hub->need));
     }
-
 }
+
 void PlayScene::draw_item()
 {
     if (buildings.size() > 0)
@@ -562,6 +560,9 @@ void PlayScene::draw_item()
         }
     }
 }
+
+
+
 void PlayScene::draw_overlay(int x, int y)
 {
     QPainter painter(this);
@@ -573,16 +574,16 @@ void PlayScene::draw_overlay(int x, int y)
         switch (current_building_direction)
         {
         case UP:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_W);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_W);
             break;
         case DOWN:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_S);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_S);
             break;
         case LEFT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_A);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_A);
             break;
         case RIGHT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_D);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, miner_img_blue_D);
             break;
         default:
             break;
@@ -592,16 +593,16 @@ void PlayScene::draw_overlay(int x, int y)
         switch (current_building_direction)
         {
         case UP:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE * 2, CELLSIZE, cutter_img_blue_W);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE * 2, CELLSIZE, cutter_img_blue_W);
             break;
         case DOWN:
-            painter.drawPixmap(x/scaleFactor- 3*CELLSIZE/2  , y/scaleFactor- CELLSIZE / 2, CELLSIZE * 2, CELLSIZE, cutter_img_blue_S);
+            painter.drawPixmap(x / scaleFactor - 3 * CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE * 2, CELLSIZE, cutter_img_blue_S);
             break;
         case LEFT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- 3*CELLSIZE / 2, CELLSIZE, CELLSIZE * 2, cutter_img_blue_A);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - 3 * CELLSIZE / 2, CELLSIZE, CELLSIZE * 2, cutter_img_blue_A);
             break;
         case RIGHT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE,CELLSIZE * 2, cutter_img_blue_D);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE * 2, cutter_img_blue_D);
             break;
         default:
             break;
@@ -612,16 +613,16 @@ void PlayScene::draw_overlay(int x, int y)
         {
         case UP:
             // qDebug() << tr("try to draw trash");
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_W);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_W);
             break;
         case DOWN:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_S);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_S);
             break;
         case LEFT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_A);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_A);
             break;
         case RIGHT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_D);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, trash_img_blue_D);
             break;
         default:
             break;
@@ -631,16 +632,16 @@ void PlayScene::draw_overlay(int x, int y)
         switch (current_building_direction)
         {
         case UP:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_W);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_W);
             break;
         case DOWN:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_S);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_S);
             break;
         case LEFT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_A);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_A);
             break;
         case RIGHT:
-            painter.drawPixmap(x/scaleFactor- CELLSIZE / 2 , y/scaleFactor- CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_D);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, rotator_img_blue_D);
             break;
         default:
             break;
@@ -649,48 +650,47 @@ void PlayScene::draw_overlay(int x, int y)
     case BELT:
         switch (current_building_direction)
         {
-        // 单个方向
+        // Single direction
         case UP:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W);
             break;
         case DOWN:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S);
             break;
         case LEFT:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A);
             break;
         case RIGHT:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D);
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D);
             break;
         case UP_RIGHT:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W_D);  // 上-右
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W_D);  // Up-Right
             break;
         case UP_LEFT:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W_A);  // 上-左
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_W_A);  // Up-Left
             break;
         case DOWN_RIGHT:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S_D);  // 下-右
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S_D);  // Down-Right
             break;
         case DOWN_LEFT:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S_A);  // 下-左
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_S_A);  // Down-Left
             break;
         case LEFT_UP:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A_W);  // 左-上
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A_W);  // Left-Up
             break;
         case LEFT_DOWN:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A_S);  // 左-下
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_A_S);  // Left-Down
             break;
         case RIGHT_UP:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D_W);  // 右-上
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D_W);  // Right-Up
             break;
         case RIGHT_DOWN:
-            painter.drawPixmap(x/scaleFactor - CELLSIZE / 2, y/scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D_S);  // 右-下
+            painter.drawPixmap(x / scaleFactor - CELLSIZE / 2, y / scaleFactor - CELLSIZE / 2, CELLSIZE, CELLSIZE, belt_img_blue_D_S);  // Right-Down
             break;
 
         default:
             break;
         }
-
 
     default:
         break;
@@ -748,18 +748,21 @@ void PlayScene::draw_overlay(int x, int y)
         }
     }
 }
+
+
+
 void PlayScene::paintEvent(QPaintEvent *)
 {
-    draw_cells();
-    draw_map_resources();
-    draw_building();
-    draw_ui();
-    draw_hub_text();
-    draw_item();
+    draw_cells();           // Draw the grid
+    draw_map_resources();    // Draw the map resources (e.g., mining fields)
+    draw_building();         // Draw the buildings
+    draw_ui();               // Draw the UI elements (buttons, etc.)
+    draw_hub_text();         // Draw text related to the hub
+    draw_item();             // Draw items on the conveyor belts
     //cur_x = ((cur_x / CELLSIZE) - related_j_offset + 0.5) * CELLSIZE;
     //cur_y = ((cur_y / CELLSIZE) - related_i_offset + 0.5) * CELLSIZE;
-    draw_overlay(cur_x, cur_y);
-    draw_current_shape();
+    draw_overlay(cur_x, cur_y);   // Draw the overlay of current building placement
+    draw_current_shape();         // Draw the current shape of items
 }
 
 void PlayScene::HandleLeftButtonPress(QMouseEvent *e, int grid_i, int grid_j)
@@ -771,13 +774,13 @@ void PlayScene::HandleLeftButtonPress(QMouseEvent *e, int grid_i, int grid_j)
 
     if (ready_to_place_belt)
     {
-        PushBackNewBeltGridPoint(grid_j, grid_i);
+        PushBackNewBeltGridPoint(grid_j, grid_i);  // Add new grid point for placing a belt
         ready_to_place_belt = false;
         is_placing_belt = true;
         return;
     }
 
-    if (current_building_name)
+    if (current_building_name)  // If a building is selected
     {
         switch (current_building_name)
         {
@@ -804,6 +807,7 @@ void PlayScene::HandleLeftButtonPress(QMouseEvent *e, int grid_i, int grid_j)
             return;
         }
 
+        // Apply building upgrades if any
         switch (upgrade)
         {
         case MINER:
@@ -819,7 +823,7 @@ void PlayScene::HandleLeftButtonPress(QMouseEvent *e, int grid_i, int grid_j)
             break;
         }
 
-        // 放置建筑
+        // Place the building
         if (current_building->CanPlace(cur, current_building_direction, map))
         {
             map.SetBuilding(cur, current_building, current_building_direction, current_building_name);
@@ -829,24 +833,22 @@ void PlayScene::HandleLeftButtonPress(QMouseEvent *e, int grid_i, int grid_j)
                 {
                     if (buildings[i]->pos == poscur)
                     {
-                        buildings.remove(i);
+                        buildings.remove(i);  // Remove any existing building at the new position
                     }
                 }
             }
-            buildings.push_back(current_building);
+            buildings.push_back(current_building);  // Add the new building to the list
             current_building_name = NONE;
-            update();
+            update();  // Refresh the scene
         }
     }
 
-    if (!ready_to_place_belt && !current_building_name)
+    if (!ready_to_place_belt && !current_building_name)  // If no building is selected, handle dragging
     {
         dragging = true;
-        start_pos = e->pos();
+        start_pos = e->pos();  // Capture the starting position for dragging
     }
 }
-
-
 
 void PlayScene::HandleRightButtonPress(int grid_i, int grid_j)
 {
@@ -856,30 +858,29 @@ void PlayScene::HandleRightButtonPress(int grid_i, int grid_j)
 
     if (0 <= grid_i && grid_i < HEIGHT && 0 <= grid_j && grid_j < WIDTH)
     {
-        RemoveBuilding(cur);
-        update();
+        RemoveBuilding(cur);  // Remove the building at the specified grid position
+        update();  // Refresh the scene
     }
 }
-
 
 void PlayScene::mousePressEvent(QMouseEvent *e)
 {
     int x = (e->pos().x() - scroll_offset.x() * scaleFactor);
     int y = (e->pos().y() - scroll_offset.y() * scaleFactor);
-    int grid_j = x / (CELLSIZE * scaleFactor);
-    int grid_i = y / (CELLSIZE * scaleFactor);
+    int grid_j = x / (CELLSIZE * scaleFactor);  // Calculate the grid column
+    int grid_i = y / (CELLSIZE * scaleFactor);  // Calculate the grid row
 
     //printf("ex = %d; ey =%d ;x = %d y = %d j = %d , i = %d s= %lf\n", e->pos().x(), e->pos().y(), x, y, grid_j, grid_i, scaleFactor);
     fflush(stdout);
 
     if (e->button() == Qt::LeftButton)
     {
-        HandleLeftButtonPress(e, grid_i, grid_j);
+        HandleLeftButtonPress(e, grid_i, grid_j);  // Handle left mouse button press
     }
     else if (e->button() == Qt::RightButton)
     {
         right_button_pressed = true;
-        HandleRightButtonPress(grid_i, grid_j);
+        HandleRightButtonPress(grid_i, grid_j);  // Handle right mouse button press
     }
 }
 
@@ -895,15 +896,16 @@ void PlayScene::RemoveBuilding(GridVec pos)
                 {
                     if (buildings[i]->name != HUB)
                     {
-                        buildings.remove(i);
+                        buildings.remove(i);  // Remove the building from the list, except the hub
                         break;
                     }
                 }
             }
         }
-        map.RemoveBuilding(pos);
+        map.RemoveBuilding(pos);  // Remove the building from the map
     }
 }
+
 
 
 void PlayScene::keyPressEvent(QKeyEvent *e)
@@ -946,27 +948,26 @@ void PlayScene::keyPressEvent(QKeyEvent *e)
         current_building_direction = DOWN;
         break;
     default:
-        // 如果按下了其他未定义的按键，可以选择忽略或处理
+        // If other undefined keys are pressed, choose to ignore or handle them
         break;
     }
 }
 
 void PlayScene::keyReleaseEvent(QKeyEvent *e)
 {
-    // 移除按键
+    // Remove the key
     pressedKeys.remove(e->key());
-    keySequence.removeOne(e->key());  // 从按键顺序中删除该按键
+    keySequence.removeOne(e->key());  // Remove the key from the key sequence
 }
-
 
 void PlayScene::PushBackNewBeltGridPoint(int grid_j, int grid_i)
 {
-    // 把鼠标拖动放置传送带时经过的新网格点压入qlist
+    // Push new grid points into the list when dragging to place conveyor belts
     belt_grid_Point.i = grid_i;
     belt_grid_Point.j = grid_j;
-    if (!belt_grid_path.contains(belt_grid_Point)) //
+    if (!belt_grid_path.contains(belt_grid_Point))  // If the point is not already in the list
     {
-        belt_grid_path.append(belt_grid_Point);
+        belt_grid_path.append(belt_grid_Point);  // Add it to the path
     }
 }
 
@@ -985,18 +986,17 @@ void PlayScene::HandleBuildingPlacement(QMouseEvent *e, int grid_i, int grid_j)
         // If placing a belt, record the grid point
         if (is_placing_belt)
         {
-            PushBackNewBeltGridPoint(grid_j, grid_i);
+            PushBackNewBeltGridPoint(grid_j, grid_i);  // Add new point for the belt path
         }
     }
 }
 
 void PlayScene::HandleDragging(QMouseEvent *e)
 {
-
     QPoint delta = e->pos() - start_pos;
     scroll_offset += delta;
 
-    // Ensure scroll_offset stays within the valid range (prevents scrolling too far)
+    // Ensure the scroll_offset stays within the valid range (prevents scrolling too far)
     if (scroll_offset.x() > 0)
     {
         scroll_offset.setX(0);
@@ -1033,7 +1033,6 @@ void PlayScene::HandleRightButtonDrag(int grid_i, int grid_j)
     }
 }
 
-
 void PlayScene::mouseMoveEvent(QMouseEvent *e)
 {
     int adjusted_x = (e->pos().x() - scroll_offset.x() * scaleFactor);
@@ -1044,19 +1043,19 @@ void PlayScene::mouseMoveEvent(QMouseEvent *e)
     // Handle building placement when a building is selected
     if (current_building_name)
     {
-        HandleBuildingPlacement(e, grid_i, grid_j);
+        HandleBuildingPlacement(e, grid_i, grid_j);  // Update the position of the building
     }
 
     // Handle dragging (scrolling) action
     if (dragging)
     {
-        HandleDragging(e);
+        HandleDragging(e);  // Update the scroll position based on mouse movement
     }
 
     // Handle right-button drag action to remove buildings
     if (right_button_pressed)
     {
-        HandleRightButtonDrag(grid_i, grid_j);
+        HandleRightButtonDrag(grid_i, grid_j);  // Remove buildings while dragging with the right button
     }
 }
 
@@ -1065,9 +1064,10 @@ void PlayScene::ClearBeltGridPath()
 {
     while (!belt_grid_path.empty())
     {
-        belt_grid_path.removeLast();
+        belt_grid_path.removeLast();  // Remove all points from the belt grid path
     }
 }
+
 int PlayScene::WhichBeltImg(int belt_grid_path_index)
 {
     if (belt_grid_path_index == 0)
@@ -1168,70 +1168,72 @@ void PlayScene::HandleSingleBeltPlacement()
     int which_belt = 0;
     int belt_direction = current_building_direction;
 
-    // 根据当前建筑方向确定传送带类型
+    // Determine the type of conveyor belt based on the current building direction
     switch (current_building_direction)
     {
-    // 单一方向
+    // Single directions
     case UP:
-        which_belt = BELT_W;  // 上方向传送带
+        which_belt = BELT_W;  // Conveyor belt facing up
         break;
     case DOWN:
-        which_belt = BELT_S;  // 下方向传送带
+        which_belt = BELT_S;  // Conveyor belt facing down
         break;
     case LEFT:
-        which_belt = BELT_A;  // 左方向传送带
+        which_belt = BELT_A;  // Conveyor belt facing left
         break;
     case RIGHT:
-        which_belt = BELT_D;  // 右方向传送带
+        which_belt = BELT_D;  // Conveyor belt facing right
         break;
 
-        // 八个新方向组合
+        // Eight new direction combinations
     case UP_RIGHT:
-        which_belt = BELT_W_D;  // 上-右传送带
-        belt_direction = RIGHT;  // 调整为右的方向
+        which_belt = BELT_W_D;  // Conveyor belt up-right
+        belt_direction = RIGHT;  // Adjust to right direction
         break;
     case UP_LEFT:
-        which_belt = BELT_W_A;  // 上-左传送带
-        belt_direction = LEFT;  // 调整为左的方向
+        which_belt = BELT_W_A;  // Conveyor belt up-left
+        belt_direction = LEFT;  // Adjust to left direction
         break;
     case DOWN_RIGHT:
-        which_belt = BELT_S_D;  // 下-右传送带
-        belt_direction = RIGHT;  // 调整为右的方向
+        which_belt = BELT_S_D;  // Conveyor belt down-right
+        belt_direction = RIGHT;  // Adjust to right direction
         break;
     case DOWN_LEFT:
-        which_belt = BELT_S_A;  // 下-左传送带
-        belt_direction = LEFT;  // 调整为左的方向
+        which_belt = BELT_S_A;  // Conveyor belt down-left
+        belt_direction = LEFT;  // Adjust to left direction
         break;
     case LEFT_UP:
-        which_belt = BELT_A_W;  // 左-上传送带
-        belt_direction = UP;  // 调整为上的方向
+        which_belt = BELT_A_W;  // Conveyor belt left-up
+        belt_direction = UP;  // Adjust to up direction
         break;
     case LEFT_DOWN:
-        which_belt = BELT_A_S;  // 左-下传送带
-        belt_direction = DOWN;  // 调整为下的方向
+        which_belt = BELT_A_S;  // Conveyor belt left-down
+        belt_direction = DOWN;  // Adjust to down direction
         break;
     case RIGHT_UP:
-        which_belt = BELT_D_W;  // 右-上传送带
-        belt_direction = UP;  // 调整为上的方向
+        which_belt = BELT_D_W;  // Conveyor belt right-up
+        belt_direction = UP;  // Adjust to up direction
         break;
     case RIGHT_DOWN:
-        which_belt = BELT_D_S;  // 右-下传送带
-        belt_direction = DOWN;  // 调整为下的方向
+        which_belt = BELT_D_S;  // Conveyor belt right-down
+        belt_direction = DOWN;  // Adjust to down direction
         break;
 
     default:
         break;
     }
 
-    // 创建新的传送带并检查是否可以放置
+    // Create a new conveyor belt and check if it can be placed
     Building *current_building = new Belt(belt_grid_path[0], which_belt, belt_direction);
     if (current_building->CanPlace(belt_grid_path[0], belt_direction, map))
     {
         map.SetBuilding(belt_grid_path[0], current_building, belt_direction, which_belt);
         buildings.push_back(current_building);
     }
-    current_building_direction = UP;
+    current_building_direction = UP;  // Reset the building direction to UP
 }
+
+
 
 
 void PlayScene::HandleBeltGridPlacement()
@@ -1268,11 +1270,8 @@ void PlayScene::HandleBeltGridPlacement()
             break;
         }
 
-        //qDebug() << "belt_grid_path[" << i << "]: " << belt_grid_path[i].j << "," << belt_grid_path[i].i;
-
         // Create a new belt and check if it can be placed
         Building *current_building = new Belt(belt_grid_path[i], which_belt, belt_direction);
-        //qDebug() << "Building pos before SetBuilding: " << current_building->pos.j << "," << current_building->pos.i;
         if (current_building->CanPlace(belt_grid_path[i], belt_direction, map))
         {
             if (upgrade == BELT)
@@ -1326,38 +1325,36 @@ void PlayScene::mouseReleaseEvent(QMouseEvent *e)
 void PlayScene::FactoryRunning()
 {
     timer.start();
-    // 监听定时器
+    // Listen to the timer
     connect(&timer, &QTimer::timeout, this, [=]()
             {
-                if (elapsedTimer.elapsed() >= 10000) {  // 检查是否经过了一秒
-                    updateHubStats();  // 更新统计
-                    elapsedTimer.restart();  // 重置计时器，开始下一秒的统计
+                if (elapsedTimer.elapsed() >= 10000) {  // Check if one second has passed
+                    updateHubStats();  // Update statistics
+                    elapsedTimer.restart();  // Reset the timer and start counting for the next second
                 }
-                //重新绘制图片
+                // Redraw the images
                 update();
-                if(buildings.size())
+                if (buildings.size())
                 {
-                    for(auto &building : buildings)
+                    for (auto &building : buildings)
                     {
-                        if(building->name != HUB && building->name != TRASH && building->name != TUNNEL_ENTRY && building->name != TUNNEL_EXIT)
+                        if (building->name != HUB && building->name != TRASH && building->name != TUNNEL_ENTRY && building->name != TUNNEL_EXIT)
                         {
                             building->UpdateTickableState(map);
                         }
                     }
                 } });
 }
+
 void PlayScene::updateHubStats()
 {
-    // 更新物体接收统计
-    //qDebug() << "Hub received objects in the last second: " << hub->received_objects_last_second;
-
-    // 更新收到的物体数量
+    // Update the count of objects received by the hub in the last second
     hub->updateReceivedObjectsCount();
 
-    // 重置 Hub 的接收计数器
+    // Reset the hub's receive counter
     hub->resetReceiveCounter();
 
-    // 请求刷新窗口以更新 UI 显示（触发 paintEvent）
+    // Request a window refresh to update the UI display (trigger paintEvent)
     update();
 }
 
@@ -1368,6 +1365,7 @@ void PlayScene::UpgradeHub()
     GridVec hubvec(WIDTH / 2 - 2, HEIGHT / 2 - 2);
     map.SetBuilding(hubvec, hub, UP, HUB);
 }
+
 void PlayScene::DoSave()
 {
     QSettings setting("Parameter.ini", QSettings::IniFormat);
@@ -1395,6 +1393,7 @@ void PlayScene::DoSave()
     setting.endGroup();
     setting.sync();
 }
+
 void PlayScene::LoadSave()
 {
     QSettings setting("Parameter.ini", QSettings::IniFormat);
@@ -1665,6 +1664,9 @@ void PlayScene::LoadSave()
         break;
     }
 }
+
+
+
 void PlayScene::closeEvent(QCloseEvent *)
 {
     saved = true;
@@ -1757,22 +1759,22 @@ void PlayScene::initializeView() {
 void PlayScene::outputCurrentShape() {
     switch (current_received_shape) {
     case CYCLE:
-       // std::cout << "Current received shape: CYCLE" << std::endl;
+        std::cout << "Current received shape: CYCLE" << std::endl;
         break;
     case RECT:
-       // std::cout << "Current received shape: RECT" << std::endl;
+        std::cout << "Current received shape: RECT" << std::endl;
         break;
     case LEFT_CYCLE:
-       // std::cout << "Current received shape: LEFT CYCLE" << std::endl;
+        std::cout << "Current received shape: LEFT CYCLE" << std::endl;
         break;
     case RIGHT_CYCLE:
-       // std::cout << "Current received shape: RIGHT CYCLE" << std::endl;
+        std::cout << "Current received shape: RIGHT CYCLE" << std::endl;
         break;
     case NONE:
-       // std::cout << "Current received shape: NONE" << std::endl;
+        std::cout << "Current received shape: NONE" << std::endl;
         break;
     default:
-       // std::cout << "Current received shape: UNKNOWN" << std::endl;
+        std::cout << "Current received shape: UNKNOWN" << std::endl;
         break;
     }
 }

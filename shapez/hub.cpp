@@ -14,9 +14,9 @@ Hub::Hub(QObject* parent) : QObject(parent)
     money = 0;
     increase_item_value = false;
     upgradehub = false;
-    received_objects_last_10_second = new int(0);  // 初始化为0
+    received_objects_last_10_second = new int(0);
     last_receive_time.start();
-    last_received_shape = NONE;  // 初始化为 NONE
+    last_received_shape = NONE;
     shape_update_timer.start();
     receivedTimestamps.clear();
 }
@@ -68,6 +68,7 @@ bool Hub::CanReceive(GridVec source, int directionin, int shapename)
 {
     return true;
 }
+
 void Hub::Receive(GridVec source, int directionin, int shapename)
 {
     PlayScene *scene = static_cast<PlayScene*>(this->parent());
@@ -146,10 +147,12 @@ void Hub::UpdateTickableState(GameMap &gamemap)
 {
     return;
 }
+
 void Hub::TickableRunning()
 {
     return;
 }
+
 void Hub::UpdateNeed()
 {
     switch (*need_shape_name)
@@ -173,13 +176,14 @@ void Hub::UpdateNeed()
         break;
     }
 }
+
 void Hub::CreateMapFile(){
     HANDLE hMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,
-        NULL,                    // 默认安全属性
-        PAGE_READWRITE,          // 读/写权限
-        0,                       // 文件的高32位大小
-        sizeof(int),             // 文件的低32位大小（int 的大小）
+        NULL,                    // Default security attributes
+        PAGE_READWRITE,          // Read/write access
+        0,                       // High-order file size
+        sizeof(int),             // Low-order file size (size of an int)
         L"need_shape_name"
         );
     need_shape_name = (int*)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int));
@@ -189,22 +193,23 @@ void Hub::CreateMapFile(){
         CloseHandle(hMapFile);
     }
 }
+
 void Hub::resetReceiveCounter()
 {
-    last_receive_time.restart();  // 重启计时器
+    last_receive_time.restart();  // Restart the timer
 }
+
 void Hub::updateReceivedObjectsCount()
 {
     QTime currentTime = QTime::currentTime();
 
-    // 清理超过10秒的时间戳
+    // Clean up timestamps older than 10 seconds
     while (!receivedTimestamps.isEmpty() && receivedTimestamps.head().secsTo(currentTime) > 10) {
         receivedTimestamps.dequeue();
     }
 
-    // 输出过去10秒内收到的物体数量
+    // Output the number of objects received in the last 10 seconds
     *received_objects_last_10_second = receivedTimestamps.size();
 
     //qDebug() << "Objects received in the last 10 seconds: " << *(received_objects_last_10_second);
 }
-

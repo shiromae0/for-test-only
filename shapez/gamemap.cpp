@@ -7,16 +7,17 @@
 int (*GameMap::Resource)[WIDTH] = nullptr;
 int (*GameMap::Buildingsmap)[WIDTH] = nullptr;
 // int (*GameMap::build)[WIDTH] = nullptr;
+
 void GameMap::CreateMapFile(){
     HANDLE hMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,
-        NULL,                    // 默认安全属性
-        PAGE_READWRITE,          // 读/写权限
-        0,                       // 文件的高32位大小
-        sizeof(int)*HEIGHT*WIDTH,             // 文件的低32位大小（int 的大小）
-        L"SharedResource"         // 使用宽字符字符串作为共享内存名称
+        NULL,                    // Default security attributes
+        PAGE_READWRITE,          // Read/write access
+        0,                       // High-order file size
+        sizeof(int)*HEIGHT*WIDTH, // Low-order file size (size of int)
+        L"SharedResource"         // Use a wide character string for the shared memory name
         );
-    Resource = (int(*)[WIDTH]) MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int) * HEIGHT*WIDTH);
+    Resource = (int(*)[WIDTH]) MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int) * HEIGHT * WIDTH);
 
     if (Resource == NULL) {
         printf("Could not map view of file (%d).\n", GetLastError());
@@ -31,25 +32,24 @@ void GameMap::CreateMapFile(){
         L"SharedBuild"
         );
     // build = (int(*)[WIDTH]) MapViewOfFile(buildmapfile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int) * HEIGHT * WIDTH);
-    // for (int i =0;i<HEIGHT;i++){
-
+    // for (int i = 0; i < HEIGHT; i++) {
 
     // }
     Buildingsmap = new int[HEIGHT][WIDTH];
     HANDLE hFileMapping = CreateFileMapping(
-        INVALID_HANDLE_VALUE,   // 不使用实际文件
-        NULL,                   // 默认安全属性
-        PAGE_READWRITE,         // 读写权限
-        0,                      // 高位文件大小
-        HEIGHT * WIDTH * sizeof(int), // 映射的大小（3x3 的 int 数组）
-        L"SharedBuild"             // 无需指定对象名称（匿名）
+        INVALID_HANDLE_VALUE,   // No actual file used
+        NULL,                   // Default security attributes
+        PAGE_READWRITE,         // Read/write access
+        0,                      // High-order file size
+        HEIGHT * WIDTH * sizeof(int), // Size of the mapping (int array of size 3x3)
+        L"SharedBuild"             // No need to specify object name (anonymous)
         );
     LPVOID lpBase = MapViewOfFile(
-        hFileMapping,           // 文件映射对象句柄
-        FILE_MAP_ALL_ACCESS,    // 读写权限
-        0,                      // 高位偏移量
-        0,                      // 低位偏移量
-        HEIGHT * WIDTH * sizeof(int) // 映射的字节数
+        hFileMapping,           // File mapping object handle
+        FILE_MAP_ALL_ACCESS,    // Read/write access
+        0,                      // High-order offset
+        0,                      // Low-order offset
+        HEIGHT * WIDTH * sizeof(int) // Number of bytes to map
         );
 
     // if (lpBase == NULL) {
@@ -58,30 +58,32 @@ void GameMap::CreateMapFile(){
     //     return 1;
     // }
 
-    // 3. 将映射区域作为二维数组来访问
-    build = static_cast<int*>(lpBase); // 将映射的内存区域转为 int 指针
-
+    // 3. Access the mapped area as a 2D array
+    build = static_cast<int*>(lpBase); // Cast the mapped memory area to an int pointer
 }
+
 GameMap::GameMap()
 {
     CreateMapFile();
     for (int i = 0; i < HEIGHT; i++)
         for (int j = 0; j < WIDTH; j++)
         {
-            Resource[i][j] = NONE;
+            Resource[i][j] = NONE;  // Initialize the Resource array with NONE
         }
     for (int i = 0; i < HEIGHT; i++)
         for (int j = 0; j < WIDTH; j++)
         {
-            BuildingsMap[i][j] = nullptr;
-            Buildingsmap[i][j] = -1;
-            build[i * WIDTH + j] = -1;
-
+            BuildingsMap[i][j] = nullptr;  // Initialize the BuildingsMap array with nullptr
+            Buildingsmap[i][j] = -1;       // Initialize the Buildingsmap array with -1
+            build[i * WIDTH + j] = -1;     // Initialize the build array with -1
         }
 }
+
 int* GameMap::getResource() {
-    return &Resource[0][0];  // 返回 Resource 数组的首地址
+    return &Resource[0][0];  // Return the starting address of the Resource array
 }
+
+
 
 
 void GameMap::FirstMap()
@@ -101,7 +103,7 @@ void GameMap::FirstMap()
     Resource[5][4] = CYCLE;
     Resource[5][5] = CYCLE;
 
-    // 设置 RECT 资源
+    // RECT resources
     Resource[1][25] = RECT;
     Resource[1][28] = RECT;
     Resource[2][25] = RECT;
@@ -130,8 +132,6 @@ void GameMap::FirstMap()
     Resource[17][6] = CYCLE;
     Resource[18][3] = CYCLE;
     Resource[18][6] = CYCLE;
-
-    // 设置 RECT 资源
     Resource[14][25] = RECT;
     Resource[14][26] = RECT;
     Resource[14][27] = RECT;
@@ -147,213 +147,6 @@ void GameMap::FirstMap()
     Resource[18][25] = RECT;
     //Resource[18][28] = RECT;
 
-
-
-
-
-
-    /*
-    int centerX = 75;  // 中心行
-    int centerY = 120; // 中心列
-    // 初始化资源
-    // 设置距离中心 10-20 个格子距离的 CYCLE 资源
-    Resource[centerX - 15][centerY - 10] = CYCLE;
-    Resource[centerX - 15][centerY - 9] = CYCLE;
-    Resource[centerX - 15][centerY - 8] = CYCLE;
-    Resource[centerX - 16][centerY - 9] = CYCLE;
-    Resource[centerX - 16][centerY - 8] = CYCLE;
-    Resource[centerX - 17][centerY - 8] = CYCLE;
-    Resource[centerX - 14][centerY - 10] = CYCLE;
-    Resource[centerX - 14][centerY - 9] = CYCLE;
-    Resource[centerX - 13][centerY - 10] = CYCLE;
-    Resource[centerX - 14][centerY - 8] = CYCLE;
-    Resource[centerX - 17][centerY - 9] = CYCLE;
-    Resource[centerX - 16][centerY - 10] = CYCLE;
-    Resource[centerX - 15][centerY - 7] = CYCLE;
-    Resource[centerX - 15][centerY - 6] = CYCLE;
-    Resource[centerX - 16][centerY - 7] = CYCLE;
-    Resource[centerX - 17][centerY - 7] = CYCLE;
-    Resource[centerX - 14][centerY - 7] = CYCLE;
-    Resource[centerX - 13][centerY - 9] = CYCLE;
-    Resource[centerX - 12][centerY - 10] = CYCLE;
-    Resource[centerX - 13][centerY - 8] = CYCLE;
-    Resource[centerX - 12][centerY - 8] = CYCLE;
-    Resource[centerX - 11][centerY - 9] = CYCLE;
-    Resource[centerX - 10][centerY - 10] = CYCLE;
-    Resource[centerX - 12][centerY - 9] = CYCLE;
-    Resource[centerX - 17][centerY - 6] = CYCLE;
-    Resource[centerX - 16][centerY - 6] = CYCLE;
-    Resource[centerX - 15][centerY - 5] = CYCLE;
-    Resource[centerX - 14][centerY - 6] = CYCLE;
-    Resource[centerX - 13][centerY - 7] = CYCLE;
-    Resource[centerX - 13][centerY - 6] = CYCLE;
-    Resource[centerX - 12][centerY - 7] = CYCLE;
-    Resource[centerX - 16][centerY - 5] = CYCLE;
-    Resource[centerX - 17][centerY - 5] = CYCLE;
-    Resource[centerX - 18][centerY - 5] = CYCLE;
-    Resource[centerX - 19][centerY - 6] = CYCLE;
-    Resource[centerX - 20][centerY - 6] = CYCLE;
-    Resource[centerX - 19][centerY - 7] = CYCLE;
-    Resource[centerX - 18][centerY - 7] = CYCLE;
-    Resource[centerX - 19][centerY - 8] = CYCLE;
-    Resource[centerX - 20][centerY - 7] = CYCLE;
-    Resource[centerX - 21][centerY - 7] = CYCLE;
-    Resource[centerX - 20][centerY - 8] = CYCLE;
-    Resource[centerX - 19][centerY - 9] = CYCLE;
-    Resource[centerX - 18][centerY - 10] = CYCLE;
-    Resource[centerX - 17][centerY - 11] = CYCLE;
-    Resource[centerX - 16][centerY - 11] = CYCLE;
-
-    // 新增的 CYCLE 资源
-    Resource[centerX - 10][centerY + 15] = CYCLE;
-    Resource[centerX - 11][centerY + 14] = CYCLE;
-    Resource[centerX - 12][centerY + 13] = CYCLE;
-    Resource[centerX - 13][centerY + 12] = CYCLE;
-    Resource[centerX - 14][centerY + 11] = CYCLE;
-    Resource[centerX - 15][centerY + 10] = CYCLE;
-    Resource[centerX - 16][centerY + 9] = CYCLE;
-    Resource[centerX - 17][centerY + 8] = CYCLE;
-    Resource[centerX - 18][centerY + 7] = CYCLE;
-    Resource[centerX - 10][centerY - 15] = CYCLE;
-    Resource[centerX - 11][centerY - 14] = CYCLE;
-    Resource[centerX - 12][centerY - 13] = CYCLE;
-    Resource[centerX - 13][centerY - 12] = CYCLE;
-    Resource[centerX - 14][centerY - 11] = CYCLE;
-    Resource[centerX - 15][centerY - 10] = CYCLE;
-    Resource[centerX - 16][centerY - 9] = CYCLE;
-
-    // 设置特定位置的 RECT 资源，调整到地图中心 10-20 个格子距离
-    Resource[centerX - 63][centerY - 100] = RECT;
-    Resource[centerX - 63][centerY - 99] = RECT;
-    Resource[centerX - 63][centerY - 98] = RECT;
-    Resource[centerX - 62][centerY - 101] = RECT;
-    Resource[centerX - 62][centerY - 100] = RECT;
-    Resource[centerX - 62][centerY - 99] = RECT;
-    Resource[centerX - 61][centerY - 100] = RECT;
-    Resource[centerX - 61][centerY - 99] = RECT;
-
-    // 添加其他区域资源，调整到地图中心 10-20 格子的距离
-    Resource[centerX - 15][centerY + 20] = CYCLE;
-    Resource[centerX - 14][centerY + 20] = CYCLE;
-    Resource[centerX - 13][centerY + 20] = CYCLE;
-    Resource[centerX - 12][centerY + 21] = CYCLE;
-    Resource[centerX - 12][centerY + 22] = CYCLE;
-    Resource[centerX - 11][centerY + 20] = CYCLE;
-    Resource[centerX - 10][centerY + 20] = CYCLE;
-    Resource[centerX - 9][centerY + 20] = CYCLE;
-    Resource[centerX - 8][centerY + 20] = CYCLE;
-    Resource[centerX - 15][centerY + 21] = CYCLE;
-    Resource[centerX - 15][centerY + 22] = CYCLE;
-    Resource[centerX - 15][centerY + 23] = CYCLE;
-    Resource[centerX - 15][centerY + 24] = CYCLE;
-    Resource[centerX - 14][centerY + 24] = CYCLE;
-    Resource[centerX - 13][centerY + 24] = CYCLE;
-    Resource[centerX - 12][centerY + 24] = CYCLE;
-    Resource[centerX - 11][centerY + 24] = CYCLE;
-
-    // 新增的 RECT 资源
-    Resource[centerX + 35][centerY - 20] = RECT;
-    Resource[centerX + 36][centerY - 20] = RECT;
-    Resource[centerX + 37][centerY - 21] = RECT;
-    Resource[centerX + 38][centerY - 22] = RECT;
-    Resource[centerX + 39][centerY - 23] = RECT;
-    Resource[centerX + 40][centerY - 24] = RECT;
-    Resource[centerX + 41][centerY - 25] = RECT;
-
-    // 再设置一个区域
-    Resource[centerX + 15][centerY + 10] = RECT;
-    Resource[centerX + 16][centerY + 10] = RECT;
-    Resource[centerX + 17][centerY + 10] = RECT;
-    Resource[centerX + 18][centerY + 11] = RECT;
-    Resource[centerX + 19][centerY + 11] = RECT;
-    Resource[centerX + 20][centerY + 10] = RECT;
-    Resource[centerX + 15][centerY + 11] = RECT;
-    Resource[centerX + 15][centerY + 12] = RECT;
-    Resource[centerX + 15][centerY + 13] = RECT;
-    Resource[centerX + 16][centerY + 12] = RECT;
-    Resource[centerX + 17][centerY + 12] = RECT;
-    Resource[centerX + 18][centerY + 12] = RECT;
-    Resource[centerX + 19][centerY + 13] = RECT;
-    Resource[centerX + 20][centerY + 12] = RECT;
-
-    // 设置更多区域，调整到地图中心 10-20 格子的距离
-    Resource[centerX + 25][centerY - 20] = CYCLE;
-    Resource[centerX + 26][centerY - 20] = CYCLE;
-    Resource[centerX + 27][centerY - 19] = CYCLE;
-    Resource[centerX + 28][centerY - 18] = CYCLE;
-    Resource[centerX + 29][centerY - 17] = CYCLE;
-    Resource[centerX + 30][centerY - 16] = CYCLE;
-    Resource[centerX + 31][centerY - 15] = CYCLE;
-
-    Resource[centerX - 5][centerY - 30] = RECT;
-    Resource[centerX - 4][centerY - 30] = RECT;
-    Resource[centerX - 3][centerY - 31] = RECT;
-    Resource[centerX - 2][centerY - 32] = RECT;
-    Resource[centerX - 1][centerY - 33] = RECT;
-    Resource[centerX][centerY - 34] = RECT;
-    Resource[centerX + 1][centerY - 35] = RECT;
-    // 添加更多距离中心 5-10 格子的资源块
-    Resource[centerX + 5][centerY + 5] = CYCLE;
-    Resource[centerX + 6][centerY + 5] = CYCLE;
-    Resource[centerX + 7][centerY + 6] = CYCLE;
-    Resource[centerX + 8][centerY + 7] = CYCLE;
-    Resource[centerX + 9][centerY + 8] = CYCLE;
-    Resource[centerX + 10][centerY + 9] = CYCLE;
-    Resource[centerX + 11][centerY + 10] = CYCLE;
-    Resource[centerX - 5][centerY - 5] = CYCLE;
-    Resource[centerX - 6][centerY - 5] = CYCLE;
-    Resource[centerX - 7][centerY - 6] = CYCLE;
-    Resource[centerX - 8][centerY - 7] = CYCLE;
-    Resource[centerX - 9][centerY - 8] = CYCLE;
-    Resource[centerX - 10][centerY - 9] = CYCLE;
-    Resource[centerX - 11][centerY - 10] = CYCLE;
-
-    Resource[centerX + 6][centerY - 6] = RECT;
-    Resource[centerX + 7][centerY - 7] = RECT;
-    Resource[centerX + 8][centerY - 8] = RECT;
-    Resource[centerX + 9][centerY - 9] = RECT;
-    Resource[centerX + 10][centerY - 10] = RECT;
-
-    Resource[centerX - 6][centerY + 6] = RECT;
-    Resource[centerX - 7][centerY + 7] = RECT;
-    Resource[centerX - 8][centerY + 8] = RECT;
-    Resource[centerX - 9][centerY + 9] = RECT;
-    Resource[centerX - 10][centerY + 10] = RECT;
-
-
-    Resource[1][3] = BARRIER;
-    Resource[2][4] = BARRIER;
-    Resource[4][2] = BARRIER;
-    Resource[5][1] = BARRIER;
-    Resource[9][6] = BARRIER;
-    Resource[10][5] = BARRIER;
-    Resource[9][3] = BARRIER;
-    Resource[12][7] = BARRIER;
-    Resource[8][9] = BARRIER;
-    Resource[12][9] = BARRIER;
-    Resource[12][10] = BARRIER;
-    Resource[13][9] = BARRIER;
-    Resource[13][8] = BARRIER;
-    Resource[14][7] = BARRIER;
-    Resource[2][13] = BARRIER;
-    Resource[2][17] = BARRIER;
-    Resource[3][14] = BARRIER;
-    Resource[3][15] = BARRIER;
-    Resource[4][10] = BARRIER;
-    Resource[4][13] = BARRIER;
-    Resource[5][14] = BARRIER;
-    Resource[5][17] = BARRIER;
-    Resource[6][18] = BARRIER;
-    Resource[6][19] = BARRIER;
-    Resource[7][20] = BARRIER;
-    Resource[8][21] = BARRIER;
-    Resource[9][23] = BARRIER;
-    Resource[9][20] = BARRIER;
-    Resource[10][14] = BARRIER;
-    Resource[11][13] = BARRIER;
-    Resource[12][14] = BARRIER;
-    Resource[14][14] = BARRIER;
-*/
 }
 
 

@@ -3,14 +3,14 @@
 
 RoundScene::RoundScene()
 {
-    // 像素画下载
+    // Pixel art loading
     cycle_img.load(CYCLE_PATH);
     rect_img.load(RECT_PATH);
     left_cycle_img.load(LEFT_CYCLE_PATH);
     right_cycle_img.load(RIGHT_CYCLE_PATH);
-    // 初始化关卡
+    // Initialize the level
     level = 1;
-    // 初始化确认按钮
+    // Initialize the confirm button
     confirm.setParent(this);
     confirm.setFixedSize(200, 100);
     confirm.setStyleSheet("QPushButton{image: url(:/res/confirm.png)}");

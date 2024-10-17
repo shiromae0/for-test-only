@@ -20,12 +20,12 @@ std::vector<GridVec> Miner::BuildingAllPos()
 }
 bool Miner::CanPlace(GridVec click, int picdirection, GameMap &gamemap)
 {
-    // 如果超出地图范围，返回false
+    // If outside the map，return false
     if (click.i < 0 || click.i >= HEIGHT || click.j < 0 || click.j >= WIDTH)
     {
         return false;
     }
-    // 如果不是在矿地上，返回false
+    // if not on mine，return false
     if (gamemap.GetResource(click) == NONE || gamemap.GetResource(click) == BARRIER)
     {
         return false;
@@ -63,7 +63,7 @@ void Miner::UpdateTickableState(GameMap &gamemap)
     case RUNNING:
         if (running_ms >= FirstRequire_ms)
         {
-            // dig好了，准备运输
+            // mine has been digged, ready to transport
             state = BLOCK;
             running_ms = 0;
         }

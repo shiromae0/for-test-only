@@ -28,13 +28,13 @@ bool Building::operator!=(const Building &b) const
 }
 bool Building::CanPlace(GridVec click, int picdirection, GameMap &gamemap)
 {
-    // miner重载
-    // 如果超出地图范围，返回false
+    // Overload for miner
+    // If out of the map bounds, return false
     if (click.i < 0 || click.i >= HEIGHT || click.j < 0 || click.j >= WIDTH)
     {
         return false;
     }
-    // 如果在矿地上，或有障碍物，返回false
+    // If on a mining field or there is an obstacle, return false
     if (gamemap.GetResource(click) == BARRIER)
     {
         return false;
@@ -58,6 +58,7 @@ bool Building::CanPlace(GridVec click, int picdirection, GameMap &gamemap)
     }
     return true;
 }
+
 bool Building::CanSend(GridVec source, int directionout, int shapename, GameMap &map)
 {
     // TODO
