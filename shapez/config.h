@@ -13,7 +13,7 @@
 #define GAME_WIDTH 1600 // 可放置物体区域宽度
 #define GAME_HEIGHT 1000 // 可放置物体区域高度
 #define WIDTH 32        // 可放置物体区域横向网格数
-#define HEIGHT 20     // 可放置物体区域纵向网格数
+#define HEIGHT 22     // 可放置物体区域纵向网格数
 #define CELLSIZE 50     // 每个格子的边长
 #define ITEM_SIZE 30    // 物品大小
 /******************矿地资源*******************/
