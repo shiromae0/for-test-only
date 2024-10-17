@@ -10,7 +10,10 @@ class Miner(Machine):
         super().__init__(position, direction)
         self.type = 22
 
-
+class Rotator(Machine):
+    def __init__(self, position, direction):
+        super().__init__(position, direction)
+        self.type = 27
 class Cutter(Machine):
     def __init__(self, position, direction):
         super().__init__(position, direction)

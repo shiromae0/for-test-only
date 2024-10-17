@@ -7,7 +7,7 @@ import gymnasium
 import numpy as np
 from gymnasium import spaces
 from gymnasium.core import ObsType, ActType
-from Machine import Machine,Miner,Hub,Trash,Conveyor,Cutter
+from Machine import Machine,Miner,Hub,Trash,Conveyor,Cutter,Rotator
 
 
 def distance(point1, point2):
@@ -15,9 +15,13 @@ def distance(point1, point2):
     x2, y2 = point2
     return abs(x2 - x1) + abs(y2 - y1)
 
+
+
+
+
 class ShapezEnv(gymnasium.Env):
     def __init__(self, build, res, target_shape):
-        self.required_routes = 1
+        self.required_routes = 2
         self.success_times = 0
         self.max_step = 1200
         self.steps = 0
@@ -74,12 +78,10 @@ class ShapezEnv(gymnasium.Env):
             machine_type = value // 100
             position = tuple(index)
             direction = value % 100
-
             if machine_type == 23:  # Cutter
                 if position in self.machines:
                     # print(f"警告：位置 {position} 已经被占用，跳过主出口初始化")
                     continue
-
                 cutter = Cutter(position, direction)
                 self.machines[position] = cutter
                 # print(f"Cutter 主出口初始化成功，位置: {position}, 方向: {direction}")
@@ -91,12 +93,9 @@ class ShapezEnv(gymnasium.Env):
                 else:
                     self.machines[sub_pos] = cutter  # 将副出口也加入到 self.machines
                     # print(f"Cutter 副出口初始化成功，位置: {sub_pos}, 方向: {direction}")
-
-
             elif machine_type == 22:  # Miner 矿机
                 self.machines[position] = Miner(position, direction)
                 # print(f"矿机初始化成功，位置: {position}, 方向: {direction}")
-
             elif machine_type == 31:  # Conveyor 传送带
                 self.machines[position] = Conveyor(position, direction)
                 # print(f"传送带初始化成功，位置: {position}, 方向: {direction}")
@@ -161,7 +160,7 @@ class ShapezEnv(gymnasium.Env):
         # for machine in self.machines.items():
         #     print(machine[0],machine[1].shape,machine[1].num)
 
-        if self.check_goal() == True:
+        if self.check_goal() == self.required_routes:
             done = True  # 如果达到目标状态，标记为完成
             reward += self.max_step * 10
             self.total_reward += reward
@@ -169,13 +168,15 @@ class ShapezEnv(gymnasium.Env):
             print(self.total_reward)
             print(self.success_times)
             print("len =",len(self.machines))
-        # 返回观察值、奖励、是否结束、是否被截断和信息
-        # mask = self.get_action_mask()
-        # print(self.grid_bld)
-        # for num,i in enumerate(mask):
-        #     if i == 1:
-        #         print("valid_act = ",self.action_list[num])
-        # print()
+        elif self.check_goal() == 1:
+            # 返回观察值、奖励、是否结束、是否被截断和信息
+            mask = self.get_action_mask()
+            print(np.array2string(self.grid_bld, max_line_width=200))
+            for num,i in enumerate(mask):
+                if i == 1:
+                    print("valid_act = ",self.action_list[num])
+            print()
+            time.sleep(1)
         self.last_action_index = action
         step_penalty = 0.01 * np.exp(0.01 * self.steps)
         # print("s_p= ",step_penalty)
@@ -184,126 +185,25 @@ class ShapezEnv(gymnasium.Env):
         # print()
         return self._get_obs(), reward, done, truncated, info
 
-    def check_goal(self) -> bool:
+    def check_goal(self):
         """
         检查是否有资源从矿机通过传送带等路径成功到达 hub，并符合目标形状。
         """
-        goal_found = False
+        cnt = 0
         for position, machine in self.machines.items():
-            if isinstance(machine, Miner):  # 找到矿机，开始从资源生成点追踪
+            if isinstance(machine, Miner): # 找到矿机，开始从资源生成点追踪
                 current_position = position
-                current_machine = machine
                 current_shape = self.grid_rsc[position]  # 获取资源的初始形状
-                # print(f"起点是矿机，位置: {current_position}, 初始形状: {current_shape}")
-                positions = []
-                while True:
-                    if current_position in positions:
-                        # print(f"发现循环路径，位置: {current_position}")
-                        break
-                    positions.append(current_position)
+                # 使用通用路径追踪函数进行检查
+                result = self._track_path_with_rotator(position, current_shape)
+                if result == 'hub':
+                    cnt += 1
+                elif result == 'none':
+                    continue  # 检查其他矿机的路径
+                elif result == 'trash':
+                    continue
 
-                    # # 获取下一个位置，根据传送带的方向前进
-                    # if current_position == self._get_next_position(current_position, current_machine.direction):
-                    #     return False
-
-                    next_position = self._get_next_position(current_position, current_machine.direction)
-                    # print(f"当前机器: {current_machine.__class__.__name__}, 位置: {current_position}, 下一步: {next_position}")
-
-                    # print(f"123123123: {next_position}")
-                    # 检查下一个位置是否有机器
-                    if next_position in self.machines:
-                        current_machine = self.machines[next_position]
-                        # print(f"下一步机器类型: {current_machine.__class__.__name__}, 位置: {next_position}")
-
-                        if isinstance(current_machine, Conveyor):
-                            # 传送带：继续前进
-                            # print(f"传送带继续前进，当前资源位置: {current_position}")
-                            current_position = next_position
-                            # print(f"资源到达传送带后更新，当前位置: {current_position}")
-                            # continue
-
-                        elif isinstance(current_machine, Hub):
-                            # print(f"到达 Hub, 位置: {next_position}, 当前形状: {current_shape}, 目标形状: {self.target_shape}")
-                            # 直接到达 Hub，检查形状是否符合目标
-                            if current_shape == self.target_shape:
-                                goal_found = True  # 找到成功路径
-                            break  # 跳出当前矿机路径的检查，继续检查其他矿机
-
-                        elif isinstance(current_machine, Cutter):
-                            # 存在cutter的情况
-                            # print(f"资源到达 Cutter，位置: {current_position}, 当前形状: {current_shape}")
-                            current_position = next_position
-
-                            # main_exit_info, side_exit_info = \
-                            #     self.place_cutter(current_position, current_shape, current_machine.direction)
-                            # main_exit_pos, main_exit_shape = main_exit_info
-                            # side_exit_pos, side_exit_shape = side_exit_info
-
-                            # print(f"经过 Cutter, 主出口位置: {main_exit_pos}, 主出口形状: {main_exit_shape}")
-                            # print(f"副出口位置: {side_exit_pos}, 副出口形状: {side_exit_shape}")
-                            main_exit_pos, side_exit_pos = \
-                                self.get_cutter_pos(current_position, current_machine.direction)
-                            main_exit_shape, side_exit_shape = self.process_cut(current_shape)
-
-                            if main_exit_pos in self.machines:
-                                main_exit_result = self._track_path_to_end(main_exit_pos)
-                            else:
-                                print(f"错误：位置 {main_exit_pos} 没有找到机器")
-                                main_exit_result = 'none'
-
-                            if side_exit_pos in self.machines:
-                                side_exit_result = self._track_path_to_end(side_exit_pos)
-                            else:
-                                print(f"错误：位置 {side_exit_pos} 没有找到机器")
-                                side_exit_result = 'none'
-
-                            # 分别判断主出口和副出口的终点
-                            # main_exit_result = self._track_path_to_end(main_exit_pos)  # 主出口的终点
-                            # side_exit_result = self._track_path_to_end(side_exit_pos)  # 副出口的终点
-
-                            # 有一个路径无解，就返回false
-                            if main_exit_result == 'none' or side_exit_result == 'none':
-                                break
-                                # 两个都到达trash，也返回false
-                            if main_exit_result == 'trash' and side_exit_result == 'trash':
-                                break
-
-                            if main_exit_result == 'hub' and main_exit_shape == self.target_shape:
-                                goal_found = True  # 主出口路径到达 Hub 且形状符合目标
-                            if side_exit_result == 'hub' and side_exit_shape == self.target_shape:
-                                goal_found = True  # 副出口路径到达 Hub 且形状符合目标
-                            break  # 跳出当前矿机路径的检查，继续检查其他矿机
-
-                            # # 如果到达hub但形状不匹配
-                            # return False
-                        else:
-                            # 遇到了其他建筑，停止
-                            # return False
-                            break
-                    else:
-                        # 如果路径中断或没有传送带，停止追踪
-                        # return False
-                        break
-        return goal_found
-
-        #                 elif isinstance(current_machine, Hub):
-        #                     # 检查资源是否到达 hub，并且形状是否符合目标
-
-        #                     if current_shape == self.target_shape:
-        #                         # print(f"资源从 {position} 成功到达 hub，形状符合目标")
-        #                         return True
-        #                     else:
-        #                         # print(f"资源到达 hub，但形状不符合目标 {self.target_shape}")
-        #                         return False
-        #                 else:
-        #                     # print("遇到了其他建筑，停止")
-        #                     return False
-        #             else:
-        #                 # 如果路径中断或没有传送带，停止追踪
-        #                 # print("资源路径中断")
-        #                 break
-        #         # print()
-        # return False
+        return cnt
 
     def create_valid_action_space(self):
         """
@@ -593,33 +493,7 @@ class ShapezEnv(gymnasium.Env):
         else:
             return -100
 
-    def get_cutter_pos(self,position,direction):
-        main_pos = None
-        sub_pos = None
-        if self.machines[position].position == position:
-            #main pos
-            main_pos = position
-            direction_map = {
-                1: (0, 1),  # 向上，副出口在下
-                2: (0, -1),  # 向下，副出口在上
-                3: (-1, 0),  # 向左，副出口在右
-                4: (1, 0)  # 向右，副出口在左
-            }
-            dx, dy = direction_map[direction]
-            sub_pos = (position[0] + dx, position[1] + dy)
-        elif self.machines[position].sub_pos == position:
-            sub_pos = position
-            direction_map = {
-                1: (0, -1),  # 向上，副出口在下
-                2: (0, 1),  # 向下，副出口在上
-                3: (1, 0),  # 向左，副出口在右
-                4: (-1, 0)  # 向右，副出口在左
-            }
-            dx, dy = direction_map[direction]
-            main_pos = (position[0] + dx, position[1] + dy)
-        else:
-            print("error, not a cutter")
-        return main_pos,sub_pos
+
 
     def handle_place(self, machine_type, position, direction):
         # handle the place event
@@ -639,10 +513,22 @@ class ShapezEnv(gymnasium.Env):
                 self.grid_bld[sub_pos] = -1
                 del self.machines[main_pos]
                 del self.machines[sub_pos]
+            elif machine_type == 31:
+                path = self.retrieve_path(position,self.grid_bld[position]%100)
+                start_pos = path[-1]
+                start_shape = self.grid_rsc[start_pos]
+                if self._track_path_with_rotator(start_pos,start_shape)=='hub':
+                    return -1
+                else:
+                    self.grid_bld[position] = -1
+                    reward = -(self.reward_grid)[position] \
+                        if (self.reward_grid)[position] > 0 else -(self.reward_grid)[position] / 2
+                    del self.machines[position]
+                    self.reward_grid[position] = -1
             else:
                 self.grid_bld[position] = -1
-                reward = -(self.reward_grid)[position] if (self.reward_grid)[position] > 0 else -(self.reward_grid)[
-                                                                                                    position] / 2
+                reward = -(self.reward_grid)[position]\
+                    if (self.reward_grid)[position] > 0 else -(self.reward_grid)[position] / 2
                 del self.machines[position]
                 self.reward_grid[position] = -1
             return reward
@@ -683,15 +569,6 @@ class ShapezEnv(gymnasium.Env):
         return reward
 
 
-
-    def compute_resource_utilization(self):
-        # 计算资源的利用率
-        self.total_useful_resource = np.argwhere(self.grid_rsc == self.target_shape)
-        # 检查资源是否成功被传送到终点
-        for machine in self.machines.values():
-            if isinstance(machine, Miner):
-                if machine.is_conveyed:
-                    self.processed_resource += 1
 
 
     def _get_next_position(self, position: Tuple[int, int], direction: int):
@@ -980,7 +857,6 @@ class ShapezEnv(gymnasium.Env):
                     idx = self.act_dict[(22, direction + 1),(pos[0],pos[1])]
                     index.append(idx)
 
-
         all_machine_pos = np.argwhere((self.grid_bld != -1) & (self.grid_bld // 100 != 21))
         for pos in all_machine_pos:
             idx = self.act_dict[(0, -1), (pos[0], pos[1])]
@@ -1052,43 +928,121 @@ class ShapezEnv(gymnasium.Env):
         else:
             return (-1,-1)
 
-    def _track_path_to_end(self, position):
+    def process_rotate(self, shape, rotation_count):
+        rotation_map = {
+            11: 11,  # 如果是圆形，旋转后不变
+            12: 12,  # 如果是正方形，旋转后不变
+            13: 20,
+            14: 60,
+            20: 14,
+            60: 13,
+            16: 18,
+            17: 19,
+            18: 17,
+            19: 16
+        }
+
+        for _ in range(rotation_count):
+            shape = rotation_map.get(shape, shape)
+        return shape
+    def get_cutter_pos(self,position,direction):
+        main_pos = None
+        sub_pos = None
+        if self.machines[position].position == position:
+            #main pos
+            main_pos = position
+            direction_map = {
+                1: (0, 1),  # 向上，副出口在下
+                2: (0, -1),  # 向下，副出口在上
+                3: (-1, 0),  # 向左，副出口在右
+                4: (1, 0)  # 向右，副出口在左
+            }
+            dx, dy = direction_map[direction]
+            sub_pos = (position[0] + dx, position[1] + dy)
+        elif self.machines[position].sub_pos == position:
+            sub_pos = position
+            direction_map = {
+                1: (0, -1),  # 向上，副出口在下
+                2: (0, 1),  # 向下，副出口在上
+                3: (1, 0),  # 向左，副出口在右
+                4: (-1, 0)  # 向右，副出口在左
+            }
+            dx, dy = direction_map[direction]
+            main_pos = (position[0] + dx, position[1] + dy)
+        else:
+            print("error, not a cutter")
+        return main_pos,sub_pos
+
+    def _track_path_with_rotator(self, position, shape):
         """
-        辅助函数，用于追踪从某个位置传输的资源是否能到达 Hub。
-        只负责判断路径是否到达 Hub，不负责形状检查。
-        如果到了边界，说明无解
+        通用路径追踪函数，处理路径中可能遇到的传送带、旋转器、Cutter和Hub。
         """
-        current_position = position
-        visited = []
+        cur_pos = position
+        rotation_count = 0  # 初始化旋转次数
         while True:
-            next_position = self._get_next_position(current_position, self.machines[current_position].direction)
-            if next_position in visited:
+            nxt_pos = self._get_next_position(cur_pos, self.machines[cur_pos].direction)
+            if nxt_pos is None or self.grid_bld[nxt_pos] == -1:
+                # print(f"路径中断或无效位置: {nxt_pos}")
                 return 'none'
-            visited.append(next_position)
-            if next_position == None or self.grid_bld[next_position] == -1:
-                #no more buildings in the next pos
-                return 'none'
-            # print(f"追踪路径，当前位置: {current_position}, 机器: {self.machines[current_position].__class__.__name__}, 方向: {self.machines[current_position].direction}")
-            if next_position in self.machines:
-                current_machine = self.machines[next_position]
+
+            if nxt_pos in self.machines:
+                current_machine = self.machines[nxt_pos]
 
                 if isinstance(current_machine, Conveyor):
+
                     # 继续沿传送带前进
-                    current_position = next_position
+                    cur_pos = nxt_pos
+                    # print(f"经过传送带，当前位置: {cur_pos}")
+
+                elif isinstance(current_machine, Rotator):
+                    # 经过 Rotator，增加旋转次数
+
+                    rotation_count += 1
+                    cur_pos = nxt_pos
+                    # print(f"经过 Rotator，旋转次数: {rotation_count}，当前位置: {cur_pos}")
+
+                elif isinstance(current_machine, Cutter):
+                    # 如果是 Cutter，处理形状切割
+                    # passed_cutter = True
+                    cur_pos = nxt_pos
+                    # print(f"资源到达 Cutter，位置: {cur_pos}")
+
+                    # 获取主、副出口
+                    main_exit_pos, side_exit_pos = self.get_cutter_pos(cur_pos, current_machine.direction)
+                    main_exit_shape, side_exit_shape = self.process_cut(shape)
+
+                    # 分别追踪主出口和副出口
+                    if main_exit_pos in self.machines:
+                        main_exit_result = self._track_path_with_rotator(main_exit_pos, main_exit_shape)
+                    else:
+                        main_exit_result = 'none'
+
+                    if side_exit_pos in self.machines:
+                        side_exit_result = self._track_path_with_rotator(side_exit_pos, side_exit_shape)
+                    else:
+                        side_exit_result = 'none'
+
+                    if main_exit_result == 'hub' or side_exit_result == 'hub':
+                        return 'hub'
+                    else:
+                        return 'none'
+
                 elif isinstance(current_machine, Hub):
-                    # 成功到达 Hub，返回 True
-                    # print(f"到达 Hub, 位置: {next_position}")
-                    return 'hub'
+                    # 如果到达 Hub，检查形状是否符合目标
+                    rotated_shape = self.process_rotate(shape, rotation_count)
+                    # print(f"到达 Hub，最终形状: {rotated_shape}，目标形状: {self.target_shape}")
+                    if rotated_shape == self.target_shape:
+                        return 'hub'
+                    else:
+                        return 'none'
+
                 elif isinstance(current_machine, Trash):
-                    # 到达trash
-                    # print(f"到达 Trash, 位置: {next_position}")
+                    # 到达 Trash，不成功
+                    # print(f"到达 Trash，位置: {nxt_pos}")
                     return 'trash'
+
                 else:
-                    # 遇到其他建筑
                     return 'none'
             else:
-                # 触碰到边界
-                # print(f"到达边界或中断路径, 位置: {next_position}")
+                # print(f"未找到下一个机器，路径中断: {nxt_pos}")
                 return 'none'
-
-                # 预设地图
