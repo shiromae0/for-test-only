@@ -146,13 +146,13 @@ class ShapezEnv(gymnasium.Env):
         self.steps = 0
         self.grid_bld = self.original_bld.copy()
         self.machines.clear()
-        random_actions = random.sample(self.action_list, 500)
-        for action in random_actions:
-            action_type, position = action
-            machine_type, direction = action_type
-            position = (position[0], position[1])
-            if self.check_action_valid(machine_type,position,direction):
-                self.handle_place(machine_type, position, direction)
+        # random_actions = random.sample(self.action_list, 500)
+        # for action in random_actions:
+        #     action_type, position = action
+        #     machine_type, direction = action_type
+        #     position = (position[0], position[1])
+        #     if self.check_action_valid(machine_type,position,direction):
+        #         self.handle_place(machine_type, position, direction)
 
         for index, value in np.ndenumerate(self.grid_bld):
             machine_type = value // 100
@@ -858,6 +858,8 @@ class ShapezEnv(gymnasium.Env):
         if self.grid_bld[main_pos] != -1 or self.grid_bld[sub_pos] != -1 or self.grid_bld[sub_pos] // 100 == 21 or \
                 self.grid_bld[main_pos] // 100 == 21:
             return False
+        if self.grid_rsc[main_pos] != 0 or self.grid_rsc[sub_pos] != 0:
+            return False
         pre_pos = self._get_pre_position(position, direction)
         if pre_pos == None or self.grid_bld[pre_pos] // 100 != 31:
             # can not be out of boundary and the pre_pos machine must be a correct conveyor
@@ -1012,8 +1014,8 @@ class ShapezEnv(gymnasium.Env):
             if nxt_pos in self.machines:
                 current_machine = self.machines[nxt_pos]
                 if isinstance(current_machine, Conveyor):
-                    nxt_direct = self.grid_bld[nxt_pos]%100
-                    if self._get_pre_position(nxt_pos,nxt_direct) != cur_pos:
+                    nxt_direct = self.grid_bld[nxt_pos] % 100
+                    if self._get_pre_position(nxt_pos, nxt_direct) != cur_pos:
                         return 'none'
                     cur_pos = nxt_pos
                 elif isinstance(current_machine, Rotator):

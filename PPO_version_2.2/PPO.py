@@ -80,7 +80,7 @@ class MaskedMultiInputPolicy(MultiInputPolicy):
 
 
 
-
+print(getmap.load_shared_arrays()[1])
 
 def get_agent_act_list():
 
@@ -93,7 +93,7 @@ def get_agent_act_list():
     env.reset()
     act_list = env.action_list
     # model = PPO(MaskedMultiInputPolicy, env=env, verbose=1, policy_kwargs={'model': None},gamma=0.98)
-    model = PPO.load("ppo_model.zip",env=env,gamma=0.98)
+    model = PPO.load("ppo_model.zip",env=env,gamma = 0.98, custom_objects={"policy_class": MaskedMultiInputPolicy})
 
     model.set_env(env)
     model.policy.model = model
@@ -117,7 +117,7 @@ def get_agent_act_list():
             print(obs["grid"])
             break
     return agent_act
-print(get_agent_act_list())
+# print(get_agent_act_list())
 # 评估模型
 # from stable_baselines3.common.evaluation import evaluate_policy
 # mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10)
